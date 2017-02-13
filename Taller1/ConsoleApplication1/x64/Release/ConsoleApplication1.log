@@ -1,0 +1,12 @@
+﻿C:\Program Files (x86)\MSBuild\Microsoft.Cpp\v4.0\V140\Microsoft.CppBuild.targets(392,5): warning MSB8028: The intermediate directory (x64\Release\) contains files shared from another project (ConsoleApplication1.vcxproj).  This can lead to incorrect clean and rebuild behavior.
+  Source.cpp
+Source.cpp(112): warning C4244: 'argument': conversion from 'std::size_t' to 'float', possible loss of data
+Source.cpp(18): warning C4101: 'received': unreferenced local variable
+Source.cpp(17): warning C4101: 'buffer': unreferenced local variable
+  Generating code
+  1 of 213 functions ( 0.5%) were compiled, the rest were copied from previous compilation.
+    0 functions were new in current compilation
+    0 functions had inline decision re-evaluated but remain unchanged
+  Finished generating code
+  ConsoleApplication1.vcxproj -> D:\Program Files (x86)\Xaxes\SourceHunters\Taller1\x64\Release\Taller1.exe
+  ConsoleApplication1.vcxproj -> D:\Program Files (x86)\Xaxes\SourceHunters\Taller1\x64\Release\Taller1.pdb (Full PDB)
