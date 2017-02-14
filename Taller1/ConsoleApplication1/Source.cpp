@@ -8,11 +8,24 @@
 
 #define MAX_MENSAJES 30
 
+void receiver(sf::TcpSocket *receive) {
+	char data[100];
+	std::size_t received;
+	sf::Socket::Status status = receive->receive(data, 100, received);
+}
+
+void send(sf::TcpSocket *send, sf::String mensaje) {
+	if (send->send(mensaje, mensaje.getSize(), numBytes) != sf::Socket::Done) {
+		std::cout << "Error al enviar " << mensaje << std::endl;
+	}
+}
+
 int main()
 {
 	// CHOSE SEVER/CLIENT
 	sf::IpAddress ip = sf::IpAddress::IpAddress("192.168.23.87"); //sf::IpAddress::getLocalAddress();
-	sf::TcpSocket socket;
+	sf::TcpSocket *send = new sf::TcpSocket;
+	sf::TcpSocket *receive = new sf::TcpSocket;
 	char connectionType, mode;
 	char buffer[2000];
 	std::size_t received;
@@ -24,24 +37,45 @@ int main()
 	if (connectionType == 's')
 	{
 		sf::TcpListener listener;
+		// Escuchamos por el puerto 50000
 		if (listener.listen(50000) != sf::Socket::Done) {
 			std::cout << "No et pots vincular al port 50000" << std::endl;
 			return -1;
 		}
-		if (listener)
-		listener.accept(socket);
-		textConsole += "Server";
-		mode = 's';
+		// puerto 50000 al socket send
+		if (listener.accept(*send) != sf::Socket::Done) {
+			std::cout << "Error al acceptar conexió" << std::endl;
+			return -1;
+		}
+
+		// Escuchamos por el puerto 50001
+		if (listener.listen(50001) != sf::Socket::Done) {
+			std::cout << "No et pots vincular al port 50001" << std::endl;
+			return -1;
+		}
+		// puerto 50001 al socket receive
+		if (listener.accept(*receive) != sf::Socket::Done) {
+			std::cout << "Error al acceptar conexió" << std::endl;
+			return -1;
+		}
 		listener.close();
 	}
 	else if (connectionType == 'c')
 	{
-		socket.connect(ip, 50000);
-		textConsole += "Client";
-		mode = 'r';
-
+		// bind puerto 50000 al socket receive
+		sf::Socket::Status status = receive->connect("127.0.0.1", 50000, sf::seconds(5.f));
+		if (status != sf::Socket::Done) {
+			std::cout << "Error al intent de conexió" << std::endl;
+			return -1;
+		}
+		// bind puerto 50001 al socket send
+		sf::Socket::Status status = send->connect("127.0.0.1", 50001, sf::seconds(5.f));
+		if (status != sf::Socket::Done) {
+			std::cout << "Error al intent de conexió" << std::endl;
+			return -1;
+		}
 	}
-
+	
 	// OPEN CHAT WINDOW
 
 	std::vector<std::string> aMensajes;
@@ -192,14 +226,6 @@ int main()
 	//	}
 	//}
 
-	socket.disconnect();
+	//socket.disconnect();
 	return 0;
-}
-
-
-
-void receiver() {
-	char data[100];
-	std::size_t received;
-	sf::Socket::Status status = socket.receive(data, 100, received);
 }
