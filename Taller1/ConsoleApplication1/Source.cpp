@@ -8,14 +8,19 @@
 
 #define MAX_MENSAJES 30
 
-void receiver(sf::TcpSocket *receive) {
+void receiver(sf::TcpSocket *receive, std::vector<std::string> *aMensajes) {
 	char data[100];
 	std::size_t received;
 	sf::Socket::Status status = receive->receive(data, 100, received);
+	aMensajes->push_back(data);// guarda mensaje a la llista de mensajes
+	if (aMensajes->size() > 25) // si supera el maxim de lines per pantalla, baixala
+	{
+		aMensajes->erase(aMensajes->begin(), aMensajes->begin() + 1);
+	}
 }
 
-void send(sf::TcpSocket *send, sf::String mensaje) {
-	if (send->send(mensaje, mensaje.getSize(), numBytes) != sf::Socket::Done) {
+void sender(sf::TcpSocket *send, sf::String *mensaje) {
+	if (send->send(mensaje, mensaje->getSize()) != sf::Socket::Done) {
 		std::cout << "Error al enviar " << mensaje << std::endl;
 	}
 }
@@ -69,7 +74,7 @@ int main()
 			return -1;
 		}
 		// bind puerto 50001 al socket send
-		sf::Socket::Status status = send->connect("127.0.0.1", 50001, sf::seconds(5.f));
+		status = send->connect("127.0.0.1", 50001, sf::seconds(5.f));
 		if (status != sf::Socket::Done) {
 			std::cout << "Error al intent de conexió" << std::endl;
 			return -1;
@@ -113,6 +118,9 @@ int main()
 	separator.setFillColor(sf::Color(200, 200, 200, 255));
 	separator.setPosition(0, 550);
 
+	sf::Thread Threceive(&receiver, receive);
+	Threceive.launch();
+
 	while (window.isOpen())
 	{
 		sf::Event evento;
@@ -128,6 +136,7 @@ int main()
 					window.close();
 				else if (evento.key.code == sf::Keyboard::Return)
 				{
+					sender(send, &mensaje); // envia mensaje
 					aMensajes.push_back(mensaje);
 					if (aMensajes.size() > 25)
 					{
@@ -137,9 +146,9 @@ int main()
 				}
 				break;
 			case sf::Event::TextEntered:
-				if (evento.text.unicode >= 32 && evento.text.unicode <= 126)
-					mensaje += (char)evento.text.unicode;
-				else if (evento.text.unicode == 8 && mensaje.getSize() > 0)
+				if (evento.text.unicode >= 32 && evento.text.unicode <= 126) // si di dona a les tecles, escriu el misatge
+					mensaje += (char)evento.text.unicode; 
+				else if (evento.text.unicode == 8 && mensaje.getSize() > 0) // si li dona al backspave, borra ultima lletra
 					mensaje.erase(mensaje.getSize() - 1, mensaje.getSize());
 				break;
 			}
