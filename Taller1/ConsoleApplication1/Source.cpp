@@ -137,25 +137,33 @@ int main()
 		sf::Event evento;
 		while (window.pollEvent(evento))
 		{
+			const char* messag = aMensajes[aMensajes.size() - 1].c_str();
+
+			if (messag[0] == '$') window.close();
 			switch (evento.type)
 			{
 			case sf::Event::Closed:
 				window.close();
 				break;
 			case sf::Event::KeyPressed:
-				if (evento.key.code == sf::Keyboard::Escape)
+				if (evento.key.code == sf::Keyboard::Escape) {
+					mensaje = sf::Keyboard::Escape;
+					sender.SendMessages(); // envia mensaje
 					window.close();
+				}
 				else if (evento.key.code == sf::Keyboard::Return)
 				{
-					mutex.lock();
+					
 					sender.SendMessages(); // envia mensaje
+					mutex.lock();
 					aMensajes.push_back(mensaje);
+					mutex.unlock();
 					if (aMensajes.size() > 25)
 					{
 						aMensajes.erase(aMensajes.begin(), aMensajes.begin() + 1);
 					}
 					mensaje = ">";
-					mutex.unlock();
+					
 				}
 				break;
 			case sf::Event::TextEntered:
@@ -183,71 +191,6 @@ int main()
 		window.clear();
 	}
 
-	// pensar mutexs
-	//sf::IpAddress ip = sf::IpAddress::IpAddress("192.168.23.154"); //sf::IpAddress::getLocalAddress();
-	//sf::TcpSocket socket;
-	//char connectionType, mode;
-	//char buffer[2000];
-	//std::size_t received;
-	//std::string text = "Connected to: ";
-
-	//std::cout << "Enter (s) for Server, Enter (c) for Client: ";
-	//std::cin >> connectionType;
-
-	//if (connectionType == 's')
-	//{
-	//	sf::TcpListener listener;
-	//	listener.listen(5000);
-	//	listener.accept(socket);
-	//	text += "Server";
-	//	mode = 's';
-	//	listener.close();
-	//}
-	//else if (connectionType == 'c')
-	//{
-	//	socket.connect(ip, 5000);
-	//	text += "Client";
-	//	mode = 'r';
-	//}
-
-	/////................................................................
-
-	//socket.send(text.c_str(), text.length() + 1);
-	//socket.receive(buffer, sizeof(buffer), received);
-
-	//std::cout << buffer << std::endl;
-
-	//bool done = false;
-	//while (!done)
-	//{
-	//	if (mode == 's')
-	//	{
-	//		std::getline(std::cin, text);
-	//		if (text.length() > 0)
-	//		{
-	//			socket.send(text.c_str(), text.length() + 1);
-	//			mode = 'r';
-	//			if (text == "exit")
-	//			{
-	//				break;
-	//			}
-	//		}
-	//	}
-	//	else if (mode == 'r')
-	//	{
-	//		socket.receive(buffer, sizeof(buffer), received);
-	//		if (received > 0)
-	//		{
-	//			std::cout << "Received: " << buffer << std::endl;
-	//			mode = 's';
-	//			if (strcmp(buffer, "exit") == 0)
-	//			{
-	//				break;
-	//			}
-	//		}
-	//	}
-	//}
-
-	//socket.disconnect();
+	Threceive.terminate();
 	return 0;
 }
