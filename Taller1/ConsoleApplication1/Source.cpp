@@ -196,6 +196,8 @@ int main()
 		window.clear();
 	}
 
+	send->disconnect();
+	receive->disconnect();
 	Threceive.terminate();
 	return 0;
 }
