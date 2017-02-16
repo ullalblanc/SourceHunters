@@ -51,7 +51,7 @@ int main()
 	{
 		sf::TcpListener listener;
 		// Escuchamos por el puerto 50000
-		if (listener.listen(50000) != sf::Socket::Done) {
+		if (listener.listen(5000) != sf::Socket::Done) {
 			std::cout << "No et pots vincular al port 50000" << std::endl;
 			return -1;
 		}
@@ -62,10 +62,10 @@ int main()
 		}
 
 		// Escuchamos por el puerto 50001
-		if (listener.listen(50001) != sf::Socket::Done) {
+		/*if (listener.listen(50001) != sf::Socket::Done) {
 			std::cout << "No et pots vincular al port 50001" << std::endl;
 			return -1;
-		}
+		}*/
 		// puerto 50001 al socket receive
 		if (listener.accept(*receive) != sf::Socket::Done) {
 			std::cout << "Error al acceptar conexió" << std::endl;
@@ -76,13 +76,13 @@ int main()
 	else if (connectionType == 'c')
 	{
 		// bind puerto 50000 al socket receive
-		sf::Socket::Status status = receive->connect("127.0.0.1", 50000, sf::seconds(5.f));
+		sf::Socket::Status status = receive->connect("127.0.0.1", 5000, sf::seconds(5.f));
 		if (status != sf::Socket::Done) {
 			std::cout << "Error al intent de conexió" << std::endl;
 			return -1;
 		}
 		// bind puerto 50001 al socket send
-		status = send->connect("127.0.0.1", 50001, sf::seconds(5.f));
+		status = send->connect("127.0.0.1", 5000, sf::seconds(5.f));
 		if (status != sf::Socket::Done) {
 			std::cout << "Error al intent de conexió" << std::endl;
 			return -1;
