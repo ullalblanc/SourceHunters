@@ -7,7 +7,6 @@
 
 #include "Send.h"
 #include "Receive.h"
-
 #define MAX_MENSAJES 30
 
 /*void receiver(sf::TcpSocket *receive, std::vector<std::string> *aMensajes) {
@@ -29,6 +28,7 @@ void sender(sf::TcpSocket *send, sf::String *mensaje) {
 
 int main()
 {
+	sf::Mutex mutex;
 	// CHOSE SEVER/CLIENT
 	sf::IpAddress ip = sf::IpAddress::IpAddress("192.168.23.87"); //sf::IpAddress::getLocalAddress();
 	sf::TcpSocket *send = new sf::TcpSocket;
@@ -45,6 +45,7 @@ int main()
 	sender.send = send;
 	Receive receiver;
 	receiver.receive = receive;
+	receiver.mutex = &mutex;
 	
 
 	if (connectionType == 's')
@@ -76,13 +77,13 @@ int main()
 	else if (connectionType == 'c')
 	{
 		// bind puerto 50000 al socket receive
-		sf::Socket::Status status = receive->connect("127.0.0.1", 5000, sf::seconds(5.f));
+		sf::Socket::Status status = receive->connect(ip, 5000, sf::seconds(5.f));
 		if (status != sf::Socket::Done) {
 			std::cout << "Error al intent de conexió" << std::endl;
 			return -1;
 		}
 		// bind puerto 50001 al socket send
-		status = send->connect("127.0.0.1", 5000, sf::seconds(5.f));
+		status = send->connect(ip, 5000, sf::seconds(5.f));
 		if (status != sf::Socket::Done) {
 			std::cout << "Error al intent de conexió" << std::endl;
 			return -1;
@@ -146,7 +147,7 @@ int main()
 					window.close();
 				else if (evento.key.code == sf::Keyboard::Return)
 				{
-
+					mutex.lock();
 					sender.SendMessages(); // envia mensaje
 					aMensajes.push_back(mensaje);
 					if (aMensajes.size() > 25)
@@ -154,6 +155,7 @@ int main()
 						aMensajes.erase(aMensajes.begin(), aMensajes.begin() + 1);
 					}
 					mensaje = ">";
+					mutex.unlock();
 				}
 				break;
 			case sf::Event::TextEntered:
