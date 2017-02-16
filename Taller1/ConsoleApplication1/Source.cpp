@@ -3,8 +3,10 @@
 #include <string>
 #include <cstring>
 #include <iostream>
-
 #include <vector>
+
+#include "Send.h"
+#include "Receive.h"
 
 #define MAX_MENSAJES 30
 
