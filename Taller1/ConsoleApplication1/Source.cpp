@@ -34,7 +34,7 @@ int main()
 	sf::TcpSocket *send = new sf::TcpSocket;
 	sf::TcpSocket *receive = new sf::TcpSocket;
 	char connectionType, mode;
-	char buffer[2000];
+	//char buffer[2000];
 	std::size_t received;
 	std::string textConsole = "Connected to: ";
 
