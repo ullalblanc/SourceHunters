@@ -10,7 +10,7 @@
 
 #define MAX_MENSAJES 30
 
-void receiver(sf::TcpSocket *receive, std::vector<std::string> *aMensajes) {
+/*void receiver(sf::TcpSocket *receive, std::vector<std::string> *aMensajes) {
 	char data[100];
 	std::size_t received;
 	sf::Socket::Status status = receive->receive(data, 100, received);
@@ -25,7 +25,7 @@ void sender(sf::TcpSocket *send, sf::String *mensaje) {
 	if (send->send(mensaje, mensaje->getSize()) != sf::Socket::Done) {
 		std::cout << "Error al enviar " << mensaje << std::endl;
 	}
-}
+}*/
 
 int main()
 {
@@ -40,6 +40,12 @@ int main()
 
 	std::cout << "Enter (s) for Server, Enter (c) for Client: ";
 	std::cin >> connectionType;
+
+	Send sender;
+	sender.send = send;
+	Receive receiver;
+	receiver.receive = receive;
+	
 
 	if (connectionType == 's')
 	{
@@ -86,6 +92,7 @@ int main()
 	// OPEN CHAT WINDOW
 
 	std::vector<std::string> aMensajes;
+	receiver.aMensajes = &aMensajes;
 
 	sf::Vector2i screenDimensions(800, 600);
 
@@ -98,7 +105,8 @@ int main()
 		std::cout << "Can't load the font file" << std::endl;
 	}
 
-	sf::String mensaje = " >";
+	std::string mensaje = " >";
+	sender.mensajes = &mensaje;
 
 	sf::Text chattingText(mensaje, font, 14);
 	sf::Text text(mensaje, font, 14);
@@ -120,7 +128,7 @@ int main()
 	separator.setFillColor(sf::Color(200, 200, 200, 255));
 	separator.setPosition(0, 550);
 
-	sf::Thread Threceive(&receiver, receive);
+	sf::Thread Threceive(&Receive::ReceiveMessages, &receiver);
 	Threceive.launch();
 
 	while (window.isOpen())
@@ -138,7 +146,8 @@ int main()
 					window.close();
 				else if (evento.key.code == sf::Keyboard::Return)
 				{
-					sender(send, &mensaje); // envia mensaje
+
+					sender.SendMessages(); // envia mensaje
 					aMensajes.push_back(mensaje);
 					if (aMensajes.size() > 25)
 					{
@@ -150,8 +159,8 @@ int main()
 			case sf::Event::TextEntered:
 				if (evento.text.unicode >= 32 && evento.text.unicode <= 126) // si di dona a les tecles, escriu el misatge
 					mensaje += (char)evento.text.unicode; 
-				else if (evento.text.unicode == 8 && mensaje.getSize() > 0) // si li dona al backspave, borra ultima lletra
-					mensaje.erase(mensaje.getSize() - 1, mensaje.getSize());
+				else if (evento.text.unicode == 8 && mensaje.size() > 0) // si li dona al backspave, borra ultima lletra
+					mensaje.erase(mensaje.size() - 1, mensaje.size());
 				break;
 			}
 		}

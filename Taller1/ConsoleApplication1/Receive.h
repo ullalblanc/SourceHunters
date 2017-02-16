@@ -10,6 +10,7 @@ public:
 
 	void ReceiveMessages();
 
+	bool stopReceive = false;
 	sf::TcpSocket *receive;
 	std::vector<std::string> *aMensajes;
 };
