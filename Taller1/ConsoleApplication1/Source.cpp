@@ -132,14 +132,19 @@ int main()
 	sf::Thread Threceive(&Receive::ReceiveMessages, &receiver);
 	Threceive.launch();
 
+	char* messag;
+	char mess;
 	while (window.isOpen())
 	{
 		sf::Event evento;
 		while (window.pollEvent(evento))
 		{
-			const char* messag = aMensajes[aMensajes.size() - 1].c_str();
+			if (aMensajes.size() > 0) {
+				messag = (char*)aMensajes[aMensajes.size() - 1].c_str();
+				mess = messag[0];
+			}
 
-			if (messag[0] == '$') window.close();
+			if (mess == '$') window.close();
 			switch (evento.type)
 			{
 			case sf::Event::Closed:
