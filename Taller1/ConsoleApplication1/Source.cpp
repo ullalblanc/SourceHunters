@@ -30,7 +30,7 @@ int main()
 {
 	sf::Mutex mutex;
 	// CHOSE SEVER/CLIENT
-	sf::IpAddress ip = sf::IpAddress::IpAddress("192.168.23.87"); //sf::IpAddress::getLocalAddress();
+	sf::IpAddress ip = sf::IpAddress::IpAddress("192.168.1.11"); //sf::IpAddress::getLocalAddress();
 	sf::TcpSocket *send = new sf::TcpSocket;
 	sf::TcpSocket *receive = new sf::TcpSocket;
 	char connectionType, mode;
@@ -132,19 +132,16 @@ int main()
 	sf::Thread Threceive(&Receive::ReceiveMessages, &receiver);
 	Threceive.launch();
 
-	char* messag;
-	char mess;
 	while (window.isOpen())
 	{
 		sf::Event evento;
 		while (window.pollEvent(evento))
 		{
 			if (aMensajes.size() > 0) {
-				messag = (char*)aMensajes[aMensajes.size() - 1].c_str();
-				mess = messag[0];
+				if (aMensajes[aMensajes.size()-1] == "$") {
+					window.close();
+				}
 			}
-
-			if (mess == '$') window.close();
 			switch (evento.type)
 			{
 			case sf::Event::Closed:
@@ -152,6 +149,7 @@ int main()
 				break;
 			case sf::Event::KeyPressed:
 				if (evento.key.code == sf::Keyboard::Escape) {
+					mensaje.clear();
 					mensaje = sf::Keyboard::Escape;
 					sender.SendMessages(); // envia mensaje
 					window.close();
