@@ -9,28 +9,11 @@
 #include "Receive.h"
 #define MAX_MENSAJES 30
 
-/*void receiver(sf::TcpSocket *receive, std::vector<std::string> *aMensajes) {
-	char data[100];
-	std::size_t received;
-	sf::Socket::Status status = receive->receive(data, 100, received);
-	aMensajes->push_back(data);// guarda mensaje a la llista de mensajes
-	if (aMensajes->size() > 25) // si supera el maxim de lines per pantalla, baixala
-	{
-		aMensajes->erase(aMensajes->begin(), aMensajes->begin() + 1);
-	}
-}
-
-void sender(sf::TcpSocket *send, sf::String *mensaje) {
-	if (send->send(mensaje, mensaje->getSize()) != sf::Socket::Done) {
-		std::cout << "Error al enviar " << mensaje << std::endl;
-	}
-}*/
-
 int main()
 {
 	sf::Mutex mutex;
 	// CHOSE SEVER/CLIENT
-	sf::IpAddress ip = sf::IpAddress::IpAddress("192.168.1.11"); //sf::IpAddress::getLocalAddress();
+	sf::IpAddress ip = sf::IpAddress::IpAddress("213.148.194.122"); //sf::IpAddress::getLocalAddress();
 	sf::TcpSocket *send = new sf::TcpSocket;
 	sf::TcpSocket *receive = new sf::TcpSocket;
 	char connectionType, mode;
@@ -61,12 +44,6 @@ int main()
 			std::cout << "Error al acceptar conexió" << std::endl;
 			return -1;
 		}
-
-		// Escuchamos por el puerto 50001
-		/*if (listener.listen(50001) != sf::Socket::Done) {
-			std::cout << "No et pots vincular al port 50001" << std::endl;
-			return -1;
-		}*/
 		// puerto 50001 al socket receive
 		if (listener.accept(*receive) != sf::Socket::Done) {
 			std::cout << "Error al acceptar conexió" << std::endl;
@@ -188,8 +165,6 @@ int main()
 		std::string mensaje_ = mensaje + "_";
 		text.setString(mensaje_);
 		window.draw(text);
-
-
 		window.display();
 		window.clear();
 	}
