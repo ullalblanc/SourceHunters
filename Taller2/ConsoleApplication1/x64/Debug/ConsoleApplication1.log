@@ -1,7 +1,7 @@
-﻿C:\Program Files (x86)\MSBuild\Microsoft.Cpp\v4.0\V140\Microsoft.CppBuild.targets(392,5): warning MSB8028: The intermediate directory (x64\Debug\) contains files shared from another project (ConsoleApplication1.vcxproj).  This can lead to incorrect clean and rebuild behavior.
+﻿C:\Program Files (x86)\MSBuild\Microsoft.Cpp\v4.0\V140\Microsoft.CppBuild.targets(392,5): warning MSB8028: The intermediate directory (x64\Debug\) contains files shared from another project (ConsoleApplication1.vcxproj, Taller1.vcxproj).  This can lead to incorrect clean and rebuild behavior.
   Source.cpp
-d:\sourcehunters\taller2\consoleapplication1\source.cpp(149): warning C4244: 'argument': conversion from 'std::size_t' to 'float', possible loss of data
-d:\sourcehunters\taller2\consoleapplication1\source.cpp(20): warning C4101: 'mode': unreferenced local variable
-d:\sourcehunters\taller2\consoleapplication1\source.cpp(22): warning C4101: 'received': unreferenced local variable
-  ConsoleApplication1.vcxproj -> D:\SourceHunters\Taller2\x64\Debug\Taller1.exe
-  ConsoleApplication1.vcxproj -> D:\SourceHunters\Taller2\x64\Debug\Taller1.pdb (Full PDB)
+d:\sourcehunters\taller2\consoleapplication1\source.cpp(146): warning C4244: 'argument': conversion from 'std::size_t' to 'float', possible loss of data
+d:\sourcehunters\taller2\consoleapplication1\source.cpp(19): warning C4101: 'mode': unreferenced local variable
+d:\sourcehunters\taller2\consoleapplication1\source.cpp(21): warning C4101: 'received': unreferenced local variable
+  ConsoleApplication1.vcxproj -> D:\SourceHunters\Taller2\x64\Debug\Taller2.exe
+  ConsoleApplication1.vcxproj -> D:\SourceHunters\Taller2\x64\Debug\Taller2.pdb (Full PDB)

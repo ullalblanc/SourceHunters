@@ -11,7 +11,6 @@
 
 int main()
 {
-	sf::Mutex mutex;
 	// CHOSE SEVER/CLIENT
 	sf::IpAddress ip = sf::IpAddress::IpAddress("192.168.23.87"); //sf::IpAddress::getLocalAddress();
 	/*sf::TcpSocket *send = new sf::TcpSocket;
@@ -124,9 +123,7 @@ int main()
 				else if (evento.key.code == sf::Keyboard::Return)
 				{					
 					sender.SendMessages(); // envia mensaje
-					mutex.lock();
 					aMensajes.push_back(mensaje);
-					mutex.unlock();
 					if (aMensajes.size() > 25)
 					{
 						aMensajes.erase(aMensajes.begin(), aMensajes.begin() + 1);
