@@ -96,8 +96,6 @@ int main()
 	separator.setFillColor(sf::Color(200, 200, 200, 255));
 	separator.setPosition(0, 550);
 
-	sf::Thread Threceive(&Receive::ReceiveMessages, &receiver);
-	Threceive.launch();
 	socket.setBlocking(false);
 
 	while (window.isOpen())
@@ -164,6 +162,5 @@ int main()
 	socket.disconnect();
 	//send->disconnect();
 	//receive->disconnect();
-	Threceive.terminate();
 	return 0;
 }
