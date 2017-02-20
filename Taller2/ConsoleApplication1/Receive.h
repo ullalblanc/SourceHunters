@@ -11,9 +11,7 @@ public:
 
 	void ReceiveMessages();
 
-	bool stopReceive = false;
-
-	sf::Mutex *mutex;
+	//sf::Mutex *mutex;
 	sf::TcpSocket *receive;
 	std::vector<std::string> *aMensajes;
 };

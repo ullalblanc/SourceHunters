@@ -9,30 +9,14 @@
 #include "Receive.h"
 #define MAX_MENSAJES 30
 
-/*void receiver(sf::TcpSocket *receive, std::vector<std::string> *aMensajes) {
-	char data[100];
-	std::size_t received;
-	sf::Socket::Status status = receive->receive(data, 100, received);
-	aMensajes->push_back(data);// guarda mensaje a la llista de mensajes
-	if (aMensajes->size() > 25) // si supera el maxim de lines per pantalla, baixala
-	{
-		aMensajes->erase(aMensajes->begin(), aMensajes->begin() + 1);
-	}
-}
-
-void sender(sf::TcpSocket *send, sf::String *mensaje) {
-	if (send->send(mensaje, mensaje->getSize()) != sf::Socket::Done) {
-		std::cout << "Error al enviar " << mensaje << std::endl;
-	}
-}*/
-
 int main()
 {
 	sf::Mutex mutex;
 	// CHOSE SEVER/CLIENT
-	sf::IpAddress ip = sf::IpAddress::IpAddress("192.168.1.11"); //sf::IpAddress::getLocalAddress();
-	sf::TcpSocket *send = new sf::TcpSocket;
-	sf::TcpSocket *receive = new sf::TcpSocket;
+	sf::IpAddress ip = sf::IpAddress::IpAddress("192.168.23.87"); //sf::IpAddress::getLocalAddress();
+	/*sf::TcpSocket *send = new sf::TcpSocket;
+	sf::TcpSocket *receive = new sf::TcpSocket;*/
+	sf::TcpSocket socket;
 	char connectionType, mode;
 	//char buffer[2000];
 	std::size_t received;
@@ -42,10 +26,10 @@ int main()
 	std::cin >> connectionType;
 
 	Send sender;
-	sender.send = send;
+	sender.send = &socket;
 	Receive receiver;
-	receiver.receive = receive;
-	receiver.mutex = &mutex;
+	receiver.receive = &socket;
+	//receiver.mutex = &mutex;
 	
 
 	if (connectionType == 's')
@@ -57,18 +41,7 @@ int main()
 			return -1;
 		}
 		// puerto 50000 al socket send
-		if (listener.accept(*send) != sf::Socket::Done) {
-			std::cout << "Error al acceptar conexió" << std::endl;
-			return -1;
-		}
-
-		// Escuchamos por el puerto 50001
-		/*if (listener.listen(50001) != sf::Socket::Done) {
-			std::cout << "No et pots vincular al port 50001" << std::endl;
-			return -1;
-		}*/
-		// puerto 50001 al socket receive
-		if (listener.accept(*receive) != sf::Socket::Done) {
+		if (listener.accept(socket) != sf::Socket::Done) {
 			std::cout << "Error al acceptar conexió" << std::endl;
 			return -1;
 		}
@@ -77,17 +50,11 @@ int main()
 	else if (connectionType == 'c')
 	{
 		// bind puerto 50000 al socket receive
-		sf::Socket::Status status = receive->connect(ip, 5000, sf::seconds(5.f));
+		sf::Socket::Status status = socket.connect(ip, 5000, sf::seconds(5.f));
 		if (status != sf::Socket::Done) {
 			std::cout << "Error al intent de conexió" << std::endl;
 			return -1;
-		}
-		// bind puerto 50001 al socket send
-		status = send->connect(ip, 5000, sf::seconds(5.f));
-		if (status != sf::Socket::Done) {
-			std::cout << "Error al intent de conexió" << std::endl;
-			return -1;
-		}
+		}	
 	}
 	
 	// OPEN CHAT WINDOW
@@ -131,9 +98,11 @@ int main()
 
 	sf::Thread Threceive(&Receive::ReceiveMessages, &receiver);
 	Threceive.launch();
+	socket.setBlocking(false);
 
 	while (window.isOpen())
 	{
+		receiver.ReceiveMessages();
 		sf::Event evento;
 		while (window.pollEvent(evento))
 		{
@@ -155,8 +124,7 @@ int main()
 					window.close();
 				}
 				else if (evento.key.code == sf::Keyboard::Return)
-				{
-					
+				{					
 					sender.SendMessages(); // envia mensaje
 					mutex.lock();
 					aMensajes.push_back(mensaje);
@@ -165,8 +133,7 @@ int main()
 					{
 						aMensajes.erase(aMensajes.begin(), aMensajes.begin() + 1);
 					}
-					mensaje = ">";
-					
+					mensaje = ">";				
 				}
 				break;
 			case sf::Event::TextEntered:
@@ -194,8 +161,9 @@ int main()
 		window.clear();
 	}
 
-	send->disconnect();
-	receive->disconnect();
+	socket.disconnect();
+	//send->disconnect();
+	//receive->disconnect();
 	Threceive.terminate();
 	return 0;
 }

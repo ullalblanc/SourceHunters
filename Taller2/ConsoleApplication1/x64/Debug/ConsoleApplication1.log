@@ -1,16 +1,9 @@
-﻿  Source.cpp
-Source.obj : error LNK2019: unresolved external symbol "__declspec(dllimport) public: __cdecl sf::TcpSocket::TcpSocket(void)" (__imp_??0TcpSocket@sf@@QEAA@XZ) referenced in function main
-Source.obj : error LNK2019: unresolved external symbol "__declspec(dllimport) public: enum sf::Socket::Status __cdecl sf::TcpSocket::connect(class sf::IpAddress const &,unsigned short,class sf::Time)" (__imp_?connect@TcpSocket@sf@@QEAA?AW4Status@Socket@2@AEBVIpAddress@2@GVTime@2@@Z) referenced in function main
-Source.obj : error LNK2019: unresolved external symbol "__declspec(dllimport) public: void __cdecl sf::TcpSocket::disconnect(void)" (__imp_?disconnect@TcpSocket@sf@@QEAAXXZ) referenced in function main
-Source.obj : error LNK2019: unresolved external symbol "__declspec(dllimport) public: enum sf::Socket::Status __cdecl sf::TcpSocket::send(void const *,unsigned __int64)" (__imp_?send@TcpSocket@sf@@QEAA?AW4Status@Socket@2@PEBX_K@Z) referenced in function main
-Source.obj : error LNK2019: unresolved external symbol "__declspec(dllimport) public: enum sf::Socket::Status __cdecl sf::TcpSocket::receive(void *,unsigned __int64,unsigned __int64 &)" (__imp_?receive@TcpSocket@sf@@QEAA?AW4Status@Socket@2@PEAX_KAEA_K@Z) referenced in function main
-Source.obj : error LNK2019: unresolved external symbol "__declspec(dllimport) public: virtual __cdecl sf::TcpSocket::~TcpSocket(void)" (__imp_??1TcpSocket@sf@@UEAA@XZ) referenced in function main
-Source.obj : error LNK2019: unresolved external symbol "__declspec(dllimport) public: static class sf::IpAddress __cdecl sf::IpAddress::getLocalAddress(void)" (__imp_?getLocalAddress@IpAddress@sf@@SA?AV12@XZ) referenced in function main
-Source.obj : error LNK2019: unresolved external symbol "__declspec(dllimport) public: __cdecl sf::TcpListener::TcpListener(void)" (__imp_??0TcpListener@sf@@QEAA@XZ) referenced in function main
-Source.obj : error LNK2019: unresolved external symbol "__declspec(dllimport) public: enum sf::Socket::Status __cdecl sf::TcpListener::listen(unsigned short,class sf::IpAddress const &)" (__imp_?listen@TcpListener@sf@@QEAA?AW4Status@Socket@2@GAEBVIpAddress@2@@Z) referenced in function main
-Source.obj : error LNK2019: unresolved external symbol "__declspec(dllimport) public: void __cdecl sf::TcpListener::close(void)" (__imp_?close@TcpListener@sf@@QEAAXXZ) referenced in function main
-Source.obj : error LNK2019: unresolved external symbol "__declspec(dllimport) public: enum sf::Socket::Status __cdecl sf::TcpListener::accept(class sf::TcpSocket &)" (__imp_?accept@TcpListener@sf@@QEAA?AW4Status@Socket@2@AEAVTcpSocket@2@@Z) referenced in function main
-Source.obj : error LNK2019: unresolved external symbol "__declspec(dllimport) public: virtual __cdecl sf::TcpListener::~TcpListener(void)" (__imp_??1TcpListener@sf@@UEAA@XZ) referenced in function main
-Source.obj : error LNK2001: unresolved external symbol "__declspec(dllimport) public: static class sf::Time const sf::Time::Zero" (__imp_?Zero@Time@sf@@2V12@B)
-Source.obj : error LNK2001: unresolved external symbol "__declspec(dllimport) public: static class sf::IpAddress const sf::IpAddress::Any" (__imp_?Any@IpAddress@sf@@2V12@B)
-c:\users\pjandula\documents\visual studio 2015\Projects\ConsoleApplication1\x64\Debug\ConsoleApplication1.exe : fatal error LNK1120: 14 unresolved externals
+﻿C:\Program Files (x86)\MSBuild\Microsoft.Cpp\v4.0\V140\Microsoft.CppBuild.targets(392,5): warning MSB8028: The intermediate directory (x64\Debug\) contains files shared from another project (ConsoleApplication1.vcxproj).  This can lead to incorrect clean and rebuild behavior.
+  Source.cpp
+d:\sourcehunters\taller2\consoleapplication1\source.cpp(151): warning C4244: 'argument': conversion from 'std::size_t' to 'float', possible loss of data
+d:\sourcehunters\taller2\consoleapplication1\source.cpp(20): warning C4101: 'mode': unreferenced local variable
+d:\sourcehunters\taller2\consoleapplication1\source.cpp(22): warning C4101: 'received': unreferenced local variable
+  Receive.cpp
+  Generating Code...
+  ConsoleApplication1.vcxproj -> D:\SourceHunters\Taller2\x64\Debug\Taller1.exe
+  ConsoleApplication1.vcxproj -> D:\SourceHunters\Taller2\x64\Debug\Taller1.pdb (Full PDB)
