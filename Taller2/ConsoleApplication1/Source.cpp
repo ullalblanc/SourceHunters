@@ -13,8 +13,6 @@ int main()
 {
 	// CHOSE SEVER/CLIENT
 	sf::IpAddress ip = sf::IpAddress::IpAddress("192.168.23.87"); //sf::IpAddress::getLocalAddress();
-	/*sf::TcpSocket *send = new sf::TcpSocket;
-	sf::TcpSocket *receive = new sf::TcpSocket;*/
 	sf::TcpSocket socket;
 	char connectionType, mode;
 	//char buffer[2000];
@@ -27,9 +25,7 @@ int main()
 	Send sender;
 	sender.send = &socket;
 	Receive receiver;
-	receiver.receive = &socket;
-	//receiver.mutex = &mutex;
-	
+	receiver.receive = &socket;	
 
 	if (connectionType == 's')
 	{
@@ -53,11 +49,9 @@ int main()
 		if (status != sf::Socket::Done) {
 			std::cout << "Error al intent de conexió" << std::endl;
 			return -1;
-		}	
-	}
-	
+		}
+	}	
 	// OPEN CHAT WINDOW
-
 	std::vector<std::string> aMensajes;
 	receiver.aMensajes = &aMensajes;
 
@@ -95,11 +89,8 @@ int main()
 	separator.setFillColor(sf::Color(200, 200, 200, 255));
 	separator.setPosition(0, 550);
 
-	socket.setBlocking(false);
-
 	while (window.isOpen())
 	{
-		receiver.ReceiveMessages();
 		sf::Event evento;
 		while (window.pollEvent(evento))
 		{
@@ -121,14 +112,14 @@ int main()
 					window.close();
 				}
 				else if (evento.key.code == sf::Keyboard::Return)
-				{					
+				{				
 					sender.SendMessages(); // envia mensaje
 					aMensajes.push_back(mensaje);
 					if (aMensajes.size() > 25)
 					{
 						aMensajes.erase(aMensajes.begin(), aMensajes.begin() + 1);
 					}
-					mensaje = ">";				
+					mensaje = ">";					
 				}
 				break;
 			case sf::Event::TextEntered:
@@ -150,14 +141,9 @@ int main()
 		std::string mensaje_ = mensaje + "_";
 		text.setString(mensaje_);
 		window.draw(text);
-
-
 		window.display();
 		window.clear();
 	}
-
 	socket.disconnect();
-	//send->disconnect();
-	//receive->disconnect();
 	return 0;
 }
