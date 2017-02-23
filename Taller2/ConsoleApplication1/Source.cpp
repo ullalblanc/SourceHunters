@@ -93,6 +93,7 @@ int main()
 	while (window.isOpen())
 	{
 		sf::Event evento;
+		receiver.ReceiveMessages();
 		while (window.pollEvent(evento))
 		{
 			if (aMensajes.size() > 0) {
@@ -113,7 +114,7 @@ int main()
 					window.close();
 				}
 				else if (evento.key.code == sf::Keyboard::Return)
-				{				
+				{	
 					sender.SendMessages(); // envia mensaje
 					aMensajes.push_back(mensaje);
 					if (aMensajes.size() > 25)
