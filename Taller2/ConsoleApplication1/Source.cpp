@@ -89,6 +89,7 @@ int main()
 	separator.setFillColor(sf::Color(200, 200, 200, 255));
 	separator.setPosition(0, 550);
 
+	socket.setBlocking(false);
 	while (window.isOpen())
 	{
 		sf::Event evento;
