@@ -21,7 +21,7 @@ void Send::SendMessages()
 		std::cout << "Error al enviar" << mensajes << std::endl;
 	}
 	else if (status == sf::Socket::Partial) {
-			
+				
 	}
 }
 

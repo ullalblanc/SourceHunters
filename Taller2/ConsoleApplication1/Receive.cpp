@@ -23,5 +23,10 @@ void Receive::ReceiveMessages()
 	if (status == sf::Socket::Done) {
 		mensaje = data;
 		aMensajes->push_back(mensaje);// guarda mensaje a la llista de mensajes
+
+		if (aMensajes->size() > 25)
+		{
+			aMensajes->erase(aMensajes->begin(), aMensajes->begin() + 1);
+		}
 	}
 }
