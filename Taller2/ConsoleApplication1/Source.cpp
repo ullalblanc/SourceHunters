@@ -12,7 +12,7 @@
 int main()
 {
 	// CHOSE SEVER/CLIENT
-	sf::IpAddress ip = sf::IpAddress::IpAddress("192.168.23.87"); //sf::IpAddress::getLocalAddress();
+	sf::IpAddress ip = sf::IpAddress::IpAddress("192.168.1.11"); //sf::IpAddress::getLocalAddress();
 	sf::TcpSocket socket;
 	char connectionType, mode;
 	//char buffer[2000];
