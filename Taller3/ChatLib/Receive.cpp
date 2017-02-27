@@ -8,12 +8,12 @@ Receive::~Receive()
 {
 }
 
-void Receive::ReceiveMessages()
+bool Receive::ReceiveMessages()
 {
 	char data[1500];
 	std::size_t received;
 	std::string mensaje = "";
-	sf::Socket::Status status = receive->receive(data, 1500, received);
+	sf::Socket::Status status = socket->receive(data, 1500, received);
 	data[received] = '\0';
 
 	if (status == sf::Socket::Done) {
@@ -24,5 +24,7 @@ void Receive::ReceiveMessages()
 		{
 			aMensajes->erase(aMensajes->begin(), aMensajes->begin() + 1);
 		}
+		return true;
 	}
+	return false;
 }

@@ -14,43 +14,24 @@ int main()
 	// CHOSE SEVER/CLIENT
 	sf::IpAddress ip = sf::IpAddress::IpAddress("192.168.1.11"); //sf::IpAddress::getLocalAddress();
 	sf::TcpSocket socket;
-	char connectionType, mode;
+	char name, mode;
 	//char buffer[2000];
 	std::size_t received;
 	std::string textConsole = "Connected to: ";
 
-	std::cout << "Enter (s) for Server, Enter (c) for Client: ";
-	std::cin >> connectionType;
+	std::cout << "Enter a name: ";
+	std::cin >> name;
 
 	Send sender;
 	sender.send = &socket;
 	Receive receiver;
-	receiver.receive = &socket;	
-
-	if (connectionType == 's')
-	{
-		sf::TcpListener listener;
-		// Escuchamos por el puerto 50000
-		if (listener.listen(5000) != sf::Socket::Done) {
-			std::cout << "No et pots vincular al port 50000" << std::endl;
-			return -1;
-		}
-		// puerto 50000 al socket send
-		if (listener.accept(socket) != sf::Socket::Done) {
-			std::cout << "Error al acceptar conexió" << std::endl;
-			return -1;
-		}
-		listener.close();
-	}
-	else if (connectionType == 'c')
-	{
+	receiver.socket = &socket;	
 		// bind puerto 50000 al socket receive
 		sf::Socket::Status status = socket.connect(ip, 5000, sf::seconds(5.f));
 		if (status != sf::Socket::Done) {
 			std::cout << "Error al intent de conexió" << std::endl;
 			return -1;
-		}
-	}	
+		}	
 	// OPEN CHAT WINDOW
 	std::vector<std::string> aMensajes;
 	receiver.aMensajes = &aMensajes;
@@ -66,19 +47,13 @@ int main()
 		std::cout << "Can't load the font file" << std::endl;
 	}
 
-	std::string mensaje = " >";
+	std::string mensaje = name + ": ";
 	sender.mensajes = &mensaje;
 
 	sf::Text chattingText(mensaje, font, 14);
 	sf::Text text(mensaje, font, 14);
-	if (connectionType == 's') {
-		chattingText.setFillColor(sf::Color(0, 160, 0));
-		text.setFillColor(sf::Color(0, 160, 0));
-	}
-	else {
-		chattingText.setFillColor(sf::Color(60, 60, 200));
-		text.setFillColor(sf::Color(60, 60, 200));
-	}
+	chattingText.setFillColor(sf::Color(60, 60, 200));
+	text.setFillColor(sf::Color(60, 60, 200));
 	
 	chattingText.setStyle(sf::Text::Bold);
 
@@ -116,12 +91,12 @@ int main()
 				else if (evento.key.code == sf::Keyboard::Return)
 				{	
 					sender.SendMessages(); // envia mensaje
-					aMensajes.push_back(mensaje);
-					if (aMensajes.size() > 25)
+					//aMensajes.push_back(mensaje);
+					/*if (aMensajes.size() > 25)
 					{
 						aMensajes.erase(aMensajes.begin(), aMensajes.begin() + 1);
-					}
-					mensaje = ">";					
+					}*/
+					mensaje = name + ": ";
 				}
 				break;
 			case sf::Event::TextEntered:

@@ -9,10 +9,10 @@ public:
 	Receive();
 	~Receive();
 
-	void ReceiveMessages();
+	bool ReceiveMessages();
 
 	bool stopReceive = false;
 
-	sf::TcpSocket *receive;
+	sf::TcpSocket *socket;
 	std::vector<std::string> *aMensajes;
 };
