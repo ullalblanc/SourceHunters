@@ -14,9 +14,10 @@ int main()
 {
 	// CHOSE SEVER/CLIENT
 	sf::IpAddress ip = sf::IpAddress::IpAddress("192.168.23.87"); //sf::IpAddress::getLocalAddress();
-	//std::vector<sf::TcpSocket*> sockets;
-	sf::TcpSocket sockets[4];
-	int numUsers = 0;
+	std::vector<sf::TcpSocket*> sockets;
+	//sf::TcpSocket sockets[4];
+	//int numUsers = 0;
+	sf::TcpSocket* sockettmp = new sf::TcpSocket;
 	//sockets[0] = new sf::TcpSocket;
 
 	std::string textConsole = "Connected to: ";
@@ -34,11 +35,15 @@ int main()
 		return -1;
 	}
 	// puerto 50000 al socket send
-	if (listener.accept(sockets[0]) != sf::Socket::Done) {
+	if (listener.accept(*sockettmp) != sf::Socket::Done) {
 		std::cout << "Error al acceptar conexió" << std::endl;
 		return -1;
 	}
-	numUsers++;
+	sockettmp->setBlocking(false);
+	sockets.push_back(sockettmp);
+	sockettmp = new sf::TcpSocket;
+	
+	//numUsers++;
 	//listener.close();
 	
 	// OPEN CHAT WINDOW
@@ -46,8 +51,8 @@ int main()
 	receiver.aMensajes = &aMensajes;
 
 	std::string mensaje = "";
-
-	sockets[0].setBlocking(false);
+	sender.mensajes = &mensaje;
+	
 
 	//int newSocket = 1;
 	//sockets[newSocket] = new sf::TcpSocket;
@@ -56,11 +61,11 @@ int main()
 	listener.setBlocking(false);
 	while (serverOn)
 	{
-		if (numUsers < MAX_USERS) {
+		if (sockets.size() < MAX_USERS) {
 			if (listener.accept(sockets[numUsers]) == sf::Socket::Done) {
 				std::cout << "New user" << std::endl;
+				sockets[numUsers].setBlocking(false);
 				numUsers++;
-				//sockets[newSocket] = new sf::TcpSocket;
 			}
 		}
 	
@@ -70,12 +75,22 @@ int main()
 		{
 			receiver.socket = &sockets[i];
 			if (receiver.ReceiveMessages()) {
-				mensaje = aMensajes[aMensajes.size()];
-				for (int j = 0; j < numUsers; j++)
-				{
-					sender.send = &sockets[j];
-					sender.SendMessages();
+				if (aMensajes[aMensajes.size()-1] == "$") {
+					sockets[i].disconnect();
+					/*for (int j = i; j < numUsers; j++)
+					{
+						sockets[j] = sockets[j + 1];
+					}*/
 				}
+				else {
+					mensaje.clear();
+					mensaje = aMensajes[aMensajes.size() - 1];
+					for (int j = 0; j < numUsers; j++)
+					{
+						sender.send = &sockets[j];
+						sender.SendMessages();
+					}
+				}		
 			}
 		}	
 		if (key.isKeyPressed(sf::Keyboard::Escape)) {
@@ -83,9 +98,9 @@ int main()
 			mensaje = sf::Keyboard::Escape;
 			sender.SendMessages(); // envia mensaje
 			serverOn = false;
-		}
-		aMensajes.push_back(mensaje);
-	}		
+		} 
+	}
+
 	//socket.disconnect();
 	return 0;
 }

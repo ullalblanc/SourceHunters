@@ -1,0 +1,118 @@
+#include <SFML\Graphics.hpp>
+#include <SFML\Network.hpp>
+#include <string>
+#include <cstring>
+#include <iostream>
+#include <vector>
+
+#include "Send.h"
+#include "Receive.h"
+#define MAX_MENSAJES 30
+
+int main()
+{
+	// CHOSE SEVER/CLIENT
+	sf::IpAddress ip = sf::IpAddress::IpAddress("192.168.23.87"); //sf::IpAddress::getLocalAddress();
+	sf::TcpSocket socket;
+	std::string name;
+	//char buffer[2000];
+	std::string textConsole = "Connected to: ";
+
+	sf::Font font;
+	if (!font.loadFromFile("courbd.ttf"))
+	{
+		std::cout << "Can't load the font file" << std::endl;
+	}
+
+	std::cout << "Enter a name: ";
+	std::cin >> name;
+	std::string mensaje = name + ": ";
+
+	sf::Text Text(mensaje, font, 14);
+	sf::Text chatText(mensaje, font, 12);
+	chatText.setFillColor(sf::Color(60, 60, 200));
+	Text.setFillColor(sf::Color(60, 60, 200));
+	chatText.setStyle(sf::Text::Bold);
+	Text.setStyle(sf::Text::Bold);
+	Text.setPosition(0, 560);
+
+	Send sender;
+	sender.send = &socket;
+	sender.mensajes = &mensaje;
+	Receive receiver;
+	receiver.socket = &socket;
+	// bind puerto 50000 al socket receive
+	sf::Socket::Status status = socket.connect(ip, 5000, sf::seconds(5.f));
+	if (status != sf::Socket::Done) {
+		std::cout << "Error al intent de conexió" << std::endl;
+		return -1;
+	}
+	// OPEN CHAT WINDOW
+	std::vector<std::string> aMensajes;
+	receiver.aMensajes = &aMensajes;
+
+	sf::Vector2i screenDimensions(800, 600);
+
+	sf::RenderWindow window;
+	window.create(sf::VideoMode(screenDimensions.x, screenDimensions.y), "Chat");
+
+
+	sf::RectangleShape separator(sf::Vector2f(800, 5));
+	separator.setFillColor(sf::Color(200, 200, 200, 255));
+	separator.setPosition(0, 550);
+
+	socket.setBlocking(false);
+	while (window.isOpen())
+	{
+		sf::Event evento;
+		receiver.ReceiveMessages();
+		while (window.pollEvent(evento))
+		{
+			if (aMensajes.size() > 0) {
+				if (aMensajes[aMensajes.size() - 1] == "$") {
+					window.close();
+				}
+			}
+			switch (evento.type)
+			{
+			case sf::Event::Closed:
+				window.close();
+				break;
+			case sf::Event::KeyPressed:
+				if (evento.key.code == sf::Keyboard::Escape) {
+					mensaje.clear();
+					mensaje = sf::Keyboard::Escape;
+					sender.SendMessages(); // envia mensaje
+					window.close();
+				}
+				else if (evento.key.code == sf::Keyboard::Return)
+				{
+					sender.SendMessages(); // envia mensaje
+					mensaje = name + ": ";
+				}
+				break;
+			case sf::Event::TextEntered:
+				if (evento.text.unicode >= 32 && evento.text.unicode <= 126) // si di dona a les tecles, escriu el misatge
+					mensaje += (char)evento.text.unicode;
+				else if (evento.text.unicode == 8 && mensaje.size() > 0) // si li dona al backspave, borra ultima lletra
+					mensaje.erase(mensaje.size() - 1, mensaje.size());
+				break;
+			}
+		}
+		window.draw(separator);
+		for (size_t i = 0; i < aMensajes.size(); i++)
+		{
+			std::string chatting = aMensajes[i];
+			chatText.setPosition(sf::Vector2f(0, 20 * (float)i));
+			chatText.setString(chatting);
+			window.draw(chatText);
+		}
+		std::string mensaje_ = mensaje + "_";
+		Text.setString(mensaje_);
+		window.draw(Text);
+		window.display();
+		window.clear();
+	}
+	socket.disconnect();
+	return 0;
+}
