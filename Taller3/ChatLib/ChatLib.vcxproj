@@ -150,6 +150,9 @@
     <ClCompile Include="Receive.cpp" />
     <ClCompile Include="Send.cpp" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="..\ConsoleApplication1\ClassDiagram.cd" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

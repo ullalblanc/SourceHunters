@@ -13,11 +13,12 @@
 int main()
 {
 	// CHOSE SEVER/CLIENT
-	sf::IpAddress ip = sf::IpAddress::IpAddress("192.168.1.11"); //sf::IpAddress::getLocalAddress();
-	std::vector<sf::TcpSocket*> sockets;
-	sockets[0] = new sf::TcpSocket;
+	sf::IpAddress ip = sf::IpAddress::IpAddress("192.168.23.87"); //sf::IpAddress::getLocalAddress();
+	//std::vector<sf::TcpSocket*> sockets;
+	sf::TcpSocket sockets[4];
+	int numUsers = 0;
+	//sockets[0] = new sf::TcpSocket;
 
-	std::size_t received;
 	std::string textConsole = "Connected to: ";
 
 	std::cout << "Server";
@@ -33,10 +34,11 @@ int main()
 		return -1;
 	}
 	// puerto 50000 al socket send
-	if (listener.accept(*sockets[0]) != sf::Socket::Done) {
+	if (listener.accept(sockets[0]) != sf::Socket::Done) {
 		std::cout << "Error al acceptar conexió" << std::endl;
 		return -1;
 	}
+	numUsers++;
 	//listener.close();
 	
 	// OPEN CHAT WINDOW
@@ -45,42 +47,42 @@ int main()
 
 	std::string mensaje = "";
 
-	sockets[0]->setBlocking(false);
+	sockets[0].setBlocking(false);
 
-	int newSocket = 1;
-	sockets[newSocket] = new sf::TcpSocket;
+	//int newSocket = 1;
+	//sockets[newSocket] = new sf::TcpSocket;
 
 	bool serverOn = true;
+	listener.setBlocking(false);
 	while (serverOn)
 	{
-		if (sockets.size() < MAX_USERS) {
-			if (listener.accept(*sockets[newSocket]) == sf::Socket::Done) {
+		if (numUsers < MAX_USERS) {
+			if (listener.accept(sockets[numUsers]) == sf::Socket::Done) {
 				std::cout << "New user" << std::endl;
-				newSocket++;
-				sockets[newSocket] = new sf::TcpSocket;
+				numUsers++;
+				//sockets[newSocket] = new sf::TcpSocket;
 			}
 		}
-		sf::Event event;
+	
+		sf::Keyboard key;
 
-		for (int i = 0; i < sockets.size(); i++)
+		for (int i = 0; i < numUsers; i++)
 		{
-			receiver.socket = sockets[i];
+			receiver.socket = &sockets[i];
 			if (receiver.ReceiveMessages()) {
 				mensaje = aMensajes[aMensajes.size()];
-				for (int j = 0; j < sockets.size(); j++)
+				for (int j = 0; j < numUsers; j++)
 				{
-					sender.send = sockets[j];
+					sender.send = &sockets[j];
 					sender.SendMessages();
 				}
 			}
 		}	
-		if (event.type == sf::Event::KeyPressed) {
-			if (event.key.code == sf::Keyboard::Escape) {
-				mensaje.clear();
-				mensaje = sf::Keyboard::Escape;
-				sender.SendMessages(); // envia mensaje
-				serverOn = false;
-			}
+		if (key.isKeyPressed(sf::Keyboard::Escape)) {
+			mensaje.clear();
+			mensaje = sf::Keyboard::Escape;
+			sender.SendMessages(); // envia mensaje
+			serverOn = false;
 		}
 		aMensajes.push_back(mensaje);
 	}		
