@@ -12,10 +12,9 @@
 int main()
 {
 	// CHOSE SEVER/CLIENT
-	sf::IpAddress ip = sf::IpAddress::IpAddress("192.168.1.11"); //sf::IpAddress::getLocalAddress();
+	sf::IpAddress ip = sf::IpAddress::IpAddress("192.168.23.87"); //sf::IpAddress::getLocalAddress();
 	sf::TcpSocket socket;
 	std::string name;
-	//char buffer[2000];
 	std::string textConsole = "Connected to: ";
 
 	sf::Font font;

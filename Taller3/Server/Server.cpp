@@ -13,20 +13,15 @@
 int main()
 {
 	// CHOSE SEVER/CLIENT
-	sf::IpAddress ip = sf::IpAddress::IpAddress("192.168.1.11"); //sf::IpAddress::getLocalAddress();
+	sf::IpAddress ip = sf::IpAddress::IpAddress("192.168.23.87"); //sf::IpAddress::getLocalAddress();
 	std::vector<sf::TcpSocket*> sockets;
-	//sf::TcpSocket sockets[4];
-	//int numUsers = 0;
 	sf::TcpSocket* sockettmp = new sf::TcpSocket;
-	//sockets[0] = new sf::TcpSocket;
 
 	std::string textConsole = "Connected to: ";
 
 	std::cout << "Server";
 	Send sender;
-	//sender.send = &sockets;
 	Receive receiver;
-	//receiver.receive = &sockets;
 
 	sf::TcpListener listener;
 	// Escuchamos por el puerto 50000
@@ -43,19 +38,12 @@ int main()
 	sockets.push_back(sockettmp);
 	sockettmp = new sf::TcpSocket;
 	
-	//numUsers++;
-	//listener.close();
-	
 	// OPEN CHAT WINDOW
 	std::vector<std::string> aMensajes;
 	receiver.aMensajes = &aMensajes;
 
 	std::string mensaje = "";
 	sender.mensajes = &mensaje;
-	
-
-	//int newSocket = 1;
-	//sockets[newSocket] = new sf::TcpSocket;
 
 	bool serverOn = true;
 	listener.setBlocking(false);
@@ -109,6 +97,5 @@ int main()
 		sockets[i]->disconnect();
 		delete sockets[i];
 	}
-	//socket.disconnect();
 	return 0;
 }
