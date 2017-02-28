@@ -34,6 +34,7 @@ int main()
 		std::cout << "Error al acceptar conexió" << std::endl;
 		return -1;
 	}
+	std::cout << "\n New user" << std::endl;
 	sockettmp->setBlocking(false);
 	sockets.push_back(sockettmp);
 	sockettmp = new sf::TcpSocket;
