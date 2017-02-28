@@ -13,7 +13,7 @@
 int main()
 {
 	// CHOSE SEVER/CLIENT
-	sf::IpAddress ip = sf::IpAddress::IpAddress("192.168.23.87"); //sf::IpAddress::getLocalAddress();
+	sf::IpAddress ip = sf::IpAddress::IpAddress("192.168.1.11"); //sf::IpAddress::getLocalAddress();
 	std::vector<sf::TcpSocket*> sockets;
 	//sf::TcpSocket sockets[4];
 	//int numUsers = 0;
@@ -62,45 +62,53 @@ int main()
 	while (serverOn)
 	{
 		if (sockets.size() < MAX_USERS) {
-			if (listener.accept(sockets[numUsers]) == sf::Socket::Done) {
+			if (listener.accept(*sockettmp) == sf::Socket::Done) {
 				std::cout << "New user" << std::endl;
-				sockets[numUsers].setBlocking(false);
-				numUsers++;
+				sockettmp->setBlocking(false); 
+				sockets.push_back(sockettmp);
+				sockettmp = new sf::TcpSocket;
 			}
 		}
 	
 		sf::Keyboard key;
 
-		for (int i = 0; i < numUsers; i++)
+		for (int i = 0; i < sockets.size(); i++)
 		{
-			receiver.socket = &sockets[i];
+			receiver.socket = sockets[i];
 			if (receiver.ReceiveMessages()) {
 				if (aMensajes[aMensajes.size()-1] == "$") {
-					sockets[i].disconnect();
-					/*for (int j = i; j < numUsers; j++)
-					{
-						sockets[j] = sockets[j + 1];
-					}*/
+					sockets[i]->disconnect();
+					std::cout << "User leaved" << std::endl;
+					delete sockets[i];
+					sockets.erase(sockets.begin() + i);
 				}
 				else {
 					mensaje.clear();
 					mensaje = aMensajes[aMensajes.size() - 1];
-					for (int j = 0; j < numUsers; j++)
+					for (int j = 0; j < sockets.size(); j++)
 					{
-						sender.send = &sockets[j];
+						sender.send = sockets[j];
 						sender.SendMessages();
 					}
 				}		
 			}
 		}	
-		if (key.isKeyPressed(sf::Keyboard::Escape)) {
+		if (key.isKeyPressed(sf::Keyboard::BackSpace)) {
 			mensaje.clear();
 			mensaje = sf::Keyboard::Escape;
-			sender.SendMessages(); // envia mensaje
+			for (int i = 0; i < sockets.size(); i++)
+			{
+				sender.send = sockets[i];
+				sender.SendMessages();
+			}
 			serverOn = false;
 		} 
 	}
-
+	for (int i = 0; i < sockets.size(); i++)
+	{
+		sockets[i]->disconnect();
+		delete sockets[i];
+	}
 	//socket.disconnect();
 	return 0;
 }

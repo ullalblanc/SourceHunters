@@ -8,4 +8,4 @@ ChatLib.lib(Send.obj) : error LNK2038: mismatch detected for 'RuntimeLibrary': v
 ChatLib.lib(Receive.obj) : error LNK2038: mismatch detected for '_ITERATOR_DEBUG_LEVEL': value '0' doesn't match value '2' in Client.obj
 ChatLib.lib(Receive.obj) : error LNK2038: mismatch detected for 'RuntimeLibrary': value 'MD_DynamicRelease' doesn't match value 'MDd_DynamicDebug' in Client.obj
 LINK : warning LNK4098: defaultlib 'MSVCRT' conflicts with use of other libs; use /NODEFAULTLIB:library
-D:\SourceHunters\Taller3\x64\Debug\Client.exe : fatal error LNK1319: 4 mismatches detected
+E:\SourceHunters\SourceHunters\Taller3\x64\Debug\Client.exe : fatal error LNK1319: 4 mismatches detected
