@@ -33,7 +33,7 @@ int main()
 	Text.setFillColor(sf::Color(60, 60, 200));
 	chatText.setStyle(sf::Text::Bold);
 	Text.setStyle(sf::Text::Bold);
-	Text.setPosition(0, 560);
+	 Text.setPosition(0, 560);
 
 	Send sender;
 	sender.send = &socket;
@@ -55,10 +55,33 @@ int main()
 	sf::RenderWindow window;
 	window.create(sf::VideoMode(screenDimensions.x, screenDimensions.y), "Chat");
 
+	//Pintem els quadres
 
-	sf::RectangleShape separator(sf::Vector2f(800, 5));
-	separator.setFillColor(sf::Color(200, 200, 200, 255));
-	separator.setPosition(0, 550);
+	//Horitzontals
+	sf::RectangleShape separator0(sf::Vector2f(800, 5));
+	separator0.setFillColor(sf::Color(200, 200, 200, 255));
+	separator0.setPosition(0, 100);
+
+	sf::RectangleShape separator1(sf::Vector2f(800, 5));
+	separator1.setFillColor(sf::Color(200, 200, 200, 255));
+	separator1.setPosition(0, 200);
+
+	sf::RectangleShape separator2(sf::Vector2f(800, 5));
+	separator2.setFillColor(sf::Color(200, 200, 200, 255));
+	separator2.setPosition(0, 550);
+	
+
+	//Verticals
+	sf::RectangleShape separator3(sf::Vector2f(5, 600));
+	separator3.setFillColor(sf::Color(200, 200, 200, 255));
+	separator3.setPosition(400, 0);
+
+	sf::RectangleShape separator4(sf::Vector2f(5, 100));
+	separator4.setFillColor(sf::Color(200, 200, 200, 255));
+	separator4.setPosition(600, 0);
+
+
+
 
 	socket.setBlocking(false);
 	while (window.isOpen())
@@ -98,7 +121,14 @@ int main()
 				break;
 			}
 		}
-		window.draw(separator);
+
+		window.draw(separator0);
+		window.draw(separator1);
+		window.draw(separator2);
+		window.draw(separator3);
+		window.draw(separator4);
+
+
 		for (size_t i = 0; i < aMensajes.size(); i++)
 		{
 			std::string chatting = aMensajes[i];
