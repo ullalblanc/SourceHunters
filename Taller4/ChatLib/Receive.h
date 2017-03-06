@@ -14,5 +14,6 @@ public:
 	bool stopReceive = false;
 
 	sf::TcpSocket *socket;
-	std::vector<std::string> *aMensajes;
+	std::string *command;
+	//std::vector<std::string> *aMensajes;
 };

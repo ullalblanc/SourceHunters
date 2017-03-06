@@ -33,7 +33,7 @@ int main()
 	Text.setFillColor(sf::Color(60, 60, 200));
 	chatText.setStyle(sf::Text::Bold);
 	Text.setStyle(sf::Text::Bold);
-	 Text.setPosition(0, 560);
+	Text.setPosition(0, 560);
 
 	Send sender;
 	sender.send = &socket;
