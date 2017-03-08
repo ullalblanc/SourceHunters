@@ -4,18 +4,36 @@
 #include <cstring>
 #include <iostream>
 #include <vector>
+#include <time.h>
 
+#include "Game.h"
 #include "Send.h"
 #include "Receive.h"
 #define MAX_MENSAJES 30
 
+enum State {
+	send, // enviar paraula nova y que comenci partida
+	play, // mentres els jugadors estan escribint. comproba si sacaba el temps i si algú ha encertat la partida
+	points, // Envia les puntuacions als jugadors y actualitza els seus logs
+	win // el joc sacaba
+};
+
 int main()
 {
+	std::clock_t time = std::clock(); // per els timers
 	// CHOSE SEVER/CLIENT
 	sf::IpAddress ip = sf::IpAddress::IpAddress("192.168.23.87"); //sf::IpAddress::getLocalAddress();
 	sf::TcpSocket socket;
 	std::string name;
 	std::string textConsole = "Connected to: ";
+
+	std::string command; // el misatge que rep per saber que fer
+	std::string word;
+
+	Player player;
+	Player Opponent;
+
+	State state = send;
 
 	sf::Font font;
 	if (!font.loadFromFile("courbd.ttf"))
@@ -25,7 +43,7 @@ int main()
 
 	std::cout << "Enter a name: ";
 	std::cin >> name;
-	std::string mensaje = name + ": ";
+	std::string mensaje = name + ": "; // FA FALTA?
 
 	sf::Text Text(mensaje, font, 14);
 	sf::Text chatText(mensaje, font, 12);
@@ -47,9 +65,8 @@ int main()
 		return -1;
 	}
 	// OPEN CHAT WINDOW
-	std::vector<std::string> aMensajes;
-	receiver.aMensajes = &aMensajes;
-
+	
+	receiver.command = &command;
 	sf::Vector2i screenDimensions(800, 600);
 
 	sf::RenderWindow window;
@@ -80,17 +97,37 @@ int main()
 	separator4.setFillColor(sf::Color(200, 200, 200, 255));
 	separator4.setPosition(600, 0);
 
+	command = name;
+	sender.SendMessages();
+	receiver.ReceiveMessages();
+	//socket.setBlocking(false);
 
-
-
-	socket.setBlocking(false);
 	while (window.isOpen())
 	{
 		sf::Event evento;
-		receiver.ReceiveMessages();
+		switch (state) {
+		case send: // rebre la paraula i començar el temps
+			receiver.ReceiveMessages();
+			word = command;
+			socket.setBlocking(false);
+			state = play;
+			time += clock.getElapsedTime() /*+ MAXTIME*/;
+			break;
+		case play:
+
+			break;
+		case points:
+
+			break;
+		case win:
+
+			break; 
+		}
+
 		while (window.pollEvent(evento))
 		{
-			if (aMensajes.size() > 0) {
+
+			/*if (aMensajes.size() > 0) {
 				if (aMensajes[aMensajes.size() - 1] == "$") {
 					window.close();
 				}
@@ -119,7 +156,7 @@ int main()
 				else if (evento.text.unicode == 8 && mensaje.size() > 0) // si li dona al backspave, borra ultima lletra
 					mensaje.erase(mensaje.size() - 1, mensaje.size());
 				break;
-			}
+			}*/
 		}
 
 		window.draw(separator0);

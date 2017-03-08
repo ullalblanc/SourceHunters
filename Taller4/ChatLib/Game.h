@@ -4,7 +4,7 @@
 #include <string>
 #include <iostream>
 
-#define TIME 5000
+#define MAXTIME 10000
 
 struct Player {
 

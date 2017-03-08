@@ -84,7 +84,8 @@ int main()
 		{
 			receiver.socket = sockets[i];
 			if (receiver.ReceiveMessages()) {
-				// TODO: asignar els noms y els nums als jugadors 
+				// TODO: asignar els noms y els nums als jugadors
+				num++;
 			}
 		}
 	}
@@ -119,7 +120,7 @@ int main()
 		}
 		sf::Keyboard key;
 
-		for (int i = 0; i < sockets.size(); i++)
+		/*for (int i = 0; i < sockets.size(); i++)
 		{
 			receiver.socket = sockets[i];
 			if (receiver.ReceiveMessages()) {
@@ -149,7 +150,7 @@ int main()
 				sender.SendMessages();
 			}
 			serverOn = false;
-		} 
+		}*/ 
 	}
 	for (int i = 0; i < sockets.size(); i++)
 	{
