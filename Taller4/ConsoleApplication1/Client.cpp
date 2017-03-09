@@ -111,10 +111,13 @@ int main()
 			word = command;
 			socket.setBlocking(false);
 			state = play;
-			time += clock.getElapsedTime() /*+ MAXTIME*/;
+			time += std::clock() + MAXTIME;
 			break;
 		case play:
 
+			if (time > std::clock()) { // s'acaba el temps
+
+			}
 			break;
 		case points:
 
