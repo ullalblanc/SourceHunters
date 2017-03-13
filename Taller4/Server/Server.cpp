@@ -8,9 +8,18 @@
 #include "Send.h"
 #include "Receive.h"
 #include "Game.h"
+#include "MessageManager.h"
 
 #define MAX_MENSAJES 30
 #define MAX_USERS 2
+
+// 1_1_1_r // Mensaje_Typing_Jugador_letra
+// 1_2_1_pelota // Mensaje_Palabra_Jugador_palabra
+// 1_3_1_Fuera de Tiempo. // Mensaje_Log_Jugador_Texto
+// 2_1_0_vacio // Estado_Start_null_null
+// 2_1_0_vacio // Estado_Finish_null_null
+// 3_0_0_Palabra // NuevaPalabra_null_null_Palabra
+// 4_0_1_Manolo // Jugadores_IndiceJugador_0_Nombre
 
 enum State {
 	send, // enviar paraula nova y que comenci partida
@@ -39,10 +48,12 @@ int main()
 	sf::IpAddress ip = sf::IpAddress::IpAddress("192.168.23.87"); //sf::IpAddress::getLocalAddress();
 	std::vector<sf::TcpSocket*> sockets;
 	sf::TcpSocket* sockettmp = new sf::TcpSocket;
+	MessageManager protocol;
 	
 	// Crear players per guardar la info
-	std::vector<Player> player;
-
+	std::vector<Player> player(2);
+	player[0]._num = 0;
+	player[1]._num = 1;
 	std::string textConsole = "Connected to: ";
 
 	std::cout << "Server";
@@ -73,6 +84,7 @@ int main()
 		std::cout << "Error al acceptar conexió" << std::endl;
 		return -1;
 	}
+	listener.close();
 	std::cout << "\n New user" << std::endl;
 	sockettmp->setBlocking(false);
 	sockets.push_back(sockettmp);
@@ -84,15 +96,29 @@ int main()
 		{
 			receiver.socket = sockets[i];
 			if (receiver.ReceiveMessages()) {
-				// TODO: asignar els noms y els nums als jugadors
+				player[i]._name = protocol.GetWord(command);
+				sender.send = sockets[i];
+				command = protocol.CreateMessage(4,0, player[i]._num,player[i]._name);
+				sender.SendMessages();
 				num++;
 			}
 		}
 	}
 
+	//sockets[0]->setBlocking(true);
+	sender.send = sockets[0];
+	command = protocol.CreateMessage(4, 0, player[1]._num, player[1]._name);
+	sender.SendMessages();
+	//sockets[0]->setBlocking(false);
+
+	//sockets[1]->setBlocking(true);
+	sender.send = sockets[1];
+	command = protocol.CreateMessage(4, 0, player[0]._num, player[0]._name);
+	sender.SendMessages();
+	//sockets[1]->setBlocking(false);
+
 	// OPEN CHAT WINDOW
 	std::vector<std::string> aMensajes;
-	//receiver.aMensajes = &aMensajes;
 
 	std::string mensaje = "";
 	sender.mensajes = &mensaje;
@@ -103,7 +129,14 @@ int main()
 		switch (state) {
 		case send:
 			// TODO: enviar als dos jugadors
-			word = words[rand() % 10 + 1];
+			word = words[rand() % 9];
+			command = protocol.CreateMessage(3, 0, 0, word);
+			for (int i = 0; i < sockets.size(); i++)
+			{
+				//sender.send = &
+			}
+			sender.SendMessages();
+			state = play;
 			break;
 		case play:
 			// TODO: rebre paraula dels jugadors i enviarles
