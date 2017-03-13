@@ -1,0 +1,6 @@
+﻿C:\Program Files (x86)\MSBuild\Microsoft.Cpp\v4.0\V140\Microsoft.CppBuild.targets(392,5): warning MSB8028: The intermediate directory (x64\Release\) contains files shared from another project (ConsoleApplication1.vcxproj, Taller1.vcxproj, Taller2.vcxproj).  This can lead to incorrect clean and rebuild behavior.
+  Client.cpp
+Client.cpp(172): error C2065: 'aMensajes': undeclared identifier
+Client.cpp(172): error C2228: left of '.size' must have class/struct/union
+  Client.cpp(172): note: type is 'unknown-type'
+Client.cpp(174): error C2065: 'aMensajes': undeclared identifier
