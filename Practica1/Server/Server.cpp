@@ -59,6 +59,7 @@ int main()
 	std::cout << "Server";
 	std::string command; // el misatge que rep per saber que fer
 	Send sender;
+	sender.command = &command;
 	Receive receiver;
 	receiver.command = &command;
 	
@@ -121,7 +122,7 @@ int main()
 	std::vector<std::string> aMensajes;
 
 	std::string mensaje = "";
-	sender.mensajes = &mensaje;
+	//sender.mensajes = &mensaje;
 	bool serverOn = true;
 
 	while (serverOn)
