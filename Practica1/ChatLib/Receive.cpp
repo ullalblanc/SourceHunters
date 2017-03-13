@@ -14,7 +14,7 @@ bool Receive::ReceiveMessages()
 	std::size_t received;
 	//std::string mensaje = "";
 	sf::Socket::Status status = socket->receive(data, 1500, received);
-	data[received] = '\0';
+	//data[received] = '\0';
 
 	if (status == sf::Socket::Done) {
 		*command = data;
