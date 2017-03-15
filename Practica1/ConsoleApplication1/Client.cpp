@@ -59,7 +59,7 @@ int main()
 
 	Send sender;
 	sender.send = &socket;
-	sender.mensajes = &player._name;
+	sender.command = &command;
 	Receive receiver;
 	receiver.socket = &socket;
 	// bind puerto 50000 al socket receive

@@ -27,24 +27,32 @@ enum State {
 	points, // Envia les puntuacions als jugadors y actualitza els seus logs
 	win // el joc sacaba
 };
-
-std::vector<std::string> words = {
-	"anomaly",
-	"cattle",
-	"pharmacy",
-	"composite",
-	"sensible",
-	"nickname",
-	"assured",
-	"sacrifice",
-	"beer",
-	"software"
-};
+//
+//std::vector<std::string> words = {
+//	"anomaly",
+//	"cattle",
+//	"pharmacy",
+//	"composite",
+//	"sensible",
+//	"nickname",
+//	"assured",
+//	"sacrifice",
+//	"beer",
+//	"software"
+//};
 
 void cleanPlayers(int* playerChecks) {
 	for (int i = 0; i < MAX_USERS; i++)
 	{
 		playerChecks[i] = 0;
+	}
+}
+
+void sendAll(Send* sender, std::vector<sf::TcpSocket*> sockets) { // per misatges iguals que s'envien a tots el jugadors
+	for (int i = 0; i < MAX_USERS; i++)
+	{
+		sender->send = sockets[i];
+		sender->SendMessages();
 	}
 }
 
@@ -141,12 +149,13 @@ int main()
 		switch (state) {
 		case send:
 			// TODO: enviar als dos jugadors
-			question = rand() % 9;
-			command = protocol.CreateMessage(3, 0, 0, std::to_string(question));
-			for (int i = 0; i < sockets.size(); i++)
+			question = rand() % 9; // agafar pregunta random
+			command = protocol.CreateMessage(3, 0, 0, std::to_string(question)); // crear misatge amb index de la pregunta random
+			sendAll(&sender, sockets); // enviar a tots els jugadors el command amb el index de la pregunta random
+			/*for (int i = 0; i < sockets.size(); i++)
 			{
 				//sender.send = &
-			}
+			}*/
 			sender.SendMessages();
 			state = play;
 			break;
@@ -159,8 +168,7 @@ int main()
 					playerChecks[i] = 1;
 					for (int j = 0; j < sockets.size(); j++)
 					{
-						sender.send = sockets[j];
-						
+						sender.send = sockets[j];					
 						sender.SendMessages();
 					}
 				}

@@ -19,5 +19,5 @@ void Send::SendMessages()
 			std::cout << "Error al enviar" << command << std::endl;
 		}
 	} while (status != sf::Socket::Done);
-	*command = " ";
+	//*command = " ";
 }
