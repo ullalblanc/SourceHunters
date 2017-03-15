@@ -41,6 +41,13 @@ std::vector<std::string> words = {
 	"software"
 };
 
+void cleanPlayers(int* playerChecks) {
+	for (int i = 0; i < MAX_USERS; i++)
+	{
+		playerChecks[i] = 0;
+	}
+}
+
 int main()
 {
 	srand(time(NULL));
@@ -51,9 +58,11 @@ int main()
 	MessageManager protocol;
 	
 	// Crear players per guardar la info
-	std::vector<Player> player(2);
+	std::vector<Player> player(MAX_USERS);
 	player[0]._num = 0;
 	player[1]._num = 1;
+	int playerChecks[MAX_USERS]; // per comprobar quins usuaris hem vist ja
+	cleanPlayers(playerChecks);
 	std::string textConsole = "Connected to: ";
 
 	std::cout << "Server";
@@ -64,7 +73,8 @@ int main()
 	receiver.command = &command;
 	
 	State state = send;
-	std::string word;
+	int question;
+	//std::string word;
 
 	sf::TcpListener listener;
 	// Escuchamos por el puerto 50000
@@ -124,14 +134,15 @@ int main()
 	std::string mensaje = "";
 	//sender.mensajes = &mensaje;
 	bool serverOn = true;
+	int points = 3;
 
 	while (serverOn)
 	{
 		switch (state) {
 		case send:
 			// TODO: enviar als dos jugadors
-			word = words[rand() % 9];
-			command = protocol.CreateMessage(3, 0, 0, word);
+			question = rand() % 9;
+			command = protocol.CreateMessage(3, 0, 0, std::to_string(question));
 			for (int i = 0; i < sockets.size(); i++)
 			{
 				//sender.send = &
@@ -140,12 +151,26 @@ int main()
 			state = play;
 			break;
 		case play:
-			// TODO: rebre paraula dels jugadors i enviarles
-			// TODO: rebre paraula comnfirmada i fer check
+			// TODO: rebre resposta dels jugadors i enviarles
+			for (int i = 0; i < sockets.size(); i++)
+			{
+				receiver.socket = sockets[i];
+				if (receiver.ReceiveMessages()) {
+					playerChecks[i] = 1;
+					for (int j = 0; j < sockets.size(); j++)
+					{
+						sender.send = sockets[j];
+						
+						sender.SendMessages();
+					}
+				}
+				//sender.send = &
+			}
+			// TODO: si tots responen dins del temps, actualitzar puntuacions
 			// TODO: si s'acaba el temps, tornar a enviar paraula
 			break;
 		case points:
-			// TODO: Si un jugador fa be una paraula, actualitzar i enviar les puntuacions. Si un te 5 punts, acabar partida
+			// TODO: actualitzar les puntuacions de la pregunta i enviar les puntuacions. Si un te 5 punts, acabar partida
 			break;
 		case win:
 			// TODO: acabar partida.
