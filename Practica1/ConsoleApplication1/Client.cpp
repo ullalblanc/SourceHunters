@@ -29,7 +29,11 @@ int main()
 	sf::TcpSocket socket;
 	//std::string name;
 	std::string textConsole = "Connected to: ";
+	sf::Image background;
+	if (!background.loadFromFile("../Resources/Fons.png"))
+		return -1;
 
+	
 	std::string command; // el misatge que rep per saber que fer
 	std::string word;
 
@@ -45,17 +49,22 @@ int main()
 	}
 
 	std::cout << "Enter a name: ";
+	
 	std::cin >> player._name;
-	player._word=""; // FA FALTA?
-	Opponent._word = "";
 
-	sf::Text Text(player._word, font, 14);
-	sf::Text chatText(player._word, font, 12);
-	chatText.setFillColor(sf::Color(60, 60, 200));
-	Text.setFillColor(sf::Color(60, 60, 200));
-	chatText.setStyle(sf::Text::Bold);
-	Text.setStyle(sf::Text::Bold);
-	Text.setPosition(0, 560);
+	//sf::RenderWindow window;
+	//window.create(sf::VideoMode(960, 540), "Buzz");
+    //window.draw(background);
+
+
+
+	//sf::Text Text(player._word, font, 14);
+	//sf::Text chatText(player._word, font, 12);
+	//chatText.setFillColor(sf::Color(60, 60, 200));
+	//Text.setFillColor(sf::Color(60, 60, 200));
+	//chatText.setStyle(sf::Text::Bold);
+	//Text.setStyle(sf::Text::Bold);
+	//Text.setPosition(0, 560);
 
 	Send sender;
 	sender.send = &socket;
@@ -71,11 +80,11 @@ int main()
 	// OPEN CHAT WINDOW
 	
 	receiver.command = &command;
-	sf::Vector2i screenDimensions(800, 600);
+	sf::Vector2i screenDimensions(960, 540);
 
 	sf::RenderWindow window;
-	window.create(sf::VideoMode(screenDimensions.x, screenDimensions.y), "Taller 4");
-
+	window.create(sf::VideoMode(screenDimensions.x, screenDimensions.y), "Buzz");
+	
 	//Pintem els quadres
 
 	//Horitzontals
@@ -101,7 +110,7 @@ int main()
 	separator4.setFillColor(sf::Color(200, 200, 200, 255));
 	separator4.setPosition(600, 0);
 	
-
+	
 	//Enviem el nostre nom
 	command = protocol.CreateMessage(4,0,0,player._name);
 	sender.SendMessages();
@@ -117,6 +126,7 @@ int main()
 
 	while (window.isOpen())
 	{
+		
 		sf::Event evento;
 		switch (state) {
 		case send: // rebre la paraula i començar el temps
@@ -137,9 +147,9 @@ int main()
 			{
 
 			//	if (player._log.size() > 0) {
-					if (player._log[player._log.size() - 1] == "$") {
-					window.close();
-					}
+					//if (player._log[player._log.size() - 1] == "$") {
+					//window.close();
+					//}
 				//}
 				switch (evento.type)
 				{
@@ -148,22 +158,22 @@ int main()
 					break;
 				case sf::Event::KeyPressed:
 					if (evento.key.code == sf::Keyboard::Escape) {
-						player._word.clear();
-						player._word = sf::Keyboard::Escape; // Escape== $
+						//player._word.clear();
+						//player._word = sf::Keyboard::Escape; // Escape== $
 						sender.SendMessages(); // envia mensaje
 						window.close();
 					}
 					else if (evento.key.code == sf::Keyboard::Return)
 					{
 						sender.SendMessages(); // envia mensaje
-						player._word = player._name + ": ";
+						//player._word = player._name + ": ";
 					}
 					break;
 				case sf::Event::TextEntered:
 					if (evento.text.unicode >= 32 && evento.text.unicode <= 126) // si di dona a les tecles, escriu el misatge
-						player._word += (char)evento.text.unicode;
-					else if (evento.text.unicode == 8 && player._word.size() > 0) // si li dona al backspave, borra ultima lletra
-						player._word.erase(player._word.size() - 1, player._word.size());
+						//player._word += (char)evento.text.unicode;
+					//else if (evento.text.unicode == 8 && player._word.size() > 0) // si li dona al backspave, borra ultima lletra
+						//player._word.erase(player._word.size() - 1, player._word.size());
 					break;
 					}
 			}
@@ -176,7 +186,7 @@ int main()
 			break; 
 		}
 
-	
+		
 		window.draw(separator0);
 		window.draw(separator1);
 		window.draw(separator2);
@@ -184,17 +194,17 @@ int main()
 		window.draw(separator4);
 
 
-		for (size_t i = 0; i < player._log.size(); i++)
+	/*	for (size_t i = 0; i < player._log.size(); i++)
 		{
 			std::string chatting = player._log[i];
 			chatText.setPosition(sf::Vector2f(0, 20 * (float)i));
 			chatText.setString(chatting);
 			window.draw(chatText);
-		}
+		}*/
 
-		std::string mensaje_ = player._word + "_";
-		Text.setString(mensaje_);
-		window.draw(Text);
+		//std::string mensaje_ = player._word + "_";
+		//Text.setString(mensaje_);
+		//window.draw(Text);
 		window.display();
 		window.clear();
 	}

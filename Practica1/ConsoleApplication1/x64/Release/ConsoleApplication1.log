@@ -1,6 +1,12 @@
 ﻿C:\Program Files (x86)\MSBuild\Microsoft.Cpp\v4.0\V140\Microsoft.CppBuild.targets(392,5): warning MSB8028: The intermediate directory (x64\Release\) contains files shared from another project (ConsoleApplication1.vcxproj, Taller1.vcxproj, Taller2.vcxproj).  This can lead to incorrect clean and rebuild behavior.
   Client.cpp
-Client.cpp(172): error C2065: 'aMensajes': undeclared identifier
-Client.cpp(172): error C2228: left of '.size' must have class/struct/union
-  Client.cpp(172): note: type is 'unknown-type'
-Client.cpp(174): error C2065: 'aMensajes': undeclared identifier
+  Generating code
+  1 of 189 functions ( 0.5%) were compiled, the rest were copied from previous compilation.
+    0 functions were new in current compilation
+    0 functions had inline decision re-evaluated but remain unchanged
+  Finished generating code
+ChatLib.lib(MessageManager.obj) : warning LNK4099: PDB 'ChatLib.pdb' was not found with 'ChatLib.lib(MessageManager.obj)' or at 'C:\Users\dsanchez\Documents\SourceHunters\Practica1\x64\Release\ChatLib.pdb'; linking object as if no debug info
+ChatLib.lib(Send.obj) : warning LNK4099: PDB 'ChatLib.pdb' was not found with 'ChatLib.lib(Send.obj)' or at 'C:\Users\dsanchez\Documents\SourceHunters\Practica1\x64\Release\ChatLib.pdb'; linking object as if no debug info
+ChatLib.lib(Receive.obj) : warning LNK4099: PDB 'ChatLib.pdb' was not found with 'ChatLib.lib(Receive.obj)' or at 'C:\Users\dsanchez\Documents\SourceHunters\Practica1\x64\Release\ChatLib.pdb'; linking object as if no debug info
+  ConsoleApplication1.vcxproj -> C:\Users\dsanchez\Documents\SourceHunters\Practica1\x64\Release\Client.exe
+  ConsoleApplication1.vcxproj -> C:\Users\dsanchez\Documents\SourceHunters\Practica1\x64\Release\Client.pdb (Full PDB)
