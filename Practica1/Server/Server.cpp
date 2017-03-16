@@ -13,13 +13,14 @@
 #define MAX_MENSAJES 30
 #define MAX_USERS 2
 
-// 1_1_1_r // Mensaje_Typing_Jugador_letra
-// 1_2_1_pelota // Mensaje_Palabra_Jugador_palabra
-// 1_3_1_Fuera de Tiempo. // Mensaje_Log_Jugador_Texto
-// 2_1_0_vacio // Estado_Start_null_null
-// 2_1_0_vacio // Estado_Finish_null_null
-// 3_0_0_Palabra // NuevaPalabra_null_null_Palabra
-// 4_0_1_Manolo // Jugadores_IndiceJugador_0_Nombre
+// 1_N_1_vacio // Respuesta_index_Jugador_vacio
+// 2_1_0_vacio // Estado_Start_null_null********************
+// 2_2_0_vacio // Estado_Finish_null_null
+// 2_3_0_Fuera de Tiempo. // Mensaje_Log_Jugador_vacio
+// 2_4_0_vacio // Mensaje_check_jugador_vacio
+// 3_N_0_vacio // NuevaPpregunta_index_null_null
+// 4_1_0_Manolo // Jugadores_IndiceJugador_0_Nombre
+// 5_N_0_vacio // Puntuaciones_Puntuacion_Jugador_null
 
 enum State {
 	send, // enviar paraula nova y que comenci partida
@@ -27,19 +28,6 @@ enum State {
 	points, // Envia les puntuacions als jugadors y actualitza els seus logs
 	win // el joc sacaba
 };
-//
-//std::vector<std::string> words = {
-//	"anomaly",
-//	"cattle",
-//	"pharmacy",
-//	"composite",
-//	"sensible",
-//	"nickname",
-//	"assured",
-//	"sacrifice",
-//	"beer",
-//	"software"
-//};
 
 void cleanPlayers(int* playerChecks) {
 	for (int i = 0; i < MAX_USERS; i++)
@@ -65,6 +53,9 @@ int main()
 	sf::TcpSocket* sockettmp = new sf::TcpSocket;
 	MessageManager protocol;
 	Timer timer;
+
+	std::vector<Question> questions = initQuestions();
+	int questionIndex;
 	
 	// Crear players per guardar la info
 	std::vector<Player> player(MAX_USERS);
@@ -84,7 +75,6 @@ int main()
 	receiver.command = &command;
 	
 	State state = send;
-	int question;
 	//std::string word;
 
 	sf::TcpListener listener;
@@ -106,17 +96,7 @@ int main()
 		sockets.push_back(sockettmp);
 		sockettmp = new sf::TcpSocket;
 	}
-
-	
-	/*if (listener.accept(*sockettmp) != sf::Socket::Done) {
-		std::cout << "Error al acceptar conexió" << std::endl;
-		return -1;
-	}
 	listener.close();
-	std::cout << "\n New user" << std::endl;
-	sockettmp->setBlocking(false);
-	sockets.push_back(sockettmp);*/
-	
 	//Rebre noms dels jugadors
 	int num = 0;
 	while (num != 4) {
@@ -144,17 +124,6 @@ int main()
 		}
 		sockets[i]->setBlocking(false);
 	}
-	//sockets[0]->setBlocking(true);
-	/*sender.send = sockets[0];
-	command = protocol.CreateMessage(4, 0, player[1]._num, player[1]._name);
-	sender.SendMessages();
-	//sockets[0]->setBlocking(false);
-
-	//sockets[1]->setBlocking(true);
-	sender.send = sockets[1];
-	command = protocol.CreateMessage(4, 0, player[0]._num, player[0]._name);
-	sender.SendMessages();
-	//sockets[1]->setBlocking(false);*/
 
 	// OPEN CHAT WINDOW
 	std::vector<std::string> aMensajes;
@@ -169,14 +138,9 @@ int main()
 		switch (state) {
 		case send:
 			// TODO: enviar als dos jugadors
-			question = rand() % 9; // agafar pregunta random
-			command = protocol.CreateMessage(3, 0, 0, std::to_string(question)); // crear misatge amb index de la pregunta random
+			questionIndex = rand() % 9; // agafar pregunta random
+			command = protocol.CreateMessage(3, 0, 0, std::to_string(questionIndex)); // crear misatge amb index de la pregunta random
 			sendAll(&sender, sockets); // enviar a tots els jugadors el command amb el index de la pregunta random
-			/*for (int i = 0; i < sockets.size(); i++)
-			{
-				//sender.send = &
-			}*/
-			//sender.SendMessages();
 			state = play;
 			timer.Start(); // començar timer
 			break;
@@ -187,6 +151,11 @@ int main()
 				{
 					receiver.socket = sockets[i];
 					if (receiver.ReceiveMessages()) {
+						if (protocol.GetType(command) == 1) {
+							if (protocol.GetSubType(command) == questions[questionIndex].correctAnswer) {
+
+							}
+						}
 						playerChecks[i] = answerOrder; // per asignar el odre de respondre
 						answerOrder++;
 						//player[i]._answer = protocol.GetWord(); // TODO: mirar de aconseguir la paraula com a int
