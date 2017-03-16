@@ -13,14 +13,14 @@
 #define MAX_MENSAJES 30
 #define MAX_USERS 2
 
-// 1_N_1_vacio // Respuesta_index_Jugador_vacio
-// 2_1_0_vacio // Estado_Start_null_null********************
-// 2_2_0_vacio // Estado_Finish_null_null
-// 2_3_0_Fuera de Tiempo. // Mensaje_Log_Jugador_vacio
-// 2_4_0_vacio // Mensaje_check_jugador_vacio
-// 3_N_0_vacio // NuevaPpregunta_index_null_null
-// 4_1_0_Manolo // Jugadores_IndiceJugador_0_Nombre
-// 5_N_0_vacio // Puntuaciones_Puntuacion_Jugador_null
+// 1_N_1_vacio // Respuesta_index_Jugador_vacio // client envia respota
+// 2_1_0_vacio // Estado_Start_null_null******************** // comença partida
+// 2_2_0_vacio // Estado_Finish_null_null // acaba partida
+// 2_3_0_Fuera de Tiempo. // Mensaje_Log_Jugador_vacio // s'acaba el temps per respondre
+// 2_4_0_vacio // Mensaje_check_jugador_vacio // un jugador ha respos
+// 3_N_0_vacio // NuevaPpregunta_index_null_null // el server envia index de pregunta nova
+// 4_1_0_Manolo // Jugadores_IndiceJugador_0_Nombre // per enviar nom y index de jugadors
+// 5_N_0_vacio // Puntuaciones_Puntuacion_Jugador_null // per enviar puntuacions actualitzades
 
 enum State {
 	send, // enviar paraula nova y que comenci partida
@@ -34,6 +34,16 @@ void cleanPlayers(int* playerChecks) {
 	{
 		playerChecks[i] = 0;
 	}
+}
+
+bool playersReady(int* playerChecks) {
+	for (int i = 0; i < MAX_USERS; i++)
+	{
+		if (playerChecks[i] == 0) {
+			return false;
+		}
+	}
+	return true;
 }
 
 void sendAll(Send* sender, std::vector<sf::TcpSocket*> sockets) { // per misatges iguals que s'envien a tots el jugadors
@@ -131,7 +141,8 @@ int main()
 	std::string mensaje = "";
 	//sender.mensajes = &mensaje;
 	bool serverOn = true;
-	int answerOrder = 1;
+	int sumScore = 3; // punt per respondre be
+	int winner;
 
 	while (serverOn)
 	{
@@ -141,60 +152,50 @@ int main()
 			questionIndex = rand() % 9; // agafar pregunta random
 			command = protocol.CreateMessage(3, 0, 0, std::to_string(questionIndex)); // crear misatge amb index de la pregunta random
 			sendAll(&sender, sockets); // enviar a tots els jugadors el command amb el index de la pregunta random
+			sumScore = 3;
+			cleanPlayers(playerChecks);
 			state = play;
 			timer.Start(); // començar timer
 			break;
 		case play:
-			// TODO: rebre resposta dels jugadors i enviarles
 			if (timer.Check()) { // si sha acabat el temps
 				for (int i = 0; i < sockets.size(); i++)
 				{
-					receiver.socket = sockets[i];
-					if (receiver.ReceiveMessages()) {
-						if (protocol.GetType(command) == 1) {
-							if (protocol.GetSubType(command) == questions[questionIndex].correctAnswer) {
-
+					if (playerChecks[i] != 1) {
+						receiver.socket = sockets[i];
+						if (receiver.ReceiveMessages()) { // si rep misatge
+							if (protocol.GetType(command) == 1) { // si rep resposta e jugador
+								if (protocol.GetSubType(command) == questions[questionIndex].correctAnswer) { // si es resposta correcta
+									player[i]._score += sumScore; // suma punts depenent de l'ordre en que ha respos
+									if (sumScore > 1) sumScore--; // si tots responen be, el 3er i el 4rt guanyen 1 punt
+									playerChecks[i] = 1; // per saber que ha respos
+								}
+								command = protocol.CreateMessage(2, 4, i, "");
+								sendAll(&sender, sockets); // enviar a tots la resposta que ha donat el jugador i
 							}
 						}
-						playerChecks[i] = answerOrder; // per asignar el odre de respondre
-						answerOrder++;
-						//player[i]._answer = protocol.GetWord(); // TODO: mirar de aconseguir la paraula com a int
-						//command = protocol.CreateMessage(); // TODO: misatge de que jugador i ha respos x
-						sendAll(&sender, sockets); // enviar a tots la resposta que ha donat el jugador i
 					}
-					//sender.send = &
 				}
-				if (answerOrder == 5) { // tots han respost dins del temps
+				if (playersReady(playerChecks)) { // tots han respost dins del temps
 					state = points;
-					answerOrder = 1;
 				}	
-			}
+			} // TODO?: Enviar que s'ha acabat el temps
 			else { 
 				state = points;
-				answerOrder = 1;
 			}
 			break;
 		case points:
-			// TODO: actualitzar les puntuacions de la pregunta i enviar les puntuacions. Si un te 5 punts, acabar partida
-			while (answerOrder != 5) { // canviar per evitar locuras
-				for (int i = 0; i < MAX_USERS; i++)
-				{
-					if (playerChecks[i] == answerOrder) {
-						// TODO: comprobar si la resposta es correcta i sumarli els punts
-
-						answerOrder++;
-						// TODO: crear misatge de la puntuacio del jugador i, i enviarla a tots
-						// command = protocol.CreateMessage();
-						sendAll(&sender, sockets);
-					}
-				}
+			for (int i = 0; i < MAX_USERS; i++)
+			{
+				command = protocol.CreateMessage(5, player[i]._score, player[1]._num, "");
+				sendAll(&sender, sockets); // enviar a tots les putnuacions actualitzades
 			}
-			cleanPlayers(playerChecks);
-			
+
 			for (int i = 0; i < MAX_USERS; i++)
 			{
 				if (player[i]._score > 10) {
 					state = win;
+					winner = i;
 				}
 			}
 			if (state != win) state = send;
