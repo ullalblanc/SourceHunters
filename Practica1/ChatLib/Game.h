@@ -33,19 +33,19 @@ std::vector<Question> initQuestions() {
 	questions[0].answer[3] = "El tacto";
 	questions[0].correctAnswer = 2;
 
-	questions[1].question = "¿Cuál de los cinco sentidos se desarrolla el primero?";
-	questions[1].answer[0] = "El gusto";
-	questions[1].answer[1] = "El olfato";
-	questions[1].answer[2] = "La oida";
-	questions[1].answer[3] = "El tacto";
-	questions[1].correctAnswer = 2;
+	questions[1].question = "¿Cuál es el único mamífero con cuatro rodillas?";
+	questions[1].answer[0] = "El Elefante";
+	questions[1].answer[1] = "El caballo";
+	questions[1].answer[2] = "La girafa";
+	questions[1].answer[3] = "El rinoceronte";
+	questions[1].correctAnswer = 1;
 
-	questions[2].question = "¿Cuál de los cinco sentidos se desarrolla el primero?";
-	questions[2].answer[0] = "El gusto";
-	questions[2].answer[1] = "El olfato";
-	questions[2].answer[2] = "La oida";
-	questions[2].answer[3] = "El tacto";
-	questions[2].correctAnswer = 2;
+	questions[2].question = "¿Con qué dos colores suele tener problemas un daltónico?";
+	questions[2].answer[0] = "Azul y amarillo";
+	questions[2].answer[1] = "Verde y amarillo";
+	questions[2].answer[2] = "Azul y verde";
+	questions[2].answer[3] = "Verde y rojo";
+	questions[2].correctAnswer = 4;
 
 
 	return questions;
