@@ -11,7 +11,7 @@
 #include "MessageManager.h"
 
 #define MAX_MENSAJES 30
-#define MAX_USERS 2
+#define MAX_USERS 4
 
 // 1_N_1_vacio // Respuesta_index_Jugador_vacio // client envia respota
 // 2_1_0_vacio // Estado_Start_null_null******************** // comença partida
@@ -21,6 +21,7 @@
 // 3_N_0_vacio // NuevaPpregunta_index_null_null // el server envia index de pregunta nova
 // 4_1_0_Manolo // Jugadores_IndiceJugador_0_Nombre // per enviar nom y index de jugadors
 // 5_N_0_vacio // Puntuaciones_Puntuacion_Jugador_null // per enviar puntuacions actualitzades
+// 6_0_0_vacio // desconexion_null_jugador_null // para desconectar un cliente. tambien se usa para acabar la partida
 
 enum State {
 	send, // enviar paraula nova y que comenci partida
@@ -65,7 +66,7 @@ int main()
 	Timer timer;
 
 	std::vector<Question> questions = initQuestions();
-	int questionIndex;
+	int questionIndex = 0;
 	
 	// Crear players per guardar la info
 	std::vector<Player> player(MAX_USERS);
@@ -85,7 +86,6 @@ int main()
 	receiver.command = &command;
 	
 	State state = send;
-	//std::string word;
 
 	sf::TcpListener listener;
 	// Escuchamos por el puerto 50000
@@ -115,9 +115,6 @@ int main()
 			receiver.socket = sockets[i];
 			if (receiver.ReceiveMessages()) {
 				player[i]._name = protocol.GetWord(command);
-				/*sender.send = sockets[i];
-				command = protocol.CreateMessage(4,0, player[i]._num,player[i]._name);
-				sender.SendMessages();*/
 				num++;
 			}
 		}
@@ -136,32 +133,34 @@ int main()
 	}
 
 	// OPEN CHAT WINDOW
-	std::vector<std::string> aMensajes;
-
-	std::string mensaje = "";
-	//sender.mensajes = &mensaje;
 	bool serverOn = true;
 	int sumScore = 3; // punt per respondre be
-	int winner;
+	int winner; // WARNING posiblement no faci falta
 
 	while (serverOn)
 	{
+		sf::Keyboard key;
+		if (key.isKeyPressed(sf::Keyboard::BackSpace)) { // si el server vol tancar la comunicacio
+			state = win;
+		}
 		switch (state) {
 		case send:
-			// TODO: enviar als dos jugadors
-			questionIndex = rand() % 9; // agafar pregunta random
-			command = protocol.CreateMessage(3, 0, 0, std::to_string(questionIndex)); // crear misatge amb index de la pregunta random
-			sendAll(&sender, sockets); // enviar a tots els jugadors el command amb el index de la pregunta random
-			sumScore = 3;
-			cleanPlayers(playerChecks);
-			state = play;
-			timer.Start(); // començar timer
+			if (timer.Check()) {
+				questionIndex; // agafar pregunta random
+				command = protocol.CreateMessage(3, questionIndex, 0, ""); // crear misatge amb index de la pregunta random
+				sendAll(&sender, sockets); // enviar a tots els jugadors el command amb el index de la pregunta random
+				sumScore = 3;
+				cleanPlayers(playerChecks);
+				state = play;
+				questionIndex++;
+				timer.Start(MAXTIME); // començar timer
+			}
 			break;
 		case play:
-			if (timer.Check()) { // si sha acabat el temps
+			if (!timer.Check()) { // si sha acabat el temps
 				for (int i = 0; i < sockets.size(); i++)
 				{
-					if (playerChecks[i] != 1) {
+					if (playerChecks[i] != 1) { // si el jugador i ya ha enviado respueste, se le omite
 						receiver.socket = sockets[i];
 						if (receiver.ReceiveMessages()) { // si rep misatge
 							if (protocol.GetType(command) == 1) { // si rep resposta e jugador
@@ -173,14 +172,19 @@ int main()
 								command = protocol.CreateMessage(2, 4, i, "");
 								sendAll(&sender, sockets); // enviar a tots la resposta que ha donat el jugador i
 							}
+							else if (protocol.GetType(command) == 6) { // si rep que el client es vol desconectar
+								state = win; // decidim qui es el guanyador i acabem la partida.
+							}
 						}
 					}
 				}
 				if (playersReady(playerChecks)) { // tots han respost dins del temps
 					state = points;
 				}	
-			} // TODO?: Enviar que s'ha acabat el temps
+			} 
 			else { 
+				command = protocol.CreateMessage(2,3,0,""); // s'ha acabat el temps
+				sendAll(&sender, sockets);
 				state = points;
 			}
 			break;
@@ -199,50 +203,22 @@ int main()
 				}
 			}
 			if (state != win) state = send;
+			timer.Start(1000); // dejar un segundo antes de realizar la siguiente accion
 			break;
 		case win:
 			// TODO: acabar partida.
-			break;
-
-		}
-		sf::Keyboard key;
-
-		/*for (int i = 0; i < sockets.size(); i++)
-		{
-			receiver.socket = sockets[i];
-			if (receiver.ReceiveMessages()) {
-				if (aMensajes[aMensajes.size()-1] == "$") {
+			if (timer.Check()) {
+				command = protocol.CreateMessage(2, 2, 0, ""); // enviem que s'acaba la partida, el client s'encarrega de mostrar el guanyador i tencar la comunicacio per la seva part
+				sendAll(&sender, sockets);
+				for (int i = 0; i < sockets.size(); i++)
+				{
 					sockets[i]->disconnect();
-					std::cout << "User leaved" << std::endl;
 					delete sockets[i];
-					sockets.erase(sockets.begin() + i);
 				}
-				else {
-					mensaje.clear();
-					mensaje = aMensajes[aMensajes.size() - 1];
-					for (int j = 0; j < sockets.size(); j++)
-					{
-						sender.send = sockets[j];
-						sender.SendMessages();
-					}
-				}		
+				serverOn = false;
 			}
-		}	
-		if (key.isKeyPressed(sf::Keyboard::BackSpace)) {
-			mensaje.clear();
-			mensaje = sf::Keyboard::Escape;
-			for (int i = 0; i < sockets.size(); i++)
-			{
-				sender.send = sockets[i];
-				sender.SendMessages();
-			}
-			serverOn = false;
-		}*/ 
-	}
-	for (int i = 0; i < sockets.size(); i++)
-	{
-		sockets[i]->disconnect();
-		delete sockets[i];
-	}
+			break;
+		}
+	}	
 	return 0;
 }

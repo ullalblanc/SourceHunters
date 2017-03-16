@@ -57,8 +57,8 @@ public:
 	Timer() {};
 	~Timer() {};
 
-	void Start() {
-		time = std::clock() + MAXTIME;
+	void Start(float maxtime) {
+		time = std::clock() + maxtime;
 	};
 
 	bool Check() {
