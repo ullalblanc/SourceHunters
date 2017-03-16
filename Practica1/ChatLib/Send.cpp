@@ -14,10 +14,11 @@ void Send::SendMessages()
 	sf::Socket::Status status;
 	do {
 		status = send->send(command->c_str(), command->size(), sent);
-		if (status != sf::Socket::Done)
+		if (status != sf::Socket::Partial)
 		{
-			std::cout << "Error al enviar" << command << std::endl;
+			//std::cout << "Error al enviar" << command << std::endl;
+			command->erase(0, sent);
 		}
-	} while (status != sf::Socket::Done);
+	} while (status != sf::Socket::Partial);
 	//*command = " ";
 }

@@ -4,16 +4,16 @@
 #include <string>
 #include <iostream>
 
-#define MAXTIME 10000
+#define MAXTIME 5000
 
 struct Player {
 
 	int _num;
 	std::string _name;
 	int _score = 0;
-	int _answer = 0;
+	//int _answer = 0;
 	//std::string _word = "";
-	std::vector<std::string> _log;
+	//std::vector<std::string> _log;
 	
 };
 
@@ -30,5 +30,9 @@ public:
 	bool Check() {
 		if (time < std::clock()) return true;
 		else return false;
+	};
+
+	int getTime() {
+		return (int)(time - std::clock());
 	};
 };

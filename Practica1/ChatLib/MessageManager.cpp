@@ -8,13 +8,14 @@
 // _auxText[2] -> Player
 // _auxText[3..] -> Message
 
-// 1_1_1_r // Mensaje_Typing_Jugador_letra
-// 1_2_1_pelota // Mensaje_Palabra_Jugador_palabra
-// 1_3_1_Fuera de Tiempo. // Mensaje_Log_Jugador_Texto
-// 2_1_0_vacio // Estado_Start_null_null
-// 2_1_0_vacio // Estado_Finish_null_null
-// 3_0_0_Palabra // NuevaPalabra_null_null_Palabra
+// 1_N_1_vacio // Mensaje_index_Jugador_vacio
+// 2_1_0_vacio // Estado_Start_null_null********************
+// 2_2_0_vacio // Estado_Finish_null_null
+// 2_3_0_Fuera de Tiempo. // Mensaje_Log_Jugador_vacio
+// 2_4_0_vacio // Mensaje_check_jugador_vacio
+// 3_N_0_vacio // NuevaPpregunta_index_null_null
 // 4_1_0_Manolo // Jugadores_IndiceJugador_0_Nombre
+// 5_N_0_vacio // Puntuaciones_Puntuacion_Jugador_null
 
 //Funciones std::String
 //http://www.cplusplus.com/reference/string/string/operator[]/
