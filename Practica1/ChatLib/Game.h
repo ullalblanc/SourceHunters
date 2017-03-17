@@ -11,6 +11,7 @@ struct Player {
 	int _num;
 	std::string _name;
 	int _score = 0;
+	bool _answerCheck;
 	//int _answer = 0;
 	//std::string _word = "";
 	//std::vector<std::string> _log;
@@ -26,26 +27,26 @@ struct Question {
 std::vector<Question> initQuestions() {
 	std::vector<Question> questions;
 		
-	questions[0].question = "¿Cuál de los cinco sentidos se desarrolla el primero?";
+	questions[0].question = "¿Cuál de los cinco sentidos \n se desarrolla el primero?";
 	questions[0].answer[0] = "El gusto";
 	questions[0].answer[1] = "El olfato";
 	questions[0].answer[2] = "La oida";
 	questions[0].answer[3] = "El tacto";
-	questions[0].correctAnswer = 2;
+	questions[0].correctAnswer = 1;
 
-	questions[1].question = "¿Cuál es el único mamífero con cuatro rodillas?";
+	questions[1].question = "¿Cuál es el único mamífero \n con cuatro rodillas?";
 	questions[1].answer[0] = "El Elefante";
 	questions[1].answer[1] = "El caballo";
 	questions[1].answer[2] = "La girafa";
 	questions[1].answer[3] = "El rinoceronte";
-	questions[1].correctAnswer = 1;
+	questions[1].correctAnswer = 0;
 
-	questions[2].question = "¿Con qué dos colores suele tener problemas un daltónico?";
+	questions[2].question = "¿Con qué dos colores suele \n tener problemas un daltónico?";
 	questions[2].answer[0] = "Azul y amarillo";
 	questions[2].answer[1] = "Verde y amarillo";
 	questions[2].answer[2] = "Azul y verde";
 	questions[2].answer[3] = "Verde y rojo";
-	questions[2].correctAnswer = 4;
+	questions[2].correctAnswer = 3;
 
 
 	return questions;
@@ -62,7 +63,7 @@ public:
 	};
 
 	bool Check() {
-		if (time < std::clock()) return true;
+		if (time < std::clock()) return true; //Torna True al Acabar
 		else return false;
 	};
 
