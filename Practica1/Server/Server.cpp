@@ -30,15 +30,15 @@ enum State {
 	win // el joc sacaba
 };
 
-void cleanPlayers(int* playerChecks) {
-	for (int i = 0; i < MAX_USERS; i++)
+void cleanPlayers(int* playerChecks, int size = MAX_USERS) {
+	for (int i = 0; i < size; i++)
 	{
 		playerChecks[i] = 0;
 	}
 }
 
-bool playersReady(int* playerChecks) {
-	for (int i = 0; i < MAX_USERS; i++)
+bool playersReady(int* playerChecks, int size = MAX_USERS) {
+	for (int i = 0; i < size; i++)
 	{
 		if (playerChecks[i] == 0) {
 			return false;
@@ -47,11 +47,13 @@ bool playersReady(int* playerChecks) {
 	return true;
 }
 
-void sendAll(Send* sender, std::vector<sf::TcpSocket*> sockets) { // per misatges iguals que s'envien a tots el jugadors
-	for (int i = 0; i < MAX_USERS; i++)                           // podriam ficar un bool de parametre si volem que es faci blocking
+void sendAll(Send* sender, std::vector<sf::TcpSocket*> sockets, bool block = false) { // per misatges iguals que s'envien a tots el jugadors
+	for (int i = 0; i < sockets.size(); i++)                           // podriam ficar un bool de parametre si volem que es faci blocking
 	{
+		if (block) sockets[i]->setBlocking(true);
 		sender->send = sockets[i];
 		sender->SendMessages();
+		if (block) sockets[i]->setBlocking(false);
 	}
 }
 
@@ -71,7 +73,7 @@ int main()
 	
 	// Crear players per guardar la info
 	std::vector<Player> player(MAX_USERS);
-	for (int i = 0; i < MAX_USERS; i++)
+	for (int i = 0; i < player.size(); i++)
 	{
 		player[i]._num = i;
 	}
@@ -96,42 +98,44 @@ int main()
 	}
 	//Accept per els dos jugadors
 
-	for (int i = 0; i < MAX_USERS; i++)
+	for (int i = 0; i < player.size(); i++)
 	{
 		if (listener.accept(*sockettmp) != sf::Socket::Done) {
 			std::cout << "Error al acceptar conexió" << std::endl;
 			return -1;
 		}
 		std::cout << "\n New user" << std::endl;
-		sockettmp->setBlocking(false);
+		//sockettmp->setBlocking(false);
 		sockets.push_back(sockettmp);
 		sockettmp = new sf::TcpSocket;
 	}
 	listener.close();
 	//Rebre noms dels jugadors
 	//int num = 0;
-	while (playerChecks[0] != 1 && playerChecks[1] != 1 && playerChecks[2] != 1 && playerChecks[3] != 1) {
+	//while (playerChecks[0] != 1 && playerChecks[1] != 1 && playerChecks[2] != 1 && playerChecks[3] != 1) {
 		for (int i = 0; i < player.size(); i++)
 		{
 			receiver.socket = sockets[i];
 			if (receiver.ReceiveMessages()) {
 				player[i]._name = protocol.GetWord(command);
-				playerChecks[0] = 1;
+				//playerChecks[0] = 1;
 				//num++;
 			}
 		}
-	}
+	//}
 
-	for (int i = 0; i < MAX_USERS; i++)
+	for (int i = 0; i < player.size(); i++)
 	{
-		sockets[i]->setBlocking(true);
-		sender.send = sockets[i];
-		for (int j = 0; j < MAX_USERS; j++)
+		//sockets[i]->setBlocking(true);
+		//sender.send = sockets[i];
+		command = protocol.CreateMessage(4, 0, player[i]._num, player[i]._name);
+		sendAll(&sender, sockets, true);
+		/*for (int j = 0; j < MAX_USERS; j++)
 		{
 			command = protocol.CreateMessage(4, 0, player[j]._num, player[j]._name);
-			sender.SendMessages();
-		}
-		sockets[i]->setBlocking(false);
+			sender.SendMessages();*/
+		//}
+		//sockets[i]->setBlocking(false);
 	}
 
 	// OPEN CHAT WINDOW
@@ -150,7 +154,7 @@ int main()
 			if (timer.Check()) {
 				question = initQuestion(questionIndex);
 				command = protocol.CreateMessage(3, questionIndex, 0, ""); // crear misatge amb index de la pregunta random
-				sendAll(&sender, sockets); // enviar a tots els jugadors el command amb el index de la pregunta random
+				sendAll(&sender, sockets, true); // enviar a tots els jugadors el command amb el index de la pregunta random
 				sumScore = 3;
 				cleanPlayers(playerChecks);
 				state = play;
@@ -186,18 +190,18 @@ int main()
 			} 
 			else { 
 				command = protocol.CreateMessage(2,3,0,""); // s'ha acabat el temps
-				sendAll(&sender, sockets);
+				sendAll(&sender, sockets, true);
 				state = points;
 			}
 			break;
 		case points:
-			for (int i = 0; i < MAX_USERS; i++)
+			for (int i = 0; i < player.size(); i++)
 			{
 				command = protocol.CreateMessage(5, player[i]._score, player[1]._num, "");
-				sendAll(&sender, sockets); // enviar a tots les putnuacions actualitzades
+				sendAll(&sender, sockets, true); // enviar a tots les putnuacions actualitzades
 			}
 
-			for (int i = 0; i < MAX_USERS; i++)
+			for (int i = 0; i < player.size(); i++)
 			{
 				if (player[i]._score > 10) {
 					state = win;
@@ -211,7 +215,7 @@ int main()
 			// TODO: acabar partida.
 			if (timer.Check()) {
 				command = protocol.CreateMessage(2, 2, 0, ""); // enviem que s'acaba la partida, el client s'encarrega de mostrar el guanyador i tencar la comunicacio per la seva part
-				sendAll(&sender, sockets);
+				sendAll(&sender, sockets, true);
 				for (int i = 0; i < sockets.size(); i++)
 				{
 					sockets[i]->disconnect();
