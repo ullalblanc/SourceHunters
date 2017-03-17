@@ -291,7 +291,7 @@ int main()
 
 	
 	
-
+	
 
 	//	std::string mensaje_ = player._word + "_";
 		//Text.setString(mensaje_);

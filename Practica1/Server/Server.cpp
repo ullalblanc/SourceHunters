@@ -109,14 +109,15 @@ int main()
 	}
 	listener.close();
 	//Rebre noms dels jugadors
-	int num = 0;
-	while (num != 4) {
+	//int num = 0;
+	while (playerChecks[0] != 1 && playerChecks[1] != 1 && playerChecks[2] != 1 && playerChecks[3] != 1) {
 		for (int i = 0; i < player.size(); i++)
 		{
 			receiver.socket = sockets[i];
 			if (receiver.ReceiveMessages()) {
 				player[i]._name = protocol.GetWord(command);
-				num++;
+				playerChecks[0] = 1;
+				//num++;
 			}
 		}
 	}
