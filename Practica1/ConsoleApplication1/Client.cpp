@@ -24,8 +24,9 @@ int main()
 {
 	MessageManager protocol;
 	Timer timer;
-	std::vector<Question> questions = initQuestions(); //Preguntes
+	//std::vector<Question> questions = initQuestions(); //Preguntes
 	int questionIndex = 0;
+	Question question;
 	bool answerSent = false;
 
 	// Image draw
@@ -202,11 +203,14 @@ int main()
 
 			receiver.ReceiveMessages();
 			if (protocol.GetType(command) == 3) {
-				Pregunta.setString(questions[protocol.GetSubType(command)].question);
-				Resposta1.setString(questions[protocol.GetSubType(command)].answer[0]);
-				Resposta2.setString(questions[protocol.GetSubType(command)].answer[1]);
-				Resposta3.setString(questions[protocol.GetSubType(command)].answer[2]);
-				Resposta4.setString(questions[protocol.GetSubType(command)].answer[3]);
+				questionIndex = protocol.GetSubType(command); // agafar index de la pregunta
+				question = initQuestion(questionIndex); // canviar a nova pregunta
+				Pregunta.setString(question.question); // actualitzar eltext per pantalla
+				Resposta1.setString(question.answer[0]);
+				Resposta2.setString(question.answer[1]);
+				Resposta3.setString(question.answer[2]);
+				Resposta4.setString(question.answer[3]);
+				//Resposta4.setString(questions[protocol.GetSubType(command)].answer[3]);
 			}
 			socket.setBlocking(false);
 			state = play;

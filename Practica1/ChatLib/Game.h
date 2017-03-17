@@ -20,7 +20,7 @@ struct Player {
 
 struct Question {
 	std::string question = "";
-	std::string answer[4];
+	std::vector<std::string> answer;
 	int correctAnswer;
 };
 
@@ -28,7 +28,7 @@ std::vector<Question> initQuestions() {
 	std::vector<Question> questions;
 		
 	questions[0].question = "¿Cuál de los cinco sentidos \n se desarrolla el primero?";
-	questions[0].answer[0] = "El gusto";
+	questions[0].answer.push_back("El gusto");
 	questions[0].answer[1] = "El olfato";
 	questions[0].answer[2] = "La oida";
 	questions[0].answer[3] = "El tacto";
@@ -50,6 +50,37 @@ std::vector<Question> initQuestions() {
 
 
 	return questions;
+}
+
+Question initQuestion(int index) {
+	Question questiontmp;
+		switch (index) {
+		case 0:
+			questiontmp.question = "¿Cuál de los cinco sentidos \n se desarrolla el primero?";
+			questiontmp.answer.push_back("El gusto");
+			questiontmp.answer.push_back("El olfato");
+			questiontmp.answer.push_back("La oida");
+			questiontmp.answer.push_back("El tacto");
+			questiontmp.correctAnswer = 1;
+			break;
+		case 1:
+			questiontmp.question = "¿Cuál es el único mamífero \n con cuatro rodillas?";
+			questiontmp.answer.push_back("El Elefante");
+			questiontmp.answer.push_back("El caballo");
+			questiontmp.answer.push_back("La girafa");
+			questiontmp.answer.push_back("El rinoceronte");
+			questiontmp.correctAnswer = 0;
+			break;
+		case 2:
+			questiontmp.question = "¿Con qué dos colores suele \n tener problemas un daltónico?";
+			questiontmp.answer.push_back("Azul y amarillo");
+			questiontmp.answer.push_back("Verde y amarillo");
+			questiontmp.answer.push_back("Azul y verde");
+			questiontmp.answer.push_back("Verde y rojo");
+			questiontmp.correctAnswer = 3;
+			break;
+	}
+		return questiontmp;
 }
 
 class Timer {

@@ -65,8 +65,9 @@ int main()
 	MessageManager protocol;
 	Timer timer;
 
-	std::vector<Question> questions = initQuestions();
+	//std::vector<Question> questions = initQuestions();
 	int questionIndex = 0;
+	Question question = initQuestion(questionIndex);
 	
 	// Crear players per guardar la info
 	std::vector<Player> player(MAX_USERS);
@@ -146,7 +147,7 @@ int main()
 		switch (state) {
 		case send:
 			if (timer.Check()) {
-				questionIndex; // agafar pregunta random
+				question = initQuestion(questionIndex);
 				command = protocol.CreateMessage(3, questionIndex, 0, ""); // crear misatge amb index de la pregunta random
 				sendAll(&sender, sockets); // enviar a tots els jugadors el command amb el index de la pregunta random
 				sumScore = 3;
@@ -164,7 +165,7 @@ int main()
 						receiver.socket = sockets[i];
 						if (receiver.ReceiveMessages()) { // si rep misatge
 							if (protocol.GetType(command) == 1) { // si rep resposta e jugador
-								if (protocol.GetSubType(command) == questions[questionIndex].correctAnswer) { // si es resposta correcta
+								if (protocol.GetSubType(command) == question.correctAnswer) { // si es resposta correcta
 									player[i]._score += sumScore; // suma punts depenent de l'ordre en que ha respos
 									if (sumScore > 1) sumScore--; // si tots responen be, el 3er i el 4rt guanyen 1 punt
 									playerChecks[i] = 1; // per saber que ha respos
