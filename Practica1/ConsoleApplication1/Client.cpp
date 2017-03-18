@@ -39,10 +39,17 @@ int main()
 	sf::Sprite sprite;
 	sprite.setTexture(background);
 		
+	sf::Texture CheckText;
+	if (!CheckText.loadFromFile("../Resources/Check.png")) {
+		std::cout << "Can't load the image file" << std::endl;
+		return -1;
+	}
+	sf::Sprite check;
+	check.setTexture(CheckText);
 
 
 	// CHOSE CLIENT
-	sf::IpAddress ip = sf::IpAddress::IpAddress("192.168.1.10"); //sf::IpAddress::getLocalAddress();
+	sf::IpAddress ip = sf::IpAddress::IpAddress("127.0.0.1"); //sf::IpAddress::getLocalAddress();
 	sf::TcpSocket socket;
 	std::string textConsole = "Connected to: ";
 
@@ -64,8 +71,9 @@ int main()
 		std::cout << "Can't load the font file" << std::endl;
 	}
 
-	std::cout << "Enter a name: ";
+	std::cout << "Introdueix les teves inicials: ";
 	std::cin >> name;
+	name.resize(3);
 
 	//Preparem els textos a la posició que els correspont
 	sf::Text Pregunta("%%Con qué dos colores suele \n tener problemas un daltónico?", font, 30);
@@ -212,6 +220,12 @@ int main()
 				Resposta4.setString(question.answer[3]);
 				//Resposta4.setString(questions[protocol.GetSubType(command)].answer[3]);
 			}
+			else if (protocol.GetType(command)==2) {
+				if (protocol.GetSubType(command) == 2)
+				{
+					state = win;
+				}
+			}
 			socket.setBlocking(false);
 			state = play;
 			answerSent = false; //Preparem per enviar la resposta
@@ -264,6 +278,7 @@ int main()
 						state = win;
 						break;
 					case (3)://Han respost tots o a acabat el temps
+						socket.setBlocking(true);
 						state = points;
 						break;
 					case (4)://un jugador ha respost
@@ -282,10 +297,29 @@ int main()
 			
 			break;
 		case points:
+			receiver.ReceiveMessages();
+			player[protocol.GetPlayer(command)]._score = protocol.GetSubType(command);
 
+			receiver.ReceiveMessages();
+			player[protocol.GetPlayer(command)]._score = protocol.GetSubType(command);
+
+			receiver.ReceiveMessages();
+			player[protocol.GetPlayer(command)]._score = protocol.GetSubType(command);
+
+			receiver.ReceiveMessages();
+			player[protocol.GetPlayer(command)]._score = protocol.GetSubType(command);
+
+			state = send;
 			break;
 		case win:
-
+			int index = 0;
+			for (int i = 0; i < MAX_USERS; i++)
+			{
+				if (player[index]._score < player[i]._score) {
+					index = i;
+				}
+			}
+			Pregunta.setString("El jugador: "+player[index]._name+"\n ha guanyat la partida");
 			break; 
 		}
 
@@ -299,6 +333,15 @@ int main()
 		/////////////////// PINTAT
 		///Fons
 		window.draw(sprite);
+
+		for (int i = 0; i < MAX_USERS; i++)
+		{
+			if (player[i]._answerCheck == true) {
+				check.setPosition(680, 130*i);
+				window.draw(check);
+			}
+		}
+	
 
 		/// TEXT
 		window.draw(Pregunta);
@@ -314,6 +357,11 @@ int main()
 		window.draw(Jugador2Score);
 		window.draw(Jugador3Score);
 		window.draw(Jugador4Score);
+		//Actualitzem temps
+		if (!timer.Check())
+			Temps.setString(std::to_string(timer.getTime()));
+		else
+			Temps.setString("0");
 		window.draw(Temps);
 		
 		window.display();

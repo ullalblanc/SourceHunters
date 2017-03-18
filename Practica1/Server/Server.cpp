@@ -129,6 +129,10 @@ int main()
 	bool serverOn = true;
 	int sumScore; // punt per respondre be
 	int winner; // WARNING posiblement no faci falta
+	for (int i = 0; i < sockets.size(); i++)
+	{
+		sockets[i]->setBlocking(false);
+	}
 
 	while (serverOn)
 	{

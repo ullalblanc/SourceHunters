@@ -4,7 +4,7 @@
 #include <string>
 #include <iostream>
 
-#define MAXTIME 5000
+#define MAXTIME 10000
 
 struct Player {
 
@@ -99,6 +99,6 @@ public:
 	};
 
 	int getTime() {
-		return (int)(time - std::clock());
+		return (int)((time - std::clock())/1000);
 	};
 };
