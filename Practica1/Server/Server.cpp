@@ -61,7 +61,7 @@ int main()
 {
 	srand(time(NULL));
 	// CHOSE SEVER/CLIENT
-	sf::IpAddress ip = sf::IpAddress::IpAddress("192.168.23.87"); //sf::IpAddress::getLocalAddress();
+	sf::IpAddress ip = sf::IpAddress::IpAddress("192.168.1.10"); //sf::IpAddress::getLocalAddress();
 	std::vector<sf::TcpSocket*> sockets;
 	sf::TcpSocket* sockettmp = new sf::TcpSocket;
 	MessageManager protocol;
@@ -111,36 +111,23 @@ int main()
 	}
 	listener.close();
 	//Rebre noms dels jugadors
-	//int num = 0;
-	//while (playerChecks[0] != 1 && playerChecks[1] != 1 && playerChecks[2] != 1 && playerChecks[3] != 1) {
-		for (int i = 0; i < player.size(); i++)
-		{
-			receiver.socket = sockets[i];
-			if (receiver.ReceiveMessages()) {
-				player[i]._name = protocol.GetWord(command);
-				//playerChecks[0] = 1;
-				//num++;
-			}
+	for (int i = 0; i < player.size(); i++)
+	{
+		receiver.socket = sockets[i];
+		if (receiver.ReceiveMessages()) {
+			player[i]._name = protocol.GetWord(command);
 		}
-	//}
+	}
 
 	for (int i = 0; i < player.size(); i++)
 	{
-		//sockets[i]->setBlocking(true);
-		//sender.send = sockets[i];
 		command = protocol.CreateMessage(4, 0, player[i]._num, player[i]._name);
 		sendAll(&sender, sockets, true);
-		/*for (int j = 0; j < MAX_USERS; j++)
-		{
-			command = protocol.CreateMessage(4, 0, player[j]._num, player[j]._name);
-			sender.SendMessages();*/
-		//}
-		//sockets[i]->setBlocking(false);
 	}
 
 	// OPEN CHAT WINDOW
 	bool serverOn = true;
-	int sumScore = 3; // punt per respondre be
+	int sumScore; // punt per respondre be
 	int winner; // WARNING posiblement no faci falta
 
 	while (serverOn)

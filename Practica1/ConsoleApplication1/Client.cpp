@@ -42,7 +42,7 @@ int main()
 
 
 	// CHOSE CLIENT
-	sf::IpAddress ip = sf::IpAddress::IpAddress("192.168.23.87"); //sf::IpAddress::getLocalAddress();
+	sf::IpAddress ip = sf::IpAddress::IpAddress("192.168.1.10"); //sf::IpAddress::getLocalAddress();
 	sf::TcpSocket socket;
 	std::string textConsole = "Connected to: ";
 
