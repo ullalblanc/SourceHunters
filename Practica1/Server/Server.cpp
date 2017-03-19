@@ -180,28 +180,30 @@ int main()
 					}
 				}
 				if (playersReady(playerChecks)) { // tots han respost dins del temps
+					command = protocol.CreateMessage(2, 3, 0, ""); // s'ha acabat el temps
+					sendAll(&sender, sockets, true);
 					state = points;
-					//cleanPlayers(playerChecks);
+					cleanPlayers(playerChecks);
 				}	
 			} 
 			else { 
 				command = protocol.CreateMessage(2,3,0,""); // s'ha acabat el temps
 				sendAll(&sender, sockets, true);
 				state = points;
-				//cleanPlayers(playerChecks);
+				cleanPlayers(playerChecks);
 			}
 			break;
 		case points:
-			if (clientsReady) {
+			//if (clientsReady) {
 				for (int i = 0; i < player.size(); i++)
 				{
 					command = protocol.CreateMessage(5, player[i]._score, player[i]._num, "");
 					sendAll(&sender, sockets, true); // enviar a tots les putnuacions actualitzades
 				}
-				clientsReady = false;
-				cleanPlayers(playerChecks);
-			}
-			else {
+				//clientsReady = false;
+				//cleanPlayers(playerChecks);
+			//}
+			//else {
 				for (int i = 0; i < sockets.size(); i++)
 				{
 					if (playerChecks[i] != 1) { // si el jugador i ya ha enviado respueste, se le omite
@@ -222,7 +224,7 @@ int main()
 					}
 					if (state != win) state = send;
 				}
-			}	
+			//}	
 			//timer.Start(1000); // dejar un segundo antes de realizar la siguiente accion
 			break;
 		case win:

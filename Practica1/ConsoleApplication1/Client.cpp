@@ -20,6 +20,23 @@ enum State {
 	win // el joc sacaba
 };
 
+void cleanPlayers(int* playerChecks, int size = MAX_USERS) {
+	for (int i = 0; i < size; i++)
+	{
+		playerChecks[i] = 0;
+	}
+}
+
+bool playersReady(int* playerChecks, int size = MAX_USERS) {
+	for (int i = 0; i < size; i++)
+	{
+		if (playerChecks[i] == 0) {
+			return false;
+		}
+	}
+	return true;
+}
+
 int main()
 {
 	MessageManager protocol;
@@ -28,7 +45,7 @@ int main()
 	int questionIndex = 0;
 	Question question;
 	bool answerSent = false;
-
+	int playerChecks[MAX_USERS]; // per comprobar quins usuaris hem vist ja
 	// Image draw
 
 	sf::Texture background;
@@ -218,6 +235,16 @@ int main()
 					Resposta2.setString(question.answer[1]);
 					Resposta3.setString(question.answer[2]);
 					Resposta4.setString(question.answer[3]);
+
+					socket.setBlocking(false);
+					state = play;
+					answerSent = false; //Preparem per enviar la resposta
+					for (int i = 0; i < MAX_USERS; i++)
+					{
+						player[i]._answerCheck = false;
+					}
+					timer.Start(MAXTIME);
+					cleanPlayers(playerChecks);
 					//Resposta4.setString(questions[protocol.GetSubType(command)].answer[3]);
 				}
 				else if (protocol.GetType(command) == 2) {
@@ -225,74 +252,97 @@ int main()
 					{
 						state = win;
 					}
-				}
-				socket.setBlocking(false);
-				state = play;
-				answerSent = false; //Preparem per enviar la resposta
-				for (int i = 0; i < MAX_USERS; i++)
-				{
-					player[i]._answerCheck = false;
-				}
-				timer.Start(MAXTIME);
+				}				
 			}
 			
 			break;
 		case play:		
 			sf::Keyboard key;
-				
-			if (key.isKeyPressed(sf::Keyboard::Escape)) { // si el jugador vol tancar la comunicacio
-				command = protocol.CreateMessage(6, 0, _indexClient, ""); // enviem missatge de adios
-				sender.SendMessages(); //enviem missatge
+			if (!timer.Check()) {
+				if (key.isKeyPressed(sf::Keyboard::Escape)) { // si el jugador vol tancar la comunicacio
+					command = protocol.CreateMessage(6, 0, _indexClient, ""); // enviem missatge de adios
+					sender.SendMessages(); //enviem missatge
+					//socket.setBlocking(true);
 				}
-			if (!answerSent) {
+				if (!answerSent) {
 
-				if (key.isKeyPressed(sf::Keyboard::Num1)) {
-					command = protocol.CreateMessage(1, 0, _indexClient, ""); //enviem resposta 1
-					sender.SendMessages(); //enviem missatge
-					answerSent = true; //Resposta enviada
+					if (key.isKeyPressed(sf::Keyboard::Num1)) {
+						command = protocol.CreateMessage(1, 0, _indexClient, ""); //enviem resposta 1
+						sender.SendMessages(); //enviem missatge
+						answerSent = true; //Resposta enviada
+						//socket.setBlocking(true);
+					}
+					else if (key.isKeyPressed(sf::Keyboard::Num2)) {
+						command = protocol.CreateMessage(1, 1, _indexClient, ""); //enviem resposta 2
+						sender.SendMessages(); //enviem missatge
+						answerSent = true; //Resposta enviada
+						//socket.setBlocking(true);
+					}
+					else if (key.isKeyPressed(sf::Keyboard::Num3)) {
+						command = protocol.CreateMessage(1, 2, _indexClient, ""); //enviem resposta 3
+						sender.SendMessages(); //enviem missatge
+						answerSent = true; //Resposta enviada
+						//socket.setBlocking(true);
+					}
+					else if (key.isKeyPressed(sf::Keyboard::Num4)) {
+						command = protocol.CreateMessage(1, 3, _indexClient, ""); //enviem resposta 4
+						sender.SendMessages(); //enviem missatge
+						answerSent = true; //Resposta enviada
+						//socket.setBlocking(true);
+					}
 
 				}
-				else if (key.isKeyPressed(sf::Keyboard::Num2)) {
-					command = protocol.CreateMessage(1, 1, _indexClient, ""); //enviem resposta 2
-					sender.SendMessages(); //enviem missatge
-					answerSent = true; //Resposta enviada
+				if (receiver.ReceiveMessages()) {//Rebem missatge durant el gameplay
+					if (protocol.GetType(command) == 2) { //missatge de servidor
+						switch (protocol.GetSubType(command)) {
+						case (2)://Un jugador a sortit i acabem la partida.
+							state = win;
+							break;
+						case (3)://Han respost tots o a acabat el temps
+							//socket.setBlocking(true);
+							cleanPlayers(playerChecks);
+							state = points;
+							break;
+						case (4)://un jugador ha respost
+							player[protocol.GetPlayer(command)]._answerCheck = true;
+							break;
+						default:
+							std::cout << "Error al rebre missatge" << std::endl;
+							break;
+						}
+					}
 				}
-				else if (key.isKeyPressed(sf::Keyboard::Num3)) {
-
-					command = protocol.CreateMessage(1, 2, _indexClient, ""); //enviem resposta 3
-					sender.SendMessages(); //enviem missatge
-					answerSent = true; //Resposta enviada
-				}
-				else if (key.isKeyPressed(sf::Keyboard::Num4)) {
-					command = protocol.CreateMessage(1, 3, _indexClient, ""); //enviem resposta 4
-					sender.SendMessages(); //enviem missatge
-					answerSent = true; //Resposta enviada
-				}
-					
 			}
-			if (receiver.ReceiveMessages()) {//Rebem missatge durant el gameplay
-				if (protocol.GetType(command) == 2) { //missatge de servidor
-					switch (protocol.GetSubType(command)) {
-					case (2)://Un jugador a sortit i acabem la partida.
-						state = win;
-						break;
-					case (3)://Han respost tots o a acabat el temps
-						socket.setBlocking(true);
-						state = points;
-						break;
-					case (4)://un jugador ha respost
-						player[protocol.GetPlayer(command)]._answerCheck = true;
-						break;
-					default:
-						std::cout << "Error al rebre missatge" << std::endl;
-						break;
-					}	
-				}											 
-			}		
+			else {
+				cleanPlayers(playerChecks);
+				state = points;
+			}
 			break;
+
 		case points:
-			socket.setBlocking(true);
-			receiver.ReceiveMessages();
+
+			socket.setBlocking(false);
+			for (int i = 0; i < MAX_USERS; i++)
+			{
+				if (receiver.ReceiveMessages()) {
+					if (playerChecks[protocol.GetPlayer(command)] == 0) {
+						player[protocol.GetPlayer(command)]._score = protocol.GetSubType(command);
+						playerChecks[protocol.GetPlayer(command)] = 1;
+					}
+				}
+			}
+			if (playersReady(playerChecks)) {
+				command = protocol.CreateMessage(4, 0, _indexClient, "");
+
+				Jugador1Score.setString(std::to_string(player[0]._score));
+				Jugador2Score.setString(std::to_string(player[1]._score));
+				Jugador3Score.setString(std::to_string(player[2]._score));
+				Jugador4Score.setString(std::to_string(player[3]._score));
+
+				state = send;
+			}
+
+			/*receiver.ReceiveMessages();
 			player[protocol.GetPlayer(command)]._score = protocol.GetSubType(command);
 			Jugador1Score.setString(std::to_string(player[protocol.GetPlayer(command)]._score));
 
@@ -304,14 +354,9 @@ int main()
 			player[protocol.GetPlayer(command)]._score = protocol.GetSubType(command);
 			Jugador3Score.setString(std::to_string(player[protocol.GetPlayer(command)]._score));
 
-			if (receiver.ReceiveMessages()) {
-				player[protocol.GetPlayer(command)]._score = protocol.GetSubType(command);
-				Jugador4Score.setString(std::to_string(player[protocol.GetPlayer(command)]._score));
-
-				command = protocol.CreateMessage(4, 0, _indexClient, "");
-
-				state = send;
-			}		
+			receiver.ReceiveMessages();
+			player[protocol.GetPlayer(command)]._score = protocol.GetSubType(command);
+			Jugador4Score.setString(std::to_string(player[protocol.GetPlayer(command)]._score));*/			
 			break;
 		case win:
 			int index = 0;
