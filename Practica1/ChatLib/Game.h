@@ -93,6 +93,10 @@ public:
 		time = std::clock() + maxtime;
 	};
 
+	void Stop() {
+		time = 0;
+	};
+
 	bool Check() {
 		if (time < std::clock()) return true; //Torna True al Acabar
 		else return false;
@@ -101,4 +105,6 @@ public:
 	int getTime() {
 		return (int)((time - std::clock())/1000);
 	};
+
+	
 };

@@ -245,12 +245,16 @@ int main()
 					}
 					timer.Start(MAXTIME);
 					cleanPlayers(playerChecks);
+					//command = 
 					//Resposta4.setString(questions[protocol.GetSubType(command)].answer[3]);
 				}
 				else if (protocol.GetType(command) == 2) {
-					if (protocol.GetSubType(command) == 2)
+					if (protocol.GetSubType(command) == 5)
 					{
-						state = win;
+						if (protocol.GetPlayer(command) == 9)
+						{
+							state = win;
+						}
 					}
 				}				
 			}
@@ -297,10 +301,12 @@ int main()
 						switch (protocol.GetSubType(command)) {
 						case (2)://Un jugador a sortit i acabem la partida.
 							state = win;
+							timer.Stop();
 							break;
 						case (3)://Han respost tots o a acabat el temps
 							//socket.setBlocking(true);
 							cleanPlayers(playerChecks);
+							timer.Stop();
 							state = points;
 							break;
 						case (4)://un jugador ha respost
@@ -316,12 +322,13 @@ int main()
 			else {
 				cleanPlayers(playerChecks);
 				state = points;
+				timer.Stop();
 			}
 			break;
 
 		case points:
-
-			socket.setBlocking(false);
+			socket.setBlocking(true);
+			answerSent = false; //Preparem per enviar la resposta
 			for (int i = 0; i < MAX_USERS; i++)
 			{
 				if (receiver.ReceiveMessages()) {
@@ -333,30 +340,13 @@ int main()
 			}
 			if (playersReady(playerChecks)) {
 				command = protocol.CreateMessage(4, 0, _indexClient, "");
-
+				sender.SendMessages();
 				Jugador1Score.setString(std::to_string(player[0]._score));
 				Jugador2Score.setString(std::to_string(player[1]._score));
 				Jugador3Score.setString(std::to_string(player[2]._score));
 				Jugador4Score.setString(std::to_string(player[3]._score));
-
 				state = send;
 			}
-
-			/*receiver.ReceiveMessages();
-			player[protocol.GetPlayer(command)]._score = protocol.GetSubType(command);
-			Jugador1Score.setString(std::to_string(player[protocol.GetPlayer(command)]._score));
-
-			receiver.ReceiveMessages();
-			player[protocol.GetPlayer(command)]._score = protocol.GetSubType(command);
-			Jugador2Score.setString(std::to_string(player[protocol.GetPlayer(command)]._score));
-
-			receiver.ReceiveMessages();
-			player[protocol.GetPlayer(command)]._score = protocol.GetSubType(command);
-			Jugador3Score.setString(std::to_string(player[protocol.GetPlayer(command)]._score));
-
-			receiver.ReceiveMessages();
-			player[protocol.GetPlayer(command)]._score = protocol.GetSubType(command);
-			Jugador4Score.setString(std::to_string(player[protocol.GetPlayer(command)]._score));*/			
 			break;
 		case win:
 			int index = 0;
@@ -367,16 +357,10 @@ int main()
 				}
 			}
 			Pregunta.setString("El jugador: "+player[index]._name+"\n ha guanyat la partida");
-			break; 
+			//sf::Keyboard keyEsc;
+			if (key.isKeyPressed(sf::Keyboard::Escape)) window.close();
+			break;
 		}
-
-	
-	
-	
-
-	//	std::string mensaje_ = player._word + "_";
-		//Text.setString(mensaje_);
-
 		/////////////////// PINTAT
 		///Fons
 		window.draw(sprite);
@@ -405,11 +389,14 @@ int main()
 		window.draw(Jugador3Score);
 		window.draw(Jugador4Score);
 		//Actualitzem temps
-		if (!timer.Check())
+		if (!timer.Check()) {
 			Temps.setString(std::to_string(timer.getTime()));
-		else
-			Temps.setString("0");
-		window.draw(Temps);
+			window.draw(Temps);
+		}
+			
+		//else
+		//	Temps.setString("0");
+		
 		
 		window.display();
 		window.clear();

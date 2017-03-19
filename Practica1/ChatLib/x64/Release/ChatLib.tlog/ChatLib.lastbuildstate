@@ -1,6 +1,2 @@
 #TargetFrameworkVersion=v4.0:PlatformToolSet=v140:EnableManagedIncrementalBuild=false:VCToolArchitecture=Native32Bit:WindowsTargetPlatformVersion=8.1
-<<<<<<< HEAD
-Release|x64|C:\Users\Usuario\Desktop\Practica1\|
-=======
-Release|x64|E:\Users\Dani\Documents\ENTI\3er\Programacio de Jocs en xarxa\SourceHunters\Practica1\|
->>>>>>> origin/master
+Release|x64|E:\SourceHunters\SourceHunters\Practica1\|

@@ -68,7 +68,7 @@ int main()
 	Timer timer;
 
 	//std::vector<Question> questions = initQuestions();
-	int questionIndex = -1;
+	int questionIndex = 0;
 	Question question = initQuestion(questionIndex);
 	
 	// Crear players per guardar la info
@@ -143,7 +143,6 @@ int main()
 		switch (state) {
 		case send:
 			//if (timer.Check()) {
-				questionIndex++;
 				if (questionIndex >= 3) {
 					state = win;
 				}
@@ -175,6 +174,7 @@ int main()
 							}
 							else if (protocol.GetType(command) == 6) { // si rep que el client es vol desconectar
 								state = win; // decidim qui es el guanyador i acabem la partida.
+								timer.Stop();
 							}
 						}
 					}
@@ -183,6 +183,7 @@ int main()
 					command = protocol.CreateMessage(2, 3, 0, ""); // s'ha acabat el temps
 					sendAll(&sender, sockets, true);
 					state = points;
+					timer.Stop();
 					cleanPlayers(playerChecks);
 				}	
 			} 
@@ -190,15 +191,15 @@ int main()
 				command = protocol.CreateMessage(2,3,0,""); // s'ha acabat el temps
 				sendAll(&sender, sockets, true);
 				state = points;
+				timer.Stop();
 				cleanPlayers(playerChecks);
 			}
 			break;
 		case points:
-			//if (clientsReady) {
 				for (int i = 0; i < player.size(); i++)
 				{
 					command = protocol.CreateMessage(5, player[i]._score, player[i]._num, "");
-					sendAll(&sender, sockets, true); // enviar a tots les putnuacions actualitzades
+					sendAll(&sender, sockets); // enviar a tots les putnuacions actualitzades
 				}
 				//clientsReady = false;
 				//cleanPlayers(playerChecks);
@@ -218,18 +219,18 @@ int main()
 				if (playersReady(playerChecks, player.size())) { // si tots han rebut be les puntuacions
 					for (int i = 0; i < player.size(); i++)
 					{
-						if (player[i]._score > 10) {
+						/*if (player[i]._score > 10) {
 							state = win;
-						}
+						}*/
 					}
-					if (state != win) state = send;
+					if (state != win) {
+						state = send;
+						questionIndex++;
+					}
 				}
-			//}	
-			//timer.Start(1000); // dejar un segundo antes de realizar la siguiente accion
 			break;
 		case win:
-			//if (timer.Check()) {
-				command = protocol.CreateMessage(2, 2, 0, ""); // enviem que s'acaba la partida, el client s'encarrega de mostrar el guanyador i tencar la comunicacio per la seva part
+				command = protocol.CreateMessage(2, 5, 9, ""); // enviem que s'acaba la partida, el client s'encarrega de mostrar el guanyador i tencar la comunicacio per la seva part
 				sendAll(&sender, sockets, true);
 				for (int i = 0; i < sockets.size(); i++)
 				{
@@ -237,7 +238,6 @@ int main()
 					delete sockets[i];
 				}
 				serverOn = false;
-			//}
 			break;
 		}
 	}	
