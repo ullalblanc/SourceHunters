@@ -5,4 +5,4 @@ sfml-window.lib(sfml-window-2.dll) : warning LNK4006: __NULL_IMPORT_DESCRIPTOR a
 sfml-system.lib(sfml-system-2.dll) : warning LNK4006: __NULL_IMPORT_DESCRIPTOR already defined in sfml-graphics.lib(sfml-graphics-2.dll); second definition ignored
 sfml-network.lib(sfml-network-2.dll) : warning LNK4006: __NULL_IMPORT_DESCRIPTOR already defined in sfml-graphics.lib(sfml-graphics-2.dll); second definition ignored
 ws2_32.lib(WS2_32.dll) : warning LNK4006: __NULL_IMPORT_DESCRIPTOR already defined in sfml-graphics.lib(sfml-graphics-2.dll); second definition ignored
-  ChatLib.vcxproj -> C:\Users\Usuario\Desktop\Nueva carpeta\Practica1x2p\x64\Release\ChatLib.lib
+  ChatLib.vcxproj -> E:\SourceHunters\SourceHunters\Practica1x2p\x64\Release\ChatLib.lib
