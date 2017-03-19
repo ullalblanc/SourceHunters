@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 ﻿  MessageManager.cpp
   Receive.cpp
   Send.cpp
@@ -6,3 +7,6 @@ sfml-system.lib(sfml-system-2.dll) : warning LNK4006: __NULL_IMPORT_DESCRIPTOR a
 sfml-network.lib(sfml-network-2.dll) : warning LNK4006: __NULL_IMPORT_DESCRIPTOR already defined in sfml-graphics.lib(sfml-graphics-2.dll); second definition ignored
 ws2_32.lib(WS2_32.dll) : warning LNK4006: __NULL_IMPORT_DESCRIPTOR already defined in sfml-graphics.lib(sfml-graphics-2.dll); second definition ignored
   ChatLib.vcxproj -> C:\Users\Usuario\Desktop\Practica1\x64\Release\ChatLib.lib
+=======
+﻿  ChatLib.vcxproj -> E:\Users\Dani\Documents\ENTI\3er\Programacio de Jocs en xarxa\SourceHunters\Practica1\x64\Release\ChatLib.lib
+>>>>>>> origin/master
