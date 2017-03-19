@@ -66,7 +66,7 @@ int main()
 	State state = send;
 
 	sf::Font font;
-	if (!font.loadFromFile("courbd.ttf"))
+	if (!font.loadFromFile("cour.ttf"))
 	{
 		std::cout << "Can't load the font file" << std::endl;
 	}
@@ -77,72 +77,72 @@ int main()
 
 	//Preparem els textos a la posició que els correspont
 	sf::Text Pregunta("%%Con qué dos colores suele \n tener problemas un daltónico?", font, 30);
-	Pregunta.setFillColor(sf::Color(0, 0, 0));
+	Pregunta.setFillColor(sf::Color(255, 255, 255));
 	Pregunta.setStyle(sf::Text::Bold);
 	Pregunta.setPosition(60, 120);
 
 	sf::Text Resposta1("Resposta1", font, 22);
-	Resposta1.setFillColor(sf::Color(0, 0, 0));
+	Resposta1.setFillColor(sf::Color(255, 255, 255));
 	Resposta1.setStyle(sf::Text::Bold);
 	Resposta1.setPosition(50, 360);
 
 	sf::Text Resposta2("Resposta2", font, 22);
-	Resposta2.setFillColor(sf::Color(0, 0, 0));
+	Resposta2.setFillColor(sf::Color(255, 255, 255));
 	Resposta2.setStyle(sf::Text::Bold);
 	Resposta2.setPosition(380, 360);
 
 	sf::Text Resposta3("Verde y amarillo", font, 22);
-	Resposta3.setFillColor(sf::Color(0, 0, 0));
+	Resposta3.setFillColor(sf::Color(255, 255, 255));
 	Resposta3.setStyle(sf::Text::Bold);
 	Resposta3.setPosition(50, 440);
 
 	sf::Text Resposta4("Resposta4", font, 22);
-	Resposta4.setFillColor(sf::Color(0, 0, 0));
+	Resposta4.setFillColor(sf::Color(255, 255, 255));
 	Resposta4.setStyle(sf::Text::Bold);
 	Resposta4.setPosition(380, 440);
 
 	sf::Text Jugador1("Jugador 1", font, 20);
-	Jugador1.setFillColor(sf::Color(0, 0, 0));
+	Jugador1.setFillColor(sf::Color(255, 255, 255));
 	Jugador1.setStyle(sf::Text::Bold);
 	Jugador1.setPosition(760, 120);
 
 	sf::Text Jugador2("Jugador 2", font, 20);
-	Jugador2.setFillColor(sf::Color(0, 0, 0));
+	Jugador2.setFillColor(sf::Color(255, 255, 255));
 	Jugador2.setStyle(sf::Text::Bold);
 	Jugador2.setPosition(760, 240);
 
 	sf::Text Jugador3("Jugador 3", font, 20);
-	Jugador3.setFillColor(sf::Color(0, 0, 0));
+	Jugador3.setFillColor(sf::Color(255, 255, 255));
 	Jugador3.setStyle(sf::Text::Bold);
 	Jugador3.setPosition(760, 365);
 
 	sf::Text Jugador4("Jugador 4", font, 20);
-	Jugador4.setFillColor(sf::Color(0, 0, 0));
+	Jugador4.setFillColor(sf::Color(255, 255, 255));
 	Jugador4.setStyle(sf::Text::Bold);
 	Jugador4.setPosition(760, 483);
 
 	sf::Text Jugador1Score(std::to_string(player[0]._score), font, 25);
-	Jugador1Score.setFillColor(sf::Color(0, 0, 0));
+	Jugador1Score.setFillColor(sf::Color(255, 255, 255));
 	Jugador1Score.setStyle(sf::Text::Bold);
 	Jugador1Score.setPosition(865, 60);
 
 	sf::Text Jugador2Score(std::to_string(player[1]._score), font, 25);
-	Jugador2Score.setFillColor(sf::Color(0, 0, 0));
+	Jugador2Score.setFillColor(sf::Color(255, 255, 255));
 	Jugador2Score.setStyle(sf::Text::Bold);
 	Jugador2Score.setPosition(865, 185);
 
 	sf::Text Jugador3Score(std::to_string(player[2]._score), font, 25);
-	Jugador3Score.setFillColor(sf::Color(0, 0, 0));
+	Jugador3Score.setFillColor(sf::Color(255, 255, 255));
 	Jugador3Score.setStyle(sf::Text::Bold);
 	Jugador3Score.setPosition(865, 305);
 
 	sf::Text Jugador4Score(std::to_string(player[3]._score), font, 25);
-	Jugador4Score.setFillColor(sf::Color(0, 0, 0));
+	Jugador4Score.setFillColor(sf::Color(255, 255, 255));
 	Jugador4Score.setStyle(sf::Text::Bold);
 	Jugador4Score.setPosition(865, 427);
 
 	sf::Text Temps(std::to_string(10), font, 50);
-	Temps.setFillColor(sf::Color(0, 0, 0));
+	Temps.setFillColor(sf::Color(255, 255, 255));
 	Temps.setStyle(sf::Text::Bold);
 	Temps.setPosition(30, 30);
 
