@@ -19,7 +19,7 @@
 // 2_3_0_Fuera de Tiempo. // Mensaje_Log_Jugador_vacio // s'acaba el temps per respondre
 // 2_4_0_vacio // Mensaje_check_jugador_vacio // un jugador ha respos
 // 3_N_0_vacio // NuevaPpregunta_index_null_null // el server envia index de pregunta nova
-// 4_1_0_Manolo // Jugadores_IndiceJugador_0_Nombre // per enviar nom y index de jugadors
+// 4_1_0_Manolo // Jugadores_IndiceJugador_0_Nombre // per enviar nom y index de jugadors// en state points sirve para notificar al server que ha recibido todas las puntuaciones y esta listo para la siguiente pregunta
 // 5_N_0_vacio // Puntuaciones_Puntuacion_Jugador_null // per enviar puntuacions actualitzades
 // 6_0_0_vacio // desconexion_null_jugador_null // para desconectar un cliente. tambien se usa para acabar la partida
 
@@ -128,7 +128,7 @@ int main()
 	// OPEN CHAT WINDOW
 	bool serverOn = true;
 	int sumScore; // punt per respondre be
-	int winner; // WARNING posiblement no faci falta
+	bool clientsReady = true; // per saber si els jugadors estan llestos per la següent pregunta
 	for (int i = 0; i < sockets.size(); i++)
 	{
 		sockets[i]->setBlocking(false);
@@ -152,7 +152,6 @@ int main()
 					command = protocol.CreateMessage(3, questionIndex, 0, ""); // crear misatge amb index de la pregunta random
 					sendAll(&sender, sockets, true); // enviar a tots els jugadors el command amb el index de la pregunta random
 					sumScore = 3;
-					cleanPlayers(playerChecks);
 					state = play;
 					timer.Start(MAXTIME); // començar timer
 				}				
@@ -182,28 +181,48 @@ int main()
 				}
 				if (playersReady(playerChecks)) { // tots han respost dins del temps
 					state = points;
+					//cleanPlayers(playerChecks);
 				}	
 			} 
 			else { 
 				command = protocol.CreateMessage(2,3,0,""); // s'ha acabat el temps
 				sendAll(&sender, sockets, true);
 				state = points;
+				//cleanPlayers(playerChecks);
 			}
 			break;
 		case points:
-			for (int i = 0; i < player.size(); i++)
-			{
-				command = protocol.CreateMessage(5, player[i]._score, player[i]._num, "");
-				sendAll(&sender, sockets, true); // enviar a tots les putnuacions actualitzades
-			}
-			for (int i = 0; i < player.size(); i++)
-			{
-				if (player[i]._score > 10) {
-					state = win;
-					winner = i;
+			if (clientsReady) {
+				for (int i = 0; i < player.size(); i++)
+				{
+					command = protocol.CreateMessage(5, player[i]._score, player[i]._num, "");
+					sendAll(&sender, sockets, true); // enviar a tots les putnuacions actualitzades
 				}
+				clientsReady = false;
+				cleanPlayers(playerChecks);
 			}
-			if (state != win) state = send;
+			else {
+				for (int i = 0; i < sockets.size(); i++)
+				{
+					if (playerChecks[i] != 1) { // si el jugador i ya ha enviado respueste, se le omite
+						receiver.socket = sockets[i];
+						if (receiver.ReceiveMessages()) { // si rep misatge
+							if (protocol.GetType(command) == 4) { // si rep resposta e jugador
+								playerChecks[i] = 1; // per saber que ha rebut be les puntuacions
+							}
+						}
+					}
+				}
+				if (playersReady(playerChecks, player.size())) { // si tots han rebut be les puntuacions
+					for (int i = 0; i < player.size(); i++)
+					{
+						if (player[i]._score > 10) {
+							state = win;
+						}
+					}
+					if (state != win) state = send;
+				}
+			}	
 			//timer.Start(1000); // dejar un segundo antes de realizar la siguiente accion
 			break;
 		case win:
