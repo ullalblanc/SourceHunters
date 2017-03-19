@@ -1,0 +1,16 @@
+﻿C:\Program Files (x86)\MSBuild\Microsoft.Cpp\v4.0\V140\Microsoft.CppBuild.targets(392,5): warning MSB8028: The intermediate directory (x64\Release\) contains files shared from another project (ConsoleApplication1.vcxproj, Taller1.vcxproj, Taller2.vcxproj).  This can lead to incorrect clean and rebuild behavior.
+  Client.cpp
+C:\Users\Usuario\Desktop\Nueva carpeta\Practica1x2p\ChatLib\Game.h(93): warning C4244: '=': conversion from 'float' to 'clock_t', possible loss of data
+Client.cpp(378): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
+Client.cpp(224): warning C4101: 'evento': unreferenced local variable
+Client.cpp(264): warning C4101: 'key': unreferenced local variable
+  Generating code
+  1 of 343 functions ( 0.3%) were compiled, the rest were copied from previous compilation.
+    0 functions were new in current compilation
+    0 functions had inline decision re-evaluated but remain unchanged
+  Finished generating code
+ChatLib.lib(MessageManager.obj) : warning LNK4099: PDB 'ChatLib.pdb' was not found with 'ChatLib.lib(MessageManager.obj)' or at 'C:\Users\Usuario\Desktop\Nueva carpeta\Practica1x2p\x64\Release\ChatLib.pdb'; linking object as if no debug info
+ChatLib.lib(Send.obj) : warning LNK4099: PDB 'ChatLib.pdb' was not found with 'ChatLib.lib(Send.obj)' or at 'C:\Users\Usuario\Desktop\Nueva carpeta\Practica1x2p\x64\Release\ChatLib.pdb'; linking object as if no debug info
+ChatLib.lib(Receive.obj) : warning LNK4099: PDB 'ChatLib.pdb' was not found with 'ChatLib.lib(Receive.obj)' or at 'C:\Users\Usuario\Desktop\Nueva carpeta\Practica1x2p\x64\Release\ChatLib.pdb'; linking object as if no debug info
+  ConsoleApplication1.vcxproj -> C:\Users\Usuario\Desktop\Nueva carpeta\Practica1x2p\x64\Release\Client.exe
+  ConsoleApplication1.vcxproj -> C:\Users\Usuario\Desktop\Nueva carpeta\Practica1x2p\x64\Release\Client.pdb (Full PDB)

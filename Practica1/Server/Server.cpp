@@ -219,9 +219,9 @@ int main()
 				if (playersReady(playerChecks, player.size())) { // si tots han rebut be les puntuacions
 					for (int i = 0; i < player.size(); i++)
 					{
-						/*if (player[i]._score > 10) {
+						if (player[i]._score > 10) {
 							state = win;
-						}*/
+						}
 					}
 					if (state != win) {
 						state = send;

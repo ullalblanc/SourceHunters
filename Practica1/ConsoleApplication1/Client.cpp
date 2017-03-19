@@ -245,8 +245,8 @@ int main()
 					}
 					timer.Start(MAXTIME);
 					cleanPlayers(playerChecks);
-					//command = 
-					//Resposta4.setString(questions[protocol.GetSubType(command)].answer[3]);
+					//command = protocol.CreateMessage(4, 0, 0, "");
+					//sender.SendMessages();
 				}
 				else if (protocol.GetType(command) == 2) {
 					if (protocol.GetSubType(command) == 5)
