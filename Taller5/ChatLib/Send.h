@@ -12,6 +12,6 @@ public:
 
 	void SendMessages();
 
-	sf::TcpSocket *send;
+	sf::UdpSocket *socket;
 	std::string *command;
 };

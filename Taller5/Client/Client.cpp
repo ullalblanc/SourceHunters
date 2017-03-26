@@ -1,5 +1,5 @@
-#include <SFML\Graphics.hpp>
-#include <SFML\Network.hpp>
+//#include <SFML\Graphics.hpp>
+//#include <SFML\Network.hpp>
 #include <string>
 #include <cstring>
 #include <iostream>
@@ -63,7 +63,7 @@ int main()
 	std::vector<Player> player(MAX_USERS);
 	for (int i = 0; i < MAX_USERS; i++)
 	{
-		player[i]._num = i;
+		player[i].id = i;
 	}
 
 	State state = send;
@@ -114,16 +114,6 @@ int main()
 	Jugador2.setStyle(sf::Text::Bold);
 	Jugador2.setPosition(760, 240);
 
-	/*sf::Text Jugador1Score(std::to_string(player[0]._score), font, 25);
-	Jugador1Score.setFillColor(sf::Color(255, 255, 255));
-	Jugador1Score.setStyle(sf::Text::Bold);
-	Jugador1Score.setPosition(865, 60);*/
-
-	//sf::Text Jugador2Score(std::to_string(player[1]._score), font, 25);
-	//Jugador2Score.setFillColor(sf::Color(255, 255, 255));
-	//Jugador2Score.setStyle(sf::Text::Bold);
-	//Jugador2Score.setPosition(865, 185);
-
 	sf::Text Temps(std::to_string(10), font, 50);
 	Temps.setFillColor(sf::Color(255, 255, 255));
 	Temps.setStyle(sf::Text::Bold);
@@ -154,19 +144,7 @@ int main()
 	command = protocol.CreateMessage(4,0,0,name);
 	sender.SendMessages();
 
-	receiver.ReceiveMessages(); //Rebem el primer nom
-	//if (name == protocol.GetWord(command)) {
-	//	_indexClient = protocol.GetPlayer(command);
-	//}
-	//player[protocol.GetPlayer(command)]._name = protocol.GetWord(command);
-	//Jugador1.setString(protocol.GetWord(command));
-
-	//receiver.ReceiveMessages(); //Rebem el segon nom
-	//if (name == protocol.GetWord(command)) {
-	//	_indexClient = protocol.GetPlayer(command);
-	//}
-	//player[protocol.GetPlayer(command)]._name = protocol.GetWord(command);
-	//Jugador2.setString(protocol.GetWord(command));
+	receiver.ReceiveMessages();
 
 	while (window.isOpen())
 	{
@@ -192,8 +170,6 @@ int main()
 		window.draw(Resposta4);
 		window.draw(Jugador1);
 		window.draw(Jugador2);
-		//window.draw(Jugador1Score);
-		//window.draw(Jugador2Score);
 
 		//Actualitzem temps
 		if (!timer.Check()) {

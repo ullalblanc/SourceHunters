@@ -1,14 +1,10 @@
-#include <SFML\Graphics.hpp>
-#include <SFML\Network.hpp>
+//#include <SFML\Graphics.hpp>
+//#include <SFML\Network.hpp>
 #include <string>
 #include <cstring>
 #include <vector>
-#include <time.h>
 
 #include "Game.h"
-
-#define MAX_MENSAJES 30
-#define MAX_USERS 2
 
 // 1_N_1_vacio // Respuesta_index_Jugador_vacio // client envia respota
 // 2_1_0_vacio // Estado_Start_null_null******************** // comença partida
@@ -45,10 +41,10 @@ bool playersReady(int* playerChecks, int size = MAX_USERS) {
 }
 
 void sendAll(Send* sender, std::vector<sf::TcpSocket*> sockets, bool block = false) { // per misatges iguals que s'envien a tots el jugadors
-	for (int i = 0; i < sockets.size(); i++)                           // podriam ficar un bool de parametre si volem que es faci blocking
+	for (int i = 0; i < sockets.size(); i++)								
 	{
 		if (block) sockets[i]->setBlocking(true);
-		sender->send = sockets[i];
+		sender->socket = sockets[i];
 		sender->SendMessages();
 		if (block) sockets[i]->setBlocking(false);
 	}
@@ -56,91 +52,65 @@ void sendAll(Send* sender, std::vector<sf::TcpSocket*> sockets, bool block = fal
 
 int main()
 {
-	// CHOSE SEVER/CLIENT
-	sf::IpAddress ip = sf::IpAddress::IpAddress("192.168.1.10"); //sf::IpAddress::getLocalAddress();
-	std::vector<sf::TcpSocket*> sockets;
-	sf::TcpSocket* sockettmp = new sf::TcpSocket;
-	MessageManager protocol;
-	Timer timer;
-	State state = send;
+	//-- UDP --//
 
-	// Crear players per guardar la info
-	std::vector<Player> player(MAX_USERS);
-	for (int i = 0; i < player.size(); i++)
-	{
-		player[i]._num = i;
-	}
-	int playerChecks[MAX_USERS]; // per comprobar quins usuaris hem vist ja
-	cleanPlayers(playerChecks);
-	std::string textConsole = "Connected to: ";
+	sf::IpAddress ip = sf::IpAddress::IpAddress("127.0.0.1");	// sf::IpAddress::getLocalAddress();
+	sf::UdpSocket socket;										// El socket del servidor
+	std::queue<sf::IpAddress> ipQueue;							// On es guarden les ips no asignades dels nous jugadors
+	std::queue<unsigned short> portQueue;						// On es guarden els ports no asigntas dels nous jugadors
+	std::queue<std::string> clientCommands;						// Misatges dels jugadors per anar executant
+	sf::Mutex mutex;											// Per evitar varis accesos a les cues
+	std::string command;										// el misatge que envia als clients
+	Send sender;												// Sender per enviar misatges
+	Receive receiver;											// Receiver per rebre constanment misatges
+	sf::Thread thread(&Receive::ReceiveMessages, &receiver);	// Thread per el receiver
 
-	std::cout << "Server";
-	std::string command; // el misatge que rep per saber que fer
-	Send sender;
-	sender.command = &command;
-	Receive receiver;
-	receiver.command = &command;
-	
-	sf::TcpListener listener;
-	// Escuchamos por el puerto 50000
-	if (listener.listen(5000) != sf::Socket::Done) {
-		std::cout << "No et pots vincular al port 50000" << std::endl;
+	sf::Socket::Status status = socket.bind(5000);				// Bind al port 5000
+	if (status != sf::Socket::Done) {
+		std::cout << "Error al intent de bind" << std::endl;
 		return -1;
 	}
-	//Accept per els dos jugadors
+	socket.setBlocking(false);									// Fiquem socketa non Blocking
 
-	for (int i = 0; i < player.size(); i++)
-	{
-		if (listener.accept(*sockettmp) != sf::Socket::Done) {
-			std::cout << "Error al acceptar conexió" << std::endl;
-			return -1;
-		}
-		std::cout << "\n New user" << std::endl;
-		//sockettmp->setBlocking(false);
-		sockets.push_back(sockettmp);
-		sockettmp = new sf::TcpSocket;
-	}
-	listener.close();
-	//Rebre noms dels jugadors
-	for (int i = 0; i < player.size(); i++)
-	{
-		receiver.socket = sockets[i];
-		if (receiver.ReceiveMessages()) {
-			//player[i]._name = protocol.GetWord(command);
-		}
-	}
+	sender.command = &command;
+	sender.socket = &socket;
 
-	for (int i = 0; i < player.size(); i++)
-	{
-		command = protocol.CreateMessage(4, 0, player[i]._num, player[i]._name);
-		sendAll(&sender, sockets, true);
-	}
+	receiver.commands = &clientCommands;
+	receiver.socket = &socket;
+	receiver.ipQueue = &ipQueue;
+	receiver.portQueue = &portQueue;
+	receiver.mutex = &mutex;
 
-	// OPEN CHAT WINDOW
-	bool serverOn = true;
-	int sumScore; // punt per respondre be
-	bool clientsReady = true; // per saber si els jugadors estan llestos per la següent pregunta
-	for (int i = 0; i < sockets.size(); i++)
-	{
-		sockets[i]->setBlocking(false);
-	}
+	//-- SERVER --//
 
-	while (serverOn)
+	MessageManager protocol;
+	Timer timer;
+	State state = play;
+	std::vector<Player> player;	// Vector de jugadors
+	Player playertmp;
+
+	//-- GAME --//
+
+	bool gameOn = true;
+	thread.launch();
+
+	std::cout << "Server";
+	std::cout << "\n New user" << std::endl;
+
+	while (gameOn)
 	{
 		sf::Keyboard key;
 		if (key.isKeyPressed(sf::Keyboard::BackSpace)) { // si el server vol tancar la comunicacio
 			state = win;
 		}
+
 		switch (state) {
-		case send:
-			break;
 		case play:
-			break;
-		case points:
-			break;
-		case win:
+			// TODO: switch que agafi el misatge de la cua i faci el que toqui. Tindriem que mirar primer el protocol
 			break;
 		}
-	}	
+	}
+	receiver.stopReceive = false;
+	thread.terminate();
 	return 0;
 }

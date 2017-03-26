@@ -12,9 +12,11 @@
 
 struct Player {
 
-	int _num;
+	int id;
 	int x;
 	int y;
+	sf::IpAddress ip;
+	unsigned short port;
 
 };
 
@@ -37,9 +39,7 @@ public:
 		else return false;
 	};
 
-	int getTime() {
+	int GetTime() {
 		return (int)((time - std::clock())/1000);
 	};
-
-	
 };
