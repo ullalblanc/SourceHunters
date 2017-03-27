@@ -8,15 +8,10 @@ Send::~Send()
 {
 }
 
-void Send::SendMessages()
+void Send::SendMessages(sf::IpAddress ip, unsigned short port)
 {
-	size_t sent;
 	sf::Socket::Status status;
-	do {
-		status = send->send(command->c_str(), command->size(), sent);
-		if (status == sf::Socket::Partial)
-		{
-			command->erase(0, sent);
-		}
-	} while (status != sf::Socket::Done);
+	//do {
+		status = socket->send(command->c_str(), command->size(), ip, port);
+	//} while (status != sf::Socket::Done);
 }

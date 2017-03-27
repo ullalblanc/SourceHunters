@@ -87,7 +87,7 @@ int main()
 	Timer timer;
 	State state = play;
 	std::vector<Player> player;	// Vector de jugadors
-	Player playertmp;
+	Player playertmp;			
 
 	//-- GAME --//
 

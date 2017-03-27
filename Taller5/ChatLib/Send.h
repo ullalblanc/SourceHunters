@@ -10,7 +10,7 @@ public:
 	Send();
 	~Send();
 
-	void SendMessages();
+	void SendMessages(sf::IpAddress ip, unsigned short port);
 
 	sf::UdpSocket *socket;
 	std::string *command;
