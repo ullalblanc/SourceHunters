@@ -1,0 +1,4 @@
+﻿  Client.cpp
+E:\SourceHunters\SourceHunters\Taller5\ChatLib\Game.h(30): warning C4244: '=': conversion from 'float' to 'clock_t', possible loss of data
+Client.obj : error LNK2001: unresolved external symbol "public: void __cdecl Receive::ReceiveMessages(void)" (?ReceiveMessages@Receive@@QEAAXXZ)
+E:\SourceHunters\SourceHunters\Taller5\x64\Release\Client.exe : fatal error LNK1120: 1 unresolved externals

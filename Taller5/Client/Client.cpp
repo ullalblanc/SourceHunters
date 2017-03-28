@@ -16,23 +16,6 @@ enum State {
 	win			// el joc sacaba
 };
 
-void cleanPlayers(int* playerChecks, int size = MAX_USERS) {
-	for (int i = 0; i < size; i++)
-	{
-		playerChecks[i] = 0;
-	}
-}
-
-bool playersReady(int* playerChecks, int size = MAX_USERS) {
-	for (int i = 0; i < size; i++)
-	{
-		if (playerChecks[i] == 0) {
-			return false;
-		}
-	}
-	return true;
-}
-
 int main()
 {
 	//-- UDP --//
@@ -47,6 +30,9 @@ int main()
 	Send sender;												// Sender per enviar misatges
 	Receive receiver;											// Receiver per rebre constanment misatges
 	sf::Thread thread(&Receive::ReceiveMessages, &receiver);	// Thread per el receiver
+
+	ipQueue.push(ip);		// IP del servidor
+	portQueue.push(5000);	// Port del servidor
 
 	sender.command = &command;
 	sender.socket = &socket;
@@ -69,7 +55,7 @@ int main()
 	//-- CLIENT --//
 
 	MessageManager protocol;	// Per llegir els segons el protocol
-	Timer timer;			
+	Timer timerConnect;			// timer per intentar conectarse a servidor	
 	State state = connect;		// Comencem en connect per que es conecti al server
 	std::vector<Player> player;	// Vector de jugadors
 	Player playertmp;			// Amb el tmp es guardara a ell mateix i als altres en el vector player
@@ -90,15 +76,28 @@ int main()
 		std::cout << "Can't load the font file" << std::endl;
 	}
 
-	sf::Vector2i screenDimensions(918, 516);										// Dimensions pantalles
-	sf::RenderWindow window;														// Creem la finestra del joc
-	window.create(sf::VideoMode(screenDimensions.x, screenDimensions.y), "Buzz");	// Obrim la finestra del joc
-	thread.launch();																// Comencem thread receive
+	sf::Vector2i screenDimensions(918, 516);											// Dimensions pantalles
+	sf::RenderWindow window;															// Creem la finestra del joc
+	window.create(sf::VideoMode(screenDimensions.x, screenDimensions.y), "Taller5");	// Obrim la finestra del joc
+	thread.launch();																	// Comencem thread receive
 
 	while (window.isOpen())
 	{
 		switch (state) {
 		case connect:
+			if (timerConnect.Check()) {
+				command = protocol.CreateMessage(1, 0, 0, "");
+				sender.SendMessages(ipQueue.front(), portQueue.front());
+				timerConnect.Start(2000);
+			}
+			if (!serverCommands.empty()) {
+				switch (protocol.GetType(serverCommands.front())) {
+				case 1:
+					
+					break;
+
+				}
+			}		
 			break;
 		case send:
 			break;

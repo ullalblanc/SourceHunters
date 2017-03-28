@@ -6,8 +6,8 @@
 
 #include "Game.h"
 
-// 1_N_1_vacio // Respuesta_index_Jugador_vacio // client envia respota
-// 2_1_0_vacio // Estado_Start_null_null******************** // comença partida
+// 1_0_0_vacio // Hello_index_Jugador_vacio // client vol conectarse
+// 2_0_1_vacio // Conexion_Start_Jugador_vacio // server avisa al client que sha conectat y li envia el id
 // 2_2_0_vacio // Estado_Finish_null_null // acaba partida
 // 2_3_0_Fuera de Tiempo. // Mensaje_Log_Jugador_vacio // s'acaba el temps per respondre
 // 2_4_0_vacio // Mensaje_check_jugador_vacio // un jugador ha respos
