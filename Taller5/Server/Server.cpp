@@ -95,7 +95,6 @@ int main()
 	thread.launch();
 
 	std::cout << "Server";
-	std::cout << "\n New user" << std::endl;
 
 	while (gameOn)
 	{
@@ -107,6 +106,22 @@ int main()
 		switch (state) {
 		case play:
 			// TODO: switch que agafi el misatge de la cua i faci el que toqui. Tindriem que mirar primer el protocol
+			if (!clientCommands.empty()) {
+				switch (clientCommands.front()[0]) {
+				case 1:	// Un client es vol conectar
+					
+					// playertmp.id =
+					playertmp.ip = ipQueue.front();
+					playertmp.port = portQueue.front();
+					player.push_back(playertmp);
+
+					ipQueue.pop();
+					portQueue.pop();
+
+					std::cout << "\n New user" << std::endl;
+					break;
+				}
+			}
 			break;
 		}
 	}
