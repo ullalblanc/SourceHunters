@@ -9,8 +9,7 @@ class Receive
 {
 public:
 	sf::UdpSocket *socket;
-	std::queue<sf::IpAddress> *ipQueue;		// On es guarden les ips no asignades dels nous jugadors
-	std::queue<unsigned short> *portQueue;	// On es guarden els ports no asigntas dels nous jugadors
+	std::vector<
 	std::queue<std::string> *commands;
 	sf::Mutex *mutex;
 	bool stopReceive;
@@ -18,5 +17,6 @@ public:
 	Receive();
 	~Receive();
 
-	void ReceiveMessages();	
+	void ReceiveServer();
+	void ReceiveClient();
 };

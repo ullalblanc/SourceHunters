@@ -1,8 +1,27 @@
-﻿  MessageManager.cpp
-  Receive.cpp
+﻿  Receive.cpp
+d:\sourcehunters\taller5\chatlib\Receive.h(13): error C2146: syntax error: missing '>' before identifier 'commands'
+d:\sourcehunters\taller5\chatlib\Receive.h(13): error C2143: syntax error: missing '>' before ';'
+d:\sourcehunters\taller5\chatlib\Receive.h(13): error C2208: 'std::vector<std::queue<std::string,std::deque<_Ty,std::allocator<_Ty>>> *,std::allocator<std::queue<_Ty,std::deque<_Ty,std::allocator<_Ty>>>*>>': no members defined using this type
+          with
+          [
+              _Ty=std::string
+          ]
+Receive.cpp(25): error C2065: 'commands': undeclared identifier
+Receive.cpp(25): error C2227: left of '->push' must point to class/struct/union/generic type
+  Receive.cpp(25): note: type is 'unknown-type'
+Receive.cpp(27): error C2065: 'ipQueue': undeclared identifier
+Receive.cpp(27): error C2227: left of '->push' must point to class/struct/union/generic type
+  Receive.cpp(27): note: type is 'unknown-type'
+Receive.cpp(28): error C2065: 'portQueue': undeclared identifier
+Receive.cpp(28): error C2227: left of '->push' must point to class/struct/union/generic type
+  Receive.cpp(28): note: type is 'unknown-type'
+Receive.cpp(48): error C2065: 'commands': undeclared identifier
+Receive.cpp(48): error C2227: left of '->push' must point to class/struct/union/generic type
+  Receive.cpp(48): note: type is 'unknown-type'
+Receive.cpp(50): error C2065: 'ipQueue': undeclared identifier
+Receive.cpp(50): error C2227: left of '->push' must point to class/struct/union/generic type
+  Receive.cpp(50): note: type is 'unknown-type'
+Receive.cpp(51): error C2065: 'portQueue': undeclared identifier
+Receive.cpp(51): error C2227: left of '->push' must point to class/struct/union/generic type
+  Receive.cpp(51): note: type is 'unknown-type'
   Send.cpp
-sfml-window.lib(sfml-window-2.dll) : warning LNK4006: __NULL_IMPORT_DESCRIPTOR already defined in sfml-graphics.lib(sfml-graphics-2.dll); second definition ignored
-sfml-system.lib(sfml-system-2.dll) : warning LNK4006: __NULL_IMPORT_DESCRIPTOR already defined in sfml-graphics.lib(sfml-graphics-2.dll); second definition ignored
-sfml-network.lib(sfml-network-2.dll) : warning LNK4006: __NULL_IMPORT_DESCRIPTOR already defined in sfml-graphics.lib(sfml-graphics-2.dll); second definition ignored
-ws2_32.lib(WS2_32.dll) : warning LNK4006: __NULL_IMPORT_DESCRIPTOR already defined in sfml-graphics.lib(sfml-graphics-2.dll); second definition ignored
-  ChatLib.vcxproj -> D:\SourceHunters\Taller5\x64\Release\ChatLib.lib
