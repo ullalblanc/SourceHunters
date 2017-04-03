@@ -13,10 +13,10 @@ private:
 public:
 
 	int GetType(std::string RawMessage);
-	int GetPlayer(std::string RawMessage);
 	int GetSubType(std::string RawMessage);
-	std::string GetWord(std::string RawMessage);
-	std::string CreateMessage(int type, int subtype, int indexPlayer, std::string Word);
+	int GetFirst(std::string RawMessage);
+	int GetSecond(std::string RawMessage);
+	std::string CreateMessage(int type, int subtype, int first, int second);
 
 	MessageManager();
 	~MessageManager();

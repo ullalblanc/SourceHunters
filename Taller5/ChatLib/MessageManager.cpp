@@ -43,9 +43,8 @@ int MessageManager::GetSubType(std::string RawMessage)
 	return _auxInt;
 }
 
-int MessageManager::GetPlayer(std::string RawMessage)
+int MessageManager::GetFirst(std::string RawMessage)
 {
-
 	std::string _auxText = "";
 	_auxText = RawMessage;
 	int _auxInt = _auxText[2];
@@ -54,18 +53,19 @@ int MessageManager::GetPlayer(std::string RawMessage)
 }
 
 
-std::string MessageManager::GetWord(std::string RawMessage)
+int MessageManager::GetSecond(std::string RawMessage)
 {
 	std::string _auxText = "";
 	_auxText = RawMessage;
-	_auxText = _auxText.erase(0, 3);
-	return _auxText;
+	int _auxInt = _auxText[3];
+	_auxInt = _auxInt - 48;
+	return _auxInt;
 }
 
-std::string MessageManager::CreateMessage(int type, int subtype, int indexPlayer, std::string Word)
+std::string MessageManager::CreateMessage(int type, int subtype, int first, int second)
 {
 	std::string message = "";
-	message = std::to_string(type) + std::to_string(subtype) + std::to_string(indexPlayer) + Word;
+	message = std::to_string(type) + std::to_string(subtype) + std::to_string(first) + std::to_string(second);
 	return message;
 }
 

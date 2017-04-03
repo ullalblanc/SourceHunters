@@ -1,5 +1,3 @@
-//#include <SFML\Graphics.hpp>
-//#include <SFML\Network.hpp>
 #include <string>
 #include <cstring>
 #include <iostream>
@@ -7,6 +5,9 @@
 #include <time.h>
 
 #include "Game.h"
+
+// 1_0_0_vacio // WELCOME_id_x_y // Welcome al client, amb la seva id i posicions
+// 2_0_1_vacio // Conexion_Start_Jugador_vacio // server avisa al client que sha conectat y li envia el id
 
 enum State {
 	connect,	// Per conectarse al servidor
@@ -28,8 +29,9 @@ int main()
 	sf::Mutex mutex;											// Per evitar varis accesos a les cues
 	std::string command;										// el misatge que envia als clients
 	Send sender;												// Sender per enviar misatges
-	Receive receiver;											// Receiver per rebre constanment misatges
-	sf::Thread thread(&Receive::ReceiveMessages, &receiver);	// Thread per el receiver
+	ClientReceive receiver;										// Receiver per rebre constanment misatges
+	sf::Thread thread(&Receive::ReceiveCommands, &receiver);	// Thread per el receiver
+	std::vector<Player> player;	// Vector de jugadors
 
 	ipQueue.push(ip);		// IP del servidor
 	portQueue.push(5000);	// Port del servidor
@@ -39,9 +41,8 @@ int main()
 
 	receiver.commands = &serverCommands;
 	receiver.socket = &socket;
-	receiver.ipQueue = &ipQueue;
-	receiver.portQueue = &portQueue;
 	receiver.mutex = &mutex;
+	receiver.players = &player;
 
 	std::cout << "Port: ";										// Demanem port al client
 	unsigned short port;
@@ -57,7 +58,6 @@ int main()
 	MessageManager protocol;	// Per llegir els segons el protocol
 	Timer timerConnect;			// timer per intentar conectarse a servidor	
 	State state = connect;		// Comencem en connect per que es conecti al server
-	std::vector<Player> player;	// Vector de jugadors
 	Player playertmp;			// Amb el tmp es guardara a ell mateix i als altres en el vector player
 
 	//-- GAME --//
@@ -76,7 +76,7 @@ int main()
 		std::cout << "Can't load the font file" << std::endl;
 	}
 
-	sf::Vector2i screenDimensions(918, 516);											// Dimensions pantalles
+	sf::Vector2i screenDimensions(500, 500);											// Dimensions pantalles
 	sf::RenderWindow window;															// Creem la finestra del joc
 	window.create(sf::VideoMode(screenDimensions.x, screenDimensions.y), "Taller5");	// Obrim la finestra del joc
 	thread.launch();																	// Comencem thread receive
@@ -86,14 +86,18 @@ int main()
 		switch (state) {
 		case connect:
 			if (timerConnect.Check()) {
-				command = protocol.CreateMessage(1, 0, 0, "");
+				command = protocol.CreateMessage(1, 0, 0, 0);
 				sender.SendMessages(ipQueue.front(), portQueue.front());
 				timerConnect.Start(2000);
 			}
 			if (!serverCommands.empty()) {
 				switch (protocol.GetType(serverCommands.front())) {
 				case 1:
-					
+					playertmp.id = protocol.GetSubType(command);
+					playertmp.x = protocol.GetFirst(command);
+					playertmp.y = protocol.GetSecond(command);
+
+					player.push_back(playertmp);
 					break;
 
 				}

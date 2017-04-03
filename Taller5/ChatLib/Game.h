@@ -6,13 +6,14 @@
 #include <queue>
 
 #include "Send.h"
-#include "Receive.h"
+//#include "Receive.h"
 #include "MessageManager.h"
 
 #define MAXTIME 10000
 
 class Player {
 
+public:
 	int id;
 	int x;
 	int y;
@@ -21,6 +22,7 @@ class Player {
 
 class ServerPlayer : public Player {
 	
+public:
 	sf::IpAddress ip;
 	unsigned short port;
 
@@ -66,7 +68,9 @@ public:
 
 class ServerReceive : public Receive {
 
+public:
 	std::vector<ServerPlayer> *players;
+	ServerPlayer *playertmp;
 
 	void ReceiveCommands() {
 		do {
@@ -81,8 +85,16 @@ class ServerReceive : public Receive {
 			if (status == sf::Socket::Done) {
 				mutex->lock();
 				commands->push(data);
-				if (data[0] = '1') { // save ip and port
 
+				if (data[0] = '1') { // save ip and port
+					/*for (int i = 0; i < players->size(); i++)
+					{
+						players[i].port;
+						if (players[i]->port == port && players[i]->ip == ip) 
+						{
+
+						}
+					}*/
 				}
 				mutex->unlock();
 			}
@@ -92,6 +104,7 @@ class ServerReceive : public Receive {
 
 class ClientReceive : public Receive {
 
+public:
 	std::vector<Player> *players;
 
 	void ReceiveCommands() {

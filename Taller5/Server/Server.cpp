@@ -8,13 +8,6 @@
 
 // 1_0_0_vacio // Hello_index_Jugador_vacio // client vol conectarse
 // 2_0_1_vacio // Conexion_Start_Jugador_vacio // server avisa al client que sha conectat y li envia el id
-// 2_2_0_vacio // Estado_Finish_null_null // acaba partida
-// 2_3_0_Fuera de Tiempo. // Mensaje_Log_Jugador_vacio // s'acaba el temps per respondre
-// 2_4_0_vacio // Mensaje_check_jugador_vacio // un jugador ha respos
-// 3_N_0_vacio // NuevaPpregunta_index_null_null // el server envia index de pregunta nova
-// 4_1_0_Manolo // Jugadores_IndiceJugador_0_Nombre // per enviar nom y index de jugadors// en state points sirve para notificar al server que ha recibido todas las puntuaciones y esta listo para la siguiente pregunta
-// 5_N_0_vacio // Puntuaciones_Puntuacion_Jugador_null // per enviar puntuacions actualitzades
-// 6_0_0_vacio // desconexion_null_jugador_null // para desconectar un cliente. tambien se usa para acabar la partida
 
 enum State {
 	send, // enviar paraula nova y que comenci partida
@@ -23,7 +16,7 @@ enum State {
 	win // el joc sacaba
 };
 
-void cleanPlayers(int* playerChecks, int size = MAX_USERS) {
+/*void cleanPlayers(int* playerChecks, int size = MAX_USERS) {
 	for (int i = 0; i < size; i++)
 	{
 		playerChecks[i] = 0;
@@ -48,7 +41,7 @@ void sendAll(Send* sender, std::vector<sf::TcpSocket*> sockets, bool block = fal
 		sender->SendMessages();
 		if (block) sockets[i]->setBlocking(false);
 	}
-}
+}*/
 
 int main()
 {
@@ -62,8 +55,10 @@ int main()
 	sf::Mutex mutex;											// Per evitar varis accesos a les cues
 	std::string command;										// el misatge que envia als clients
 	Send sender;												// Sender per enviar misatges
-	Receive receiver;											// Receiver per rebre constanment misatges
-	sf::Thread thread(&Receive::ReceiveMessages, &receiver);	// Thread per el receiver
+	ServerReceive receiver;										// Receiver per rebre constanment misatges
+	sf::Thread thread(&Receive::ReceiveCommands, &receiver);	// Thread per el receiver
+	std::vector<ServerPlayer> player;							// Vector de jugadors
+	ServerPlayer playertmp;
 
 	sf::Socket::Status status = socket.bind(5000);				// Bind al port 5000
 	if (status != sf::Socket::Done) {
@@ -77,17 +72,15 @@ int main()
 
 	receiver.commands = &clientCommands;
 	receiver.socket = &socket;
-	receiver.ipQueue = &ipQueue;
-	receiver.portQueue = &portQueue;
 	receiver.mutex = &mutex;
+	//receiver.players = &player;
+	receiver.playertmp = &playertmp;
 
 	//-- SERVER --//
-
+	srand(time(NULL));
 	MessageManager protocol;
 	Timer timer;
-	State state = play;
-	std::vector<Player> player;	// Vector de jugadors
-	Player playertmp;			
+	State state = play;		
 
 	//-- GAME --//
 
@@ -109,15 +102,28 @@ int main()
 			if (!clientCommands.empty()) {
 				switch (clientCommands.front()[0]) {
 				case 1:	// Un client es vol conectar
-					
-					// playertmp.id =
-					playertmp.ip = ipQueue.front();
-					playertmp.port = portQueue.front();
-					player.push_back(playertmp);
+					if (!player.empty()) { // si no esta buit
+						for (int i = 0; i < player.size(); i++)
+						{
+							if (player[i].port != playertmp.port && player[i].ip != playertmp.ip) {
+								player.push_back(playertmp);
+								player[player.size() - 1].id = player.size() - 1;
+								player[player.size() - 1].x = rand() % 9;
+								player[player.size() - 1].y = rand() % 9;
 
-					ipQueue.pop();
-					portQueue.pop();
+								command = protocol.CreateMessage(1, player[player.size() - 1].id, player[player.size() - 1].x, player[player.size() - 1].y); // 1_0_0_vacio // WELCOME_id_x_y
+								sender.SendMessages(player[player.size() - 1].ip, player[player.size() - 1].port);
+							}
+						}
+					} else { // si esta buit
+						player.push_back(playertmp);
+						player[player.size() - 1].id = player.size() - 1;
+						player[player.size() - 1].x = rand() % 9;
+						player[player.size() - 1].y = rand() % 9;
 
+						command = protocol.CreateMessage(1, player[player.size() - 1].id, player[player.size() - 1].x, player[player.size() - 1].y); // 1_0_0_vacio // WELCOME_id_x_y
+						sender.SendMessages(player[player.size() - 1].ip, player[player.size() - 1].port);
+					}
 					std::cout << "\n New user" << std::endl;
 					break;
 				}
