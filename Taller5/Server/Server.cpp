@@ -10,29 +10,13 @@
 // 2_0_1_vacio // Conexion_Start_Jugador_vacio // server avisa al client que sha conectat y li envia el id
 
 enum State {
-	send, // enviar paraula nova y que comenci partida
-	play, // mentres els jugadors estan escribint. comproba si sacaba el temps i si algú ha encertat la partida
+	send,	// enviar paraula nova y que comenci partida
+	play,	// mentres els jugadors estan escribint. comproba si sacaba el temps i si algú ha encertat la partida
 	points, // Envia les puntuacions als jugadors y actualitza els seus logs
-	win // el joc sacaba
+	win		// el joc sacaba
 };
 
-/*void cleanPlayers(int* playerChecks, int size = MAX_USERS) {
-	for (int i = 0; i < size; i++)
-	{
-		playerChecks[i] = 0;
-	}
-}
-
-bool playersReady(int* playerChecks, int size = MAX_USERS) {
-	for (int i = 0; i < size; i++)
-	{
-		if (playerChecks[i] == 0) {
-			return false;
-		}
-	}
-	return true;
-}
-
+/*
 void sendAll(Send* sender, std::vector<sf::TcpSocket*> sockets, bool block = false) { // per misatges iguals que s'envien a tots el jugadors
 	for (int i = 0; i < sockets.size(); i++)								
 	{
@@ -102,10 +86,15 @@ int main()
 			if (!clientCommands.empty()) {
 				switch (clientCommands.front()[0]) {
 				case 1:	// Un client es vol conectar
+
 					if (!player.empty()) { // si no esta buit
 						for (int i = 0; i < player.size(); i++)
 						{
-							if (player[i].port != playertmp.port && player[i].ip != playertmp.ip) {
+							if (player[i].port == playertmp.port && player[i].ip == playertmp.ip) {
+								command = protocol.CreateMessage(1, player[i].id, player[i].x, player[i].y); // 1_0_0_vacio // WELCOME_id_x_y
+								sender.SendMessages(player[player.size() - 1].ip, player[player.size() - 1].port);
+							}
+							if (player[i].port != playertmp.port && player[i].ip != playertmp.ip) {	// Si no coincideix amb un player existent
 								player.push_back(playertmp);
 								player[player.size() - 1].id = player.size() - 1;
 								player[player.size() - 1].x = rand() % 9;
@@ -113,7 +102,7 @@ int main()
 
 								command = protocol.CreateMessage(1, player[player.size() - 1].id, player[player.size() - 1].x, player[player.size() - 1].y); // 1_0_0_vacio // WELCOME_id_x_y
 								sender.SendMessages(player[player.size() - 1].ip, player[player.size() - 1].port);
-							}
+							} 
 						}
 					} else { // si esta buit
 						player.push_back(playertmp);
@@ -126,6 +115,7 @@ int main()
 					}
 					std::cout << "\n New user" << std::endl;
 					break;
+
 				}
 			}
 			break;
