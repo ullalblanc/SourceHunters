@@ -1,8 +1,6 @@
 //#include <SFML\Graphics.hpp>
 //#include <SFML\Network.hpp>
-#include <string>
 #include <cstring>
-#include <vector>
 
 #include "Game.h"
 
@@ -64,6 +62,7 @@ int main()
 	srand(time(NULL));
 	MessageManager protocol;
 	Timer timer;
+	Timer positionTimer;
 	State state = play;		
 
 	//-- GAME --//
@@ -117,9 +116,7 @@ int main()
 
 						std::cout << "\n New user" << std::endl;
 					}
-					
 					break;
-
 				}
 			}
 			break;

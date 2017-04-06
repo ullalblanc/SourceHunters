@@ -1,7 +1,5 @@
-#include <string>
 #include <cstring>
 #include <iostream>
-#include <vector>
 #include <time.h>
 
 #include "Game.h"

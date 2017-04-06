@@ -4,9 +4,9 @@
 #include <string>
 #include <iostream>
 #include <queue>
+#include <vector>
 
 #include "Send.h"
-//#include "Receive.h"
 #include "MessageManager.h"
 
 #define MAXTIME 10000
@@ -17,7 +17,7 @@ public:
 	int id;
 	int x;
 	int y;
-
+	std::vector<std::string> keyCommands;
 };
 
 class ServerPlayer : public Player {
