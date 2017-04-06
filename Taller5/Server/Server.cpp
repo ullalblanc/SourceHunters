@@ -90,18 +90,20 @@ int main()
 					if (!player.empty()) { // si no esta buit
 						for (int i = 0; i < player.size(); i++)
 						{
-							if (player[i].port == playertmp.port && player[i].ip == playertmp.ip) {
+							if (player[i].port == playertmp.port && player[i].ip == playertmp.ip) { // Si conincideix amb un player existent
 								command = protocol.CreateMessage(1, player[i].id, player[i].x, player[i].y); // 1_0_0_vacio // WELCOME_id_x_y
 								sender.SendMessages(player[player.size() - 1].ip, player[player.size() - 1].port);
-							}
-							if (player[i].port != playertmp.port && player[i].ip != playertmp.ip) {	// Si no coincideix amb un player existent
+								break;
+							} else if (i == player.size()-1) {	// Si no coincideix amb un player existent i ja els ha comparat a tots
 								player.push_back(playertmp);
-								player[player.size() - 1].id = player.size() - 1;
-								player[player.size() - 1].x = rand() % 9;
+								player[player.size() - 1].id = player[player.size() - 2].id++;
+								player[player.size() - 1].x = rand() % 9; // TODO: asegurar que no es repeteixen caselles
 								player[player.size() - 1].y = rand() % 9;
 
 								command = protocol.CreateMessage(1, player[player.size() - 1].id, player[player.size() - 1].x, player[player.size() - 1].y); // 1_0_0_vacio // WELCOME_id_x_y
 								sender.SendMessages(player[player.size() - 1].ip, player[player.size() - 1].port);
+
+								std::cout << "\n New user" << std::endl;
 							} 
 						}
 					} else { // si esta buit
@@ -112,8 +114,10 @@ int main()
 
 						command = protocol.CreateMessage(1, player[player.size() - 1].id, player[player.size() - 1].x, player[player.size() - 1].y); // 1_0_0_vacio // WELCOME_id_x_y
 						sender.SendMessages(player[player.size() - 1].ip, player[player.size() - 1].port);
+
+						std::cout << "\n New user" << std::endl;
 					}
-					std::cout << "\n New user" << std::endl;
+					
 					break;
 
 				}

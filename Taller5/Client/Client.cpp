@@ -98,14 +98,31 @@ int main()
 					playertmp.y = protocol.GetSecond(command);
 
 					player.push_back(playertmp);
+					state = play;
 					break;
-
+				default:
+					serverCommands.push(serverCommands.front());
+					serverCommands.pop();
+					break;
 				}
 			}		
 			break;
 		case send:
 			break;
 		case play:
+			if (!serverCommands.empty()) {
+				switch (protocol.GetType(serverCommands.front())) {
+				case 1:
+					break;
+				case 2:
+
+					break;
+				default:
+					serverCommands.push(serverCommands.front());
+					serverCommands.pop();
+					break;
+				}
+			}
 			break;
 		case points:
 			break;
