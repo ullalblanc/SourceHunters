@@ -145,12 +145,10 @@
   <ItemGroup>
     <ClInclude Include="Game.h" />
     <ClInclude Include="MessageManager.h" />
-    <ClInclude Include="Receive.h" />
     <ClInclude Include="Send.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="MessageManager.cpp" />
-    <ClCompile Include="Receive.cpp" />
     <ClCompile Include="Send.cpp" />
   </ItemGroup>
   <ItemGroup>

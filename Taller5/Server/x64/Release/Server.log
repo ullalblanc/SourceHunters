@@ -1,26 +1,12 @@
 ﻿C:\Program Files (x86)\MSBuild\Microsoft.Cpp\v4.0\V140\Microsoft.CppBuild.targets(392,5): warning MSB8028: The intermediate directory (x64\Release\) contains files shared from another project (ConsoleApplication1.vcxproj, Taller1.vcxproj, Taller2.vcxproj).  This can lead to incorrect clean and rebuild behavior.
   Server.cpp
-D:\SourceHunters\Taller5\ChatLib\Game.h(38): warning C4244: '=': conversion from 'float' to 'clock_t', possible loss of data
-Server.cpp(80): warning C4244: 'argument': conversion from 'time_t' to 'unsigned int', possible loss of data
-Server.cpp(110): warning C4267: '=': conversion from 'size_t' to 'int', possible loss of data
-Server.cpp(120): warning C4267: '=': conversion from 'size_t' to 'int', possible loss of data
-Server.cpp(94): warning C4101: 'key': unreferenced local variable
-D:\SourceHunters\Taller5\deps64\include\SFML/System/Thread.inl(48): error C2064: term does not evaluate to a function taking 1 arguments
-  D:\SourceHunters\Taller5\deps64\include\SFML/System/Thread.inl(48): note: while compiling class template member function 'void sf::priv::ThreadFunctorWithArg<F,A>::run(void)'
-          with
-          [
-              F=void (__cdecl Receive::* )(void),
-              A=ServerReceive *
-          ]
-  D:\SourceHunters\Taller5\deps64\include\SFML/System/Thread.inl(79): note: see reference to class template instantiation 'sf::priv::ThreadFunctorWithArg<F,A>' being compiled
-          with
-          [
-              F=void (__cdecl Receive::* )(void),
-              A=ServerReceive *
-          ]
-  Server.cpp(59): note: see reference to function template instantiation 'sf::Thread::Thread<void(__cdecl Receive::* )(void),ServerReceive*>(F,A)' being compiled
-          with
-          [
-              F=void (__cdecl Receive::* )(void),
-              A=ServerReceive *
-          ]
+E:\SourceHunters\SourceHunters\Taller5\ChatLib\Game.h(38): warning C4244: '=': conversion from 'float' to 'clock_t', possible loss of data
+Server.cpp(59): warning C4244: 'argument': conversion from 'time_t' to 'unsigned int', possible loss of data
+Server.cpp(74): warning C4101: 'key': unreferenced local variable
+  Generating code
+  1 of 533 functions ( 0.2%) were compiled, the rest were copied from previous compilation.
+    0 functions were new in current compilation
+    0 functions had inline decision re-evaluated but remain unchanged
+  Finished generating code
+  Server.vcxproj -> E:\SourceHunters\SourceHunters\Taller5\x64\Release\Server.exe
+  Server.vcxproj -> E:\SourceHunters\SourceHunters\Taller5\x64\Release\Server.pdb (Full PDB)

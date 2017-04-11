@@ -60,8 +60,8 @@ public:
 	sf::Mutex *mutex;
 	bool stopReceive = true;
 
-	Receive();
-	~Receive();
+	Receive() {};
+	~Receive() {};
 
 	virtual void ReceiveCommands() = 0;
 };
@@ -84,18 +84,39 @@ public:
 
 			if (status == sf::Socket::Done) {
 				mutex->lock();
-				commands->push(data);
+				//commands->push(data);
 
 				if (data[0] = '1') { // save ip and port
-					/*for (int i = 0; i < players->size(); i++)
-					{
-						players[i].port;
-						if (players[i]->port == port && players[i]->ip == ip) 
+					if (!players->empty()) {
+						for (int i = 0; i < players->size(); i++) // recorre tots els jugadors
 						{
+							if (players->at(i).port == port && players->at(i).ip == ip) // Si es un dels jugadors existens
+							{
+								data[1] = players->at(i).id + 48; // marca la id
+								break;							// acaba el for
+							}
+							else if (i == players->size() - 1) {	// si no existeix 
+								playertmp->ip = ip;				// crea nou jugador
+								playertmp->port = port;
+								playertmp->id = players->at(players->size() - 1).id++; // un id mes al ultim de la llista
 
+								players->push_back(*playertmp);
+								data[1] = players->at(i).id + 48;	// marca la id
+								data[2] = '1';						// marca que necesita posicio
+							}
 						}
-					}*/
+					}
+					else {
+						playertmp->ip = ip;					// crea nou jugador
+						playertmp->port = port;
+						playertmp->id = 1; // un id mes al ultim de la llista
+
+						players->push_back(*playertmp);
+						data[1] = players->at(0).id + 48;	// marca la id
+						data[2] = '1';						// marca que necesita posicio
+					}
 				}
+				commands->push(data);
 				mutex->unlock();
 			}
 		} while (stopReceive);
