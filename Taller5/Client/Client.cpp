@@ -32,7 +32,6 @@ int main()
 	sf::Thread thread(&ClientReceive::ReceiveCommands, &receiver);	// Thread per el receiver
 	std::vector<Player> player;	// Vector de jugadors
 
-
 	sender.command = &command;
 	sender.socket = &socket;
 
@@ -57,10 +56,14 @@ int main()
 	State state = connect;		// Comencem en connect per que es conecti al server
 	Player playertmp;			// Amb el tmp es guardara a ell mateix i als altres en el vector player
 
+	playertmp.y = 750;
+	player.push_back(playertmp);
+	player.push_back(playertmp);
+
 	//-- GAME --//
 
 	sf::Texture texture;
-	if (!texture.loadFromFile("../Resources/Fons.jpg")) {
+	if (!texture.loadFromFile("../Resources/Fons.png")) {
 		std::cout << "Can't load the image file" << std::endl;
 		return -1;
 	}
@@ -90,7 +93,7 @@ int main()
 		std::cout << "Can't load the font file" << std::endl;
 	}
 
-	sf::Vector2i screenDimensions(500, 500);											// Dimensions pantalles
+	sf::Vector2i screenDimensions(1600, 900);											// Dimensions pantalles
 	sf::RenderWindow window;															// Creem la finestra del joc
 	window.create(sf::VideoMode(screenDimensions.x, screenDimensions.y), "Taller5");	// Obrim la finestra del joc
 	thread.launch();																	// Comencem thread receive
@@ -109,18 +112,22 @@ int main()
 				switch (protocol.GetType(serverCommands.front())) {
 
 				case 1:
-					playertmp.id = protocol.GetSubType(serverCommands.front());
-					playertmp.x = protocol.GetFirst(serverCommands.front());
-					playertmp.y = protocol.GetSecond(serverCommands.front());
-
-					player.push_back(playertmp);
-					state = play;
+					player[0].id = protocol.GetSubType(serverCommands.front());
+					player[0].x = protocol.GetPosition(serverCommands.front());
 					serverCommands.pop();
 					break;
 
+				case 2:
+					player[1].id = protocol.GetSubType(serverCommands.front());
+					player[1].x = protocol.GetFirst(serverCommands.front());
+					serverCommands.pop();
+
+					command = protocol.CreateMessage(2, player[0].id, 0, 0);
+					sender.SendMessages(ip, serverPort);
+					state = play;
+					break;
+
 				default:
-					//serverCommands.push(serverCommands.front());
-					//serverCommands.pop();
 					break;
 
 				}
@@ -138,27 +145,10 @@ int main()
 					break;
 
 				case 2: // Posició de jugador
-					for (int i = 0; i < player.size(); i++)
-					{
-						if (player[i].id == protocol.GetSubType(command)) { // si es un dels jugadors que ja coneix
-							player[i].x = protocol.GetFirst(command);
-							player[i].y = protocol.GetSecond(command);
-							//player[i].keyCommands.push_back(command);
-							std::cout << "cookies";
-							serverCommands.pop();
-							break;
-						}
-					}
-					playertmp.id = protocol.GetSubType(command);
-					playertmp.x = protocol.GetFirst(command);
-					playertmp.y = protocol.GetSecond(command);
-					playertmp.keyCommands.push_back(command);
-					serverCommands.pop();
+					
 					break;
 
 				default:
-					serverCommands.push(serverCommands.front());
-					serverCommands.pop();
 					break;
 
 				}
@@ -170,14 +160,15 @@ int main()
 		case win:
 			break;
 		}
+
 		window.draw(sprite);	// Pintem el fons
 		if (player.size() > 0) { 
-			blue.setPosition(player[0].x * 25 + 25, player[0].y * 25 + 25);
+			blue.setPosition(player[0].x, player[0].y);
 			window.draw(blue); // pintem el jugador
 			if (player.size() > 1) {
 				for (int i = 1; i < player.size(); i++)
 				{
-					fucsia.setPosition(player[i].x * 25 + 25, player[i].y * 25 + 25);
+					fucsia.setPosition(player[i].x, player[i].y);
 					window.draw(fucsia); // pintem el enemic
 				}
 			}
