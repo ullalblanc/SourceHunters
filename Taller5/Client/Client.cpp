@@ -56,6 +56,7 @@ int main()
 	State state = connect;		// Comencem en connect per que es conecti al server
 	Player playertmp;			// Amb el tmp es guardara a ell mateix i als altres en el vector player
 
+	playertmp.x = -50;
 	playertmp.y = 750;
 	player.push_back(playertmp);
 	player.push_back(playertmp);
@@ -107,6 +108,7 @@ int main()
 				command = protocol.CreateMessage(1, 0, 0, 0);
 				sender.SendMessages(ip, serverPort);
 				timerConnect.Start(2000);
+				timerConnect.Stop();
 			}
 			if (!serverCommands.empty()) {
 				switch (protocol.GetType(serverCommands.front())) {
@@ -119,7 +121,7 @@ int main()
 
 				case 2:
 					player[1].id = protocol.GetSubType(serverCommands.front());
-					player[1].x = protocol.GetFirst(serverCommands.front());
+					player[1].x = protocol.GetPosition(serverCommands.front());
 					serverCommands.pop();
 
 					command = protocol.CreateMessage(2, player[0].id, 0, 0);

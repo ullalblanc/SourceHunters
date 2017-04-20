@@ -1,11 +1,13 @@
 ﻿  Client.cpp
-E:\SourceHunters\SourceHunters\Taller5\ChatLib\Game.h(40): warning C4244: '=': conversion from 'float' to 'clock_t', possible loss of data
-Client.cpp(172): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
-Client.cpp(177): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
+D:\SourceHunters\Taller5\ChatLib\Game.h(41): warning C4244: '=': conversion from 'float' to 'clock_t', possible loss of data
+Client.cpp(168): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
+Client.cpp(173): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
   Generating code
-  1 of 555 functions ( 0.2%) were compiled, the rest were copied from previous compilation.
+  1 of 535 functions ( 0.2%) were compiled, the rest were copied from previous compilation.
     0 functions were new in current compilation
     0 functions had inline decision re-evaluated but remain unchanged
   Finished generating code
-  Client.vcxproj -> E:\SourceHunters\SourceHunters\Taller5\x64\Release\Client.exe
-  Client.vcxproj -> E:\SourceHunters\SourceHunters\Taller5\x64\Release\Client.pdb (Full PDB)
+ChatLib.lib(MessageManager.obj) : warning LNK4099: PDB 'ChatLib.pdb' was not found with 'ChatLib.lib(MessageManager.obj)' or at 'D:\SourceHunters\Taller5\x64\Release\ChatLib.pdb'; linking object as if no debug info
+ChatLib.lib(Send.obj) : warning LNK4099: PDB 'ChatLib.pdb' was not found with 'ChatLib.lib(Send.obj)' or at 'D:\SourceHunters\Taller5\x64\Release\ChatLib.pdb'; linking object as if no debug info
+  Client.vcxproj -> D:\SourceHunters\Taller5\x64\Release\Client.exe
+  Client.vcxproj -> D:\SourceHunters\Taller5\x64\Release\Client.pdb (Full PDB)

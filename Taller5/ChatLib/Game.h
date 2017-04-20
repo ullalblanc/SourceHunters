@@ -32,21 +32,27 @@ public:
 
 class Timer {
 	std::clock_t time = std::clock();
+	bool stopped = false;
 public:
 	Timer() {};
 	~Timer() {};
 
 	void Start(float maxtime) {
 		time = std::clock() + maxtime;
+		stopped = false;
 	};
 
 	void Stop() {
-		time = 0;
+		//time = 0;
+		stopped = true;
 	};
 
 	bool Check() {
-		if (time < std::clock()) return true; //Torna True al Acabar
-		else return false;
+		if (!stopped) {
+			if (time < std::clock()) return true; //Torna True al Acabar
+			else return false;
+		}
+		return false;
 	};
 
 	int GetTime() {
@@ -110,7 +116,7 @@ public:
 									playertmp.id = 1; // player 1
 								}
 								players->push_back(playertmp);
-								data[1] = players->at(i).id + 48;	// marca la id
+								data[1] = players->at(i+1).id + 48;	// marca la id
 								data[2] = '1';						// marca que necesita posicio
 							}
 						}

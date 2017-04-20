@@ -90,8 +90,11 @@ int main()
 						{
 							if (protocol.GetSubType(clientCommands.front()) == player[i].id) {	// el jugador que diu Hello
 								if (protocol.GetFirst(clientCommands.front()) == 1) {			// necesita posicio
-									if (player[i].id == 1) player[i].x = 270;	// jugador 1 a 270
-									else player[i].x = 800;						// jugador 2 a 800
+									if (player[i].id == 1) { 
+										player[i].x = 270;// jugador 1 a 270
+									} else {
+										player[i].x = 800; // jugador 2 a 800
+									}
 									player[i].y = 750;
 									std::cout << "\n New user" << std::endl;
 								}
@@ -107,13 +110,12 @@ int main()
 			}
 			else
 			{
-				// TODO: fer timer per anar enviant misatges critics fins que  eñs jugadors respongui
 				if (timerReady.Check()) {
-					command = protocol.CreateMessageP(2, player[0].id, player[0].x); // 1_0_0_vacio // WELCOME_id_x_y
+					command = protocol.CreateMessageP(2, player[0].id, player[0].x); // 2_0_0_vacio // WELCOME_id_x_y
 					sender.SendMessages(player[1].ip, player[1].port);
 					player[0].keyCommands.push_back(command);
 
-					command = protocol.CreateMessageP(2, player[1].id, player[1].x); // 1_0_0_vacio // WELCOME_id_x_y
+					command = protocol.CreateMessageP(2, player[1].id, player[1].x); // 2_0_0_vacio // WELCOME_id_x_y
 					sender.SendMessages(player[0].ip, player[0].port);
 					player[1].keyCommands.push_back(command);
 
