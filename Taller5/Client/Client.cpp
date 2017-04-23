@@ -107,7 +107,7 @@ int main()
 			if (timerConnect.Check()) {
 				command = protocol.CreateMessage(1, 0, 0, 0);
 				sender.SendMessages(ip, serverPort);
-				timerConnect.Start(2000);
+				timerConnect.Start(5000);
 				timerConnect.Stop();
 			}
 			if (!serverCommands.empty()) {
@@ -146,8 +146,11 @@ int main()
 				case 1: // NO TINDRIA QUE REBRE 1
 					break;
 
-				case 2: // Posició de jugador
-					
+				case 2: 
+					serverCommands.pop();
+
+					command = protocol.CreateMessage(2, player[0].id, 0, 0);
+					sender.SendMessages(ip, serverPort);
 					break;
 
 				default:

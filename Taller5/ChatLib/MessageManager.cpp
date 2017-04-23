@@ -66,7 +66,7 @@ int MessageManager::GetPosition(std::string RawMessage)
 {
 	std::string _auxText = "";
 	_auxText = RawMessage;
-	int _auxInt = (_auxText[2]-48)*100 + (_auxText[3] - 48) * 10 + (_auxText[4] - 48);
+	int _auxInt = (_auxText[2] - 48) * 1000 + (_auxText[3]-48)*100 + (_auxText[4] - 48) * 10 + (_auxText[5] - 48);
 	return _auxInt;
 }
 
@@ -80,7 +80,12 @@ std::string MessageManager::CreateMessage(int type, int subtype, int first, int 
 std::string MessageManager::CreateMessageP(int type, int subtype, int position)
 {
 	std::string message = "";
-	message = std::to_string(type) + std::to_string(subtype) + std::to_string(position);
+	if (position - 1000 < 0) {
+		message = std::to_string(type) + std::to_string(subtype) + "0" + std::to_string(position);
+	}
+	else {
+		message = std::to_string(type) + std::to_string(subtype) + std::to_string(position);
+	}
 	return message;
 }
 

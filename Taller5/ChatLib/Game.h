@@ -94,7 +94,7 @@ public:
 				mutex->lock();
 				//commands->push(data);
 
-				if (data[0] = '1') { // save ip and port
+				if (data[0] == '1') { // save ip and port
 					ServerPlayer playertmp;
 					if (!players->empty()) {
 						for (int i = 0; i < players->size(); i++) // recorre tots els jugadors

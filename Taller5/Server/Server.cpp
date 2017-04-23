@@ -59,7 +59,8 @@ int main()
 	srand(time(NULL));
 	MessageManager protocol;
 	Timer timerReady;
-	State state = connect;		
+	State state = connect;
+	bool playersConected = false;
 
 	timerReady.Start(0);
 
@@ -80,7 +81,7 @@ int main()
 		switch (state) {
 
 		case connect: // que es conectin els dos jugadors
-			if (player.size() < TOTALPLAYERS) {
+			if (!playersConected) {
 				if (!clientCommands.empty()) {
 					int clientCase = protocol.GetType(clientCommands.front());
 					switch (clientCase) {
@@ -93,7 +94,7 @@ int main()
 									if (player[i].id == 1) { 
 										player[i].x = 270;// jugador 1 a 270
 									} else {
-										player[i].x = 800; // jugador 2 a 800
+										player[i].x = 1330; // jugador 2 a 1330
 									}
 									player[i].y = 750;
 									std::cout << "\n New user" << std::endl;
@@ -105,6 +106,11 @@ int main()
 						}
 						break;
 
+					}
+				}
+				if (player.size() == TOTALPLAYERS) { // Si existeixen 2 jugadors
+					if (player[0].x > 0 && player[1].x > 0) {// si els 2 jugadors tenen posicions valides, estan correctament conectats
+						playersConected = true;
 					}
 				}
 			}
@@ -125,11 +131,15 @@ int main()
 				if (!clientCommands.empty()) {
 					int clientCase = protocol.GetType(clientCommands.front());
 					switch (clientCase) {
+					case 1:
+						clientCommands.pop();
+						break;
 					case 2:	// Un client es vol conectar
 						int id = protocol.GetSubType(clientCommands.front());
 						for (int i = 0; i < player[id].keyCommands.size(); i++) // Recorrer tots els keycommands
 						{
-							if (player[id].keyCommands[i][0] == 2) {								// si es un keycommand de ready
+							//std::string commandToCheck = player[id].keyCommands[i];
+							if (player[id].keyCommands[i][0] == '2') {								// si es un keycommand de ready
 								player[id].keyCommands.erase(player[id].keyCommands.begin() + i);	// borral
 							}
 						}
