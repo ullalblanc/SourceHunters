@@ -5,7 +5,8 @@
 #include "Game.h"
 
 // 1_i_x_y // WELCOME_id_x_y // Welcome al client, amb la seva id i posicions
-// 2_i_x_y // POSITION_id_x_y // Posicio del jugador id 
+// 2_i_x_y // POSITION_id_x_y // Posicio del jugador id
+// 3 // Ping
 
 enum State {
 	connect,	// Per conectarse al servidor
@@ -146,13 +147,16 @@ int main()
 				case 1: // NO TINDRIA QUE REBRE 1
 					break;
 
-				case 2: 
-					serverCommands.pop();
-
+				case 2: 		
 					command = protocol.CreateMessage(2, player[0].id, 0, 0);
 					sender.SendMessages(ip, serverPort);
+					serverCommands.pop();
 					break;
 
+				case 3:
+					command = "3" + std::to_string(player[0].id);
+					sender.SendMessages(ip, serverPort);
+					serverCommands.pop();
 				default:
 					break;
 

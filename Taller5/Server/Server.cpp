@@ -6,6 +6,7 @@
 
 // 1_0_0_0 // Hello_index_Jugador_vacio // client vol conectarse
 // 2_i_i_0 // Conexion_Start_Jugador_vacio // client comfirma que esta ready per jugar
+// 3_i // Ping_index // Comfirmacio de ping de client
 
 enum State {
 	connect,	// Esperar a que es conectin els dos jugadors
@@ -15,12 +16,32 @@ enum State {
 };
 
 
-//void sendAll(Send* sender, sf::UdpSocket socket, std::vector<ServerPlayer>* player) { // per misatges iguals que s'envien a tots el jugadors
-//	for (int i = 0; i < player->size(); i++)								
-//	{		
-//		sender->SendMessages(player[i].ip, player[i].port);
-//	}
-//}
+void sendAll(Send* sender, std::vector<ServerPlayer>* player) { // per misatges iguals que s'envien a tots el jugadors
+
+	bool foundMessage = false;									// Per saber si hi ha un misatge igual
+
+	sender->SendMessages(player->at(1).ip, player->at(1).port);
+	for (int i = 0; i < player->at(1).keyCommands.size(); i++)
+	{
+		if (player->at(1).keyCommands[i] == *sender->command) {
+			foundMessage = true;
+			break;
+		}
+	}
+	if (!foundMessage) player->at(1).keyCommands.push_back(*sender->command);
+
+	foundMessage = false;
+
+	sender->SendMessages(player->at(0).ip, player->at(0).port);
+	for (int i = 0; i < player->at(0).keyCommands.size(); i++)
+	{
+		if (player->at(0).keyCommands[i] == *sender->command) {
+			foundMessage = true;
+			break;
+		}
+	}
+	if (!foundMessage) player->at(0).keyCommands.push_back(*sender->command);
+}
 
 int main()
 {
@@ -59,10 +80,12 @@ int main()
 	srand(time(NULL));
 	MessageManager protocol;
 	Timer timerReady;
+	Timer timerPing;
 	State state = connect;
 	bool playersConected = false;
 
 	timerReady.Start(0);
+	timerPing.Start(0);
 
 	//-- GAME --//
 
@@ -80,6 +103,7 @@ int main()
 
 		switch (state) {
 
+	//-- CONECT --//
 		case connect: // que es conectin els dos jugadors
 			if (!playersConected) {
 				if (!clientCommands.empty()) {
@@ -156,6 +180,7 @@ int main()
 							//std::string commandToCheck = player[id].keyCommands[i];
 							if (player[id].keyCommands[i][0] == '2') {								// si es un keycommand de ready
 								player[id].keyCommands.erase(player[id].keyCommands.begin() + i);	// borral
+								break;
 							}
 						}
 						break;
@@ -169,10 +194,39 @@ int main()
 			}
 			break;
 
+	//-- PLAY --//
 		case play:
-			
+			// PING
+			if (timerPing.Check()) {
+				command = "3";
+				//TODO: 
+				sendAll(&sender, &player);
+				timerPing.Start(3000);
+			}
 
-
+	//-- CLIENT COMMANDS --//
+			if (!clientCommands.empty()) {
+				int clientCase = protocol.GetType(clientCommands.front());
+				switch (clientCase) {
+				case 1:	// Un client es vol conectar
+					clientCommands.pop();
+					break;
+				case 2:
+					clientCommands.pop();
+					break;
+				case 3:
+					int playerId = protocol.GetSubType(clientCommands.front());
+					for (int i = 0; i < player[playerId].keyCommands.size(); i++)
+					{
+						if (protocol.GetType(clientCommands.front()) == protocol.GetType(player[playerId].keyCommands[i])) {
+							player[playerId].keyCommands[i].erase();
+							break;
+						}
+					}
+					clientCommands.pop();
+					break;
+				}
+			}
 			break;
 		}
 	}
