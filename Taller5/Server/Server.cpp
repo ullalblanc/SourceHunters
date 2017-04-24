@@ -119,12 +119,27 @@ int main()
 				if (timerReady.Check()) {
 					command = protocol.CreateMessageP(2, player[0].id, player[0].x); // 2_0_0_vacio // WELCOME_id_x_y
 					sender.SendMessages(player[1].ip, player[1].port);
-					player[0].keyCommands.push_back(command);
+					for (int i = 0; i < player[0].keyCommands.size(); i++)
+					{
+						if (player[0].keyCommands[i] == command) {
+							break;
+						}
+						else if (i == player[0].keyCommands.size() - 1) {
+							player[0].keyCommands.push_back(command);
+						}
+					}
 
 					command = protocol.CreateMessageP(2, player[1].id, player[1].x); // 2_0_0_vacio // WELCOME_id_x_y
 					sender.SendMessages(player[0].ip, player[0].port);
-					player[1].keyCommands.push_back(command);
-
+					for (int i = 0; i < player[1].keyCommands.size(); i++)
+					{
+						if (player[1].keyCommands[i] == command) {
+							break;
+						}
+						else if (i == player[1].keyCommands.size() - 1) {
+							player[1].keyCommands.push_back(command);
+						}
+					}
 					timerReady.Start(3000);
 				}
 
