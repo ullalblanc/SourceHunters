@@ -4,7 +4,7 @@
 
 #include "Game.h"
 
-// 1_0_0_0 // Hello_index_Jugador_vacio // client vol conectarse
+// 1_0_0_0 // Hello // client vol conectarse
 // 2_i_i_0 // Conexion_Start_Jugador_vacio // client comfirma que esta ready per jugar
 // 3_i // Ping_index // Comfirmacio de ping de client
 
@@ -123,7 +123,8 @@ int main()
 									player[i].y = 750;
 									std::cout << "\n New user" << std::endl;
 								}
-								command = protocol.CreateMessageP(1, player[i].id, player[i].x); // 1_0_0_vacio // WELCOME_id_x_y
+								command = protocol.CreateMessage(std::vector<int>{HELLO, player[i].id, player[i].x});
+								//command = protocol.CreateMessageP(1, player[i].id, player[i].x); // 1_0_0_vacio // WELCOME_id_x_y
 								sender.SendMessages(player[i].ip, player[i].port);
 								clientCommands.pop();
 							}

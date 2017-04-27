@@ -4,9 +4,10 @@
 
 #include "Game.h"
 
-// 1_i_x_y // WELCOME_id_x_y // Welcome al client, amb la seva id i posicions
-// 2_i_x_y // POSITION_id_x_y // Posicio del jugador id
+// 1_i_x_y // WELCOME_id_x // Welcome al client, amb la seva id i posicions
+// 2_i_x_y // POSITION_id_x // Posicio del jugador id
 // 3 // Ping
+// Protocol: https://docs.google.com/spreadsheets/d/152EPpd8-f7fTDkZwQlh1OCY5kjCTxg6-iZ2piXvEgeg/edit?usp=sharing
 
 enum State {
 	connect,	// Per conectarse al servidor

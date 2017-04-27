@@ -8,14 +8,7 @@
 // _auxText[2] -> Player
 // _auxText[3..] -> Message
 
-// 1_N_1_vacio // Mensaje_index_Jugador_vacio
-// 2_1_0_vacio // Estado_Start_null_null********************
-// 2_2_0_vacio // Estado_Finish_null_null
-// 2_3_0_Fuera de Tiempo. // Mensaje_Log_Jugador_vacio
-// 2_4_0_vacio // Mensaje_check_jugador_vacio
-// 3_N_0_vacio // NuevaPpregunta_index_null_null
-// 4_1_0_Manolo // Jugadores_IndiceJugador_0_Nombre
-// 5_N_0_vacio // Puntuaciones_Puntuacion_Jugador_null
+// Protocol: https://docs.google.com/spreadsheets/d/152EPpd8-f7fTDkZwQlh1OCY5kjCTxg6-iZ2piXvEgeg/edit?usp=sharing
 
 //Funciones std::String
 //http://www.cplusplus.com/reference/string/string/operator[]/
@@ -74,6 +67,16 @@ std::string MessageManager::CreateMessage(int type, int subtype, int first, int 
 {
 	std::string message = "";
 	message = std::to_string(type) + std::to_string(subtype) + std::to_string(first) + std::to_string(second);
+	return message;
+}
+
+std::string MessageManager::CreateMessage(std::vector<int> messageArray)
+{
+	std::string message = "";
+	for (int i = 0; i < messageArray.size(); i++)
+	{
+		message = message + std::to_string(messageArray[i]);
+	}
 	return message;
 }
 

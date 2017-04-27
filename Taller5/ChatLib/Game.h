@@ -12,6 +12,12 @@
 #define MAXTIME 10000
 #define TOTALPLAYERS 2
 
+enum Type {
+	HELLO,		// Un jugador es vol conectar
+	CONECTION,	// Informacio sobre conexio
+	PING		// PING
+};
+
 class Player {
 
 public:
