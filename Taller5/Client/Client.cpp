@@ -64,14 +64,17 @@ int main()
 	player.push_back(playertmp);
 
 	//-- GAME --//
+	
+
+	//carreguem imatges
 
 	sf::Texture texture;
 	if (!texture.loadFromFile("../Resources/Fons.png")) {
 		std::cout << "Can't load the image file" << std::endl;
 		return -1;
 	}
-	sf::Sprite sprite; // fons
-	sprite.setTexture(texture);
+	sf::Sprite fons; // fons
+	fons.setTexture(texture);
 
 	sf::Texture texture2;
 	if (!texture2.loadFromFile("../Resources/Blue.png")) {
@@ -98,7 +101,9 @@ int main()
 
 	sf::Vector2i screenDimensions(1600, 900);											// Dimensions pantalles
 	sf::RenderWindow window;															// Creem la finestra del joc
-	window.create(sf::VideoMode(screenDimensions.x, screenDimensions.y), "Taller5");	// Obrim la finestra del joc
+	window.create(sf::VideoMode(screenDimensions.x, screenDimensions.y), "Aoi Samurai");	// Obrim la finestra del joc
+	window.setFramerateLimit(60); //FrameRate
+
 	thread.launch();																	// Comencem thread receive
 
 	while (window.isOpen())
@@ -171,7 +176,8 @@ int main()
 			break;
 		}
 
-		window.draw(sprite);	// Pintem el fons
+		window.draw(fons);	// Pintem el fons
+
 		if (player.size() > 0) { 
 			blue.setPosition(player[0].x, player[0].y);
 			window.draw(blue); // pintem el jugador
