@@ -1,3 +1,12 @@
 ﻿C:\Program Files (x86)\MSBuild\Microsoft.Cpp\v4.0\V140\Microsoft.CppBuild.targets(392,5): warning MSB8028: The intermediate directory (x64\Release\) contains files shared from another project (ConsoleApplication1.vcxproj, Taller1.vcxproj, Taller2.vcxproj).  This can lead to incorrect clean and rebuild behavior.
-Server.obj : error LNK2001: unresolved external symbol "public: class std::basic_string<char,struct std::char_traits<char>,class std::allocator<char> > __cdecl MessageManager::CreateMessage(class std::vector<int,class std::allocator<int> >)" (?CreateMessage@MessageManager@@QEAA?AV?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@V?$vector@HV?$allocator@H@std@@@3@@Z)
-C:\Users\dsanchez\Documents\Enti\SourceHunters\Taller5\x64\Release\Server.exe : fatal error LNK1120: 1 unresolved externals
+  Server.cpp
+D:\SourceHunters\Taller5\ChatLib\Game.h(47): warning C4244: '=': conversion from 'float' to 'clock_t', possible loss of data
+Server.cpp(80): warning C4244: 'argument': conversion from 'time_t' to 'unsigned int', possible loss of data
+Server.cpp(99): warning C4101: 'key': unreferenced local variable
+  Generating code
+  41 of 577 functions ( 7.1%) were compiled, the rest were copied from previous compilation.
+    0 functions were new in current compilation
+    16 functions had inline decision re-evaluated but remain unchanged
+  Finished generating code
+  Server.vcxproj -> D:\SourceHunters\Taller5\x64\Release\Server.exe
+  Server.vcxproj -> D:\SourceHunters\Taller5\x64\Release\Server.pdb (Full PDB)

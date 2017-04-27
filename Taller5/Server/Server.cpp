@@ -123,8 +123,8 @@ int main()
 									player[i].y = 750;
 									std::cout << "\n New user" << std::endl;
 								}
-								command = protocol.CreateMessage(std::vector<int>{HELLO, player[i].id, player[i].x});
-								//command = protocol.CreateMessageP(1, player[i].id, player[i].x); // 1_0_0_vacio // WELCOME_id_x_y
+								//command = protocol.CreateMessage(std::vector<int>{HELLO, player[i].id, player[i].x});
+								command = protocol.CreateMessageP(1, player[i].id, player[i].x); // 1_0_0_vacio // WELCOME_id_x_y
 								sender.SendMessages(player[i].ip, player[i].port);
 								clientCommands.pop();
 							}
