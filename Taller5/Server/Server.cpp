@@ -106,6 +106,7 @@ int main()
 	//-- CONECT --//
 		case connect: // que es conectin els dos jugadors
 			if (!playersConected) {
+				mutex.lock();
 				if (!clientCommands.empty()) {
 					int clientCase = protocol.GetType(clientCommands.front());
 					switch (clientCase) {
@@ -138,6 +139,7 @@ int main()
 						playersConected = true;
 					}
 				}
+				mutex.unlock();
 			}
 			else
 			{
@@ -167,7 +169,7 @@ int main()
 					}
 					timerReady.Start(3000);
 				}
-
+				mutex.lock();
 				if (!clientCommands.empty()) {
 					int clientCase = protocol.GetType(clientCommands.front());
 					switch (clientCase) {
@@ -187,7 +189,7 @@ int main()
 						break;
 					}
 				}
-
+				mutex.unlock();
 				if (player[0].keyCommands.empty() && player[1].keyCommands.empty())
 				{
 					state = play;
@@ -197,15 +199,34 @@ int main()
 
 	//-- PLAY --//
 		case play:
-			// PING
+		////-- PING --////
 			if (timerPing.Check()) {
-				command = "3";
-				//TODO: 
-				sendAll(&sender, &player);
-				timerPing.Start(3000);
+				// Check si un o els dos jugadors s'ha desconectat
+				bool toConect = false;
+				for (int i = 0; i < TOTALPLAYERS; i++)
+				{
+					
+					for (int i = 0; i < player[i].keyCommands.size(); i++)
+					{
+						if (protocol.GetType(player[i].keyCommands.front()) == 3) {
+							player.erase(player.begin() + i);
+							toConect = true;
+						}
+					}				
+				}
+				if (toConect) { // si hi ha algun jugador desconectat
+					state = connect;
+				}
+				else {
+					command = "3";
+					sendAll(&sender, &player);
+					timerPing.Start(3000);
+				}
+				
 			}
 
-	//-- CLIENT COMMANDS --//
+		////-- CLIENT COMMANDS --////
+			mutex.lock();
 			if (!clientCommands.empty()) {
 				int clientCase = protocol.GetType(clientCommands.front());
 				switch (clientCase) {
@@ -228,6 +249,7 @@ int main()
 					break;
 				}
 			}
+			mutex.unlock();
 			break;
 		}
 	}

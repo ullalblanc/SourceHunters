@@ -12,7 +12,7 @@
 #define MAXTIME 10000
 #define TOTALPLAYERS 2
 
-enum Type {
+enum Type { // uint2
 	HELLO,		// Un jugador es vol conectar
 	CONECTION,	// Informacio sobre conexio
 	PING		// PING
