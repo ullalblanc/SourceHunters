@@ -67,7 +67,7 @@ int main()
 	
 
 	//carreguem imatges
-
+	//fons
 	sf::Texture texture;
 	if (!texture.loadFromFile("../Resources/Fons.png")) {
 		std::cout << "Can't load the image file" << std::endl;
@@ -76,14 +76,81 @@ int main()
 	sf::Sprite fons; // fons
 	fons.setTexture(texture);
 
-	sf::Texture texture2;
-	if (!texture2.loadFromFile("../Resources/Blue.png")) {
+	//Jugador 1 
+	sf::Texture p1TextTop;
+	if (!p1TextTop.loadFromFile("../Resources/SpriteEsquerrav1.png")) {
 		std::cout << "Can't load the image file" << std::endl;
 		return -1;
 	}
-	sf::Sprite blue; // jugador
+	//Animation idle
+	Animation idleAnimation;
+	idleAnimation.setSpriteSheet(p1TextTop);
+	idleAnimation.addFrame(sf::IntRect(0,0,650,650));
+
+	//Animacio attack top player 1
+	Animation attackAnimationTop;
+	attackAnimationTop.setSpriteSheet(p1TextTop);
+	attackAnimationTop.addFrame(sf::IntRect(652*1, 0, 650, 650));
+	attackAnimationTop.addFrame(sf::IntRect(652*2, 0, 650, 650));
+	attackAnimationTop.addFrame(sf::IntRect(652*3, 0, 650, 650));
+	attackAnimationTop.addFrame(sf::IntRect(652*4, 0, 650, 650));
+	attackAnimationTop.addFrame(sf::IntRect(652*5, 0, 650, 650));//5
+	attackAnimationTop.addFrame(sf::IntRect(652*6, 0, 650, 650));
+	attackAnimationTop.addFrame(sf::IntRect(652*7, 0, 650, 650));
+	attackAnimationTop.addFrame(sf::IntRect(652*8, 0, 650, 650));
+	attackAnimationTop.addFrame(sf::IntRect(652*9, 0, 650, 650));
+	attackAnimationTop.addFrame(sf::IntRect(652*0,652, 650, 650));//10
+	attackAnimationTop.addFrame(sf::IntRect(652*1, 652, 650, 650));
+	attackAnimationTop.addFrame(sf::IntRect(652*2, 652, 650, 650));
+	attackAnimationTop.addFrame(sf::IntRect(652*3, 652, 650, 650));
+
+	//Animacio attack mid player 1
+	Animation attackAnimationMid;
+	attackAnimationMid.setSpriteSheet(p1TextTop);
+	attackAnimationMid.addFrame(sf::IntRect(652 * 4, 652, 650, 650));
+	attackAnimationMid.addFrame(sf::IntRect(652 * 5, 652, 650, 650));
+	attackAnimationMid.addFrame(sf::IntRect(652 * 6, 652, 650, 650));
+	attackAnimationMid.addFrame(sf::IntRect(652 * 7, 652, 650, 650));
+	attackAnimationMid.addFrame(sf::IntRect(652 * 8, 652, 650, 650));//5
+	attackAnimationMid.addFrame(sf::IntRect(652 * 9, 652, 650, 650));
+	attackAnimationMid.addFrame(sf::IntRect(652 * 0, 652*2, 650, 650));
+	attackAnimationMid.addFrame(sf::IntRect(652 * 1, 652*2, 650, 650));
+	attackAnimationMid.addFrame(sf::IntRect(652 * 2, 652*2, 650, 650));
+	attackAnimationMid.addFrame(sf::IntRect(652 * 3, 652*2, 650, 650));//10
+	attackAnimationMid.addFrame(sf::IntRect(652 * 4, 652*2, 650, 650));
+	attackAnimationMid.addFrame(sf::IntRect(652 * 5, 652*2, 650, 650));
+	attackAnimationMid.addFrame(sf::IntRect(652 * 6, 652*2, 650, 650));
+
+	//Animacio attack bot player 1
+	Animation attackAnimationBot;
+	attackAnimationBot.setSpriteSheet(p1TextTop);
+	attackAnimationBot.addFrame(sf::IntRect(652 * 7, 652 * 2, 650, 650));
+	attackAnimationBot.addFrame(sf::IntRect(652 * 8, 652 * 2, 650, 650));
+	attackAnimationBot.addFrame(sf::IntRect(652 * 9, 652 * 2, 650, 650));
+	attackAnimationBot.addFrame(sf::IntRect(652 * 0, 652 * 3, 650, 650));
+	attackAnimationBot.addFrame(sf::IntRect(652 * 1, 652 * 3, 650, 650));//5
+	attackAnimationBot.addFrame(sf::IntRect(652 * 2, 652 * 3, 650, 650));
+	attackAnimationBot.addFrame(sf::IntRect(652 * 3, 652 * 3, 650, 650));
+	attackAnimationBot.addFrame(sf::IntRect(652 * 4, 652 * 3, 650, 650));
+	attackAnimationBot.addFrame(sf::IntRect(652 * 5, 652 * 3, 650, 650));
+	attackAnimationBot.addFrame(sf::IntRect(652 * 6, 652 * 3, 650, 650));//10
+	attackAnimationBot.addFrame(sf::IntRect(652 * 7, 652 * 3, 650, 650));
+	attackAnimationBot.addFrame(sf::IntRect(652 * 8, 652 * 3, 650, 650));
+	attackAnimationBot.addFrame(sf::IntRect(652 * 9, 652 * 3, 650, 650));
+
+	Animation* currentAnimation = &idleAnimation;
+
+	// set up AnimatedSprite
+	AnimatedSprite p1Top(sf::seconds(0.2), true, false); //(sf::Time frameTime, bool paused, bool looped)
+	p1Top.setPosition(sf::Vector2f(player[0].x, player[0].x));
+
+	sf::Clock frameClock;//Preparem el temps
+
+
+
+	/*sf::Sprite blue; // jugador
 	blue.setTexture(texture2);
-	blue.setOrigin(20, 20);
+	blue.setOrigin(20, 20);*/
 	sf::Texture texture3;
 	if (!texture3.loadFromFile("../Resources/Fucsia.png")) {
 		std::cout << "Can't load the image file" << std::endl;
@@ -108,6 +175,7 @@ int main()
 
 	while (window.isOpen())
 	{
+		sf::Time frameTime = frameClock.restart();
 		switch (state) {
 		case connect:
 
@@ -146,7 +214,15 @@ int main()
 		case send:
 			break;
 		case play:
+			
 
+			sf::Keyboard key;
+			if (key.isKeyPressed(sf::Keyboard::Right)) {
+				player[0].x += 2;
+				currentAnimation = &attackAnimationTop;
+
+
+			}
 			if (!serverCommands.empty()) {
 				switch (protocol.GetType(serverCommands.front())) {
 
@@ -179,8 +255,10 @@ int main()
 		window.draw(fons);	// Pintem el fons
 
 		if (player.size() > 0) { 
-			blue.setPosition(player[0].x, player[0].y);
-			window.draw(blue); // pintem el jugador
+			p1Top.play(*currentAnimation);
+			p1Top.update(frameTime);
+			p1Top.setPosition(player[0].x, player[0].y);
+			window.draw(p1Top); // pintem el jugador
 			if (player.size() > 1) {
 				for (int i = 1; i < player.size(); i++)
 				{
