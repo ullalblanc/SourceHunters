@@ -8,6 +8,8 @@
 
 #include "Send.h"
 #include "MessageManager.h"
+#include "InputMemoryBitStream.h"
+#include "OutputMemoryBitStream.h"
 
 #define MAXTIME 10000
 #define TOTALPLAYERS 2
