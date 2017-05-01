@@ -32,7 +32,9 @@ int main()
 	Send sender;												// Sender per enviar misatges
 	ClientReceive receiver;										// Receiver per rebre constanment misatges
 	sf::Thread thread(&ClientReceive::ReceiveCommands, &receiver);	// Thread per el receiver
-	std::vector<Player> player;	// Vector de jugadors
+	std::vector<Player> player;									// Vector de jugadors
+	//InputMemoryBitStream input;								// Per llegir misatges optimitzats
+	OutputMemoryBitStream output;								// Per crear mistages optimitzats
 
 	sender.command = &command;
 	sender.socket = &socket;

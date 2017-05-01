@@ -59,6 +59,8 @@ int main()
 	sf::Thread thread(&ServerReceive::ReceiveCommands, &receiver);	// Thread per el receiver
 	std::vector<ServerPlayer> player;							// Vector de jugadors
 	ServerPlayer playertmp;
+	//InputMemoryBitStream input;								// Per llegir misatges optimitzats
+	OutputMemoryBitStream output;								// Per crear mistages optimitzats
 
 	sf::Socket::Status status = socket.bind(5000);				// Bind al port 5000
 	if (status != sf::Socket::Done) {
@@ -77,7 +79,6 @@ int main()
 	//receiver.playertmp = &playertmp;
 
 	//-- SERVER --//
-	srand(time(NULL));
 	MessageManager protocol;
 	Timer timerReady;
 	Timer timerPing;
