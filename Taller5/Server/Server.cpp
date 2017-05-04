@@ -19,8 +19,22 @@ enum State {
 void sendAll(Send* sender, std::vector<ServerPlayer>* player) { // per misatges iguals que s'envien a tots el jugadors
 
 	bool foundMessage = false;									// Per saber si hi ha un misatge igual
+	for (int i = 0; i < player->size(); i++)
+	{
+		sender->SendMessages(player->at(i).ip, player->at(i).port);
+		for (int j = 0; j < player->at(i).keyCommands.size(); j++)
+		{
+			if (player->at(i).keyCommands[j] == *sender->command) {
+				foundMessage = true;
+				break;
+			}
+		}
+		if (!foundMessage) player->at(i).keyCommands.push_back(*sender->command);
 
-	sender->SendMessages(player->at(1).ip, player->at(1).port);
+		foundMessage = false;
+	}
+
+	/*sender->SendMessages(player->at(1).ip, player->at(1).port);
 	for (int i = 0; i < player->at(1).keyCommands.size(); i++)
 	{
 		if (player->at(1).keyCommands[i] == *sender->command) {
@@ -40,7 +54,7 @@ void sendAll(Send* sender, std::vector<ServerPlayer>* player) { // per misatges 
 			break;
 		}
 	}
-	if (!foundMessage) player->at(0).keyCommands.push_back(*sender->command);
+	if (!foundMessage) player->at(0).keyCommands.push_back(*sender->command);*/
 }
 
 int main()
@@ -205,11 +219,12 @@ int main()
 				// Check si un o els dos jugadors s'ha desconectat
 				bool toConect = false;
 				for (int i = 0; i < TOTALPLAYERS; i++)
-				{
-					
-					for (int i = 0; i < player[i].keyCommands.size(); i++)
+				{					
+					for (int j = 0; j < player[i].keyCommands.size(); j++)
 					{
-						if (protocol.GetType(player[i].keyCommands.front()) == 3) {
+						if (protocol.GetType(player[i].keyCommands[j]) == 3) {
+							command = "4" + std::to_string(i); // Misatge que s'ha desconectat el jugador i
+							sendAll(&sender, &player);
 							player.erase(player.begin() + i);
 							toConect = true;
 						}
@@ -247,6 +262,12 @@ int main()
 						}
 					}
 					clientCommands.pop();
+					break;
+
+				case 4:
+					break;
+
+				case 5: // Movimiento
 					break;
 				}
 			}

@@ -1,9 +1,12 @@
 ﻿  Client.cpp
-D:\SourceHunters\Taller5\ChatLib\Game.h(41): warning C4244: '=': conversion from 'float' to 'clock_t', possible loss of data
-Client.cpp(175): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
-Client.cpp(180): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
+D:\SourceHunters\Taller5\ChatLib\Game.h(49): warning C4244: '=': conversion from 'float' to 'clock_t', possible loss of data
+Client.cpp(146): warning C4305: 'argument': truncation from 'double' to 'float'
+Client.cpp(147): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
+Client.cpp(262): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
+Client.cpp(267): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
+Client.cpp(221): warning C4101: 'key': unreferenced local variable
   Generating code
-  1 of 538 functions ( 0.2%) were compiled, the rest were copied from previous compilation.
+  5 of 630 functions ( 0.8%) were compiled, the rest were copied from previous compilation.
     0 functions were new in current compilation
     0 functions had inline decision re-evaluated but remain unchanged
   Finished generating code

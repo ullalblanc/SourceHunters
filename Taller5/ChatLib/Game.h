@@ -17,7 +17,8 @@
 enum Type { // uint2
 	HELLO,		// Un jugador es vol conectar
 	CONECTION,	// Informacio sobre conexio
-	PING		// PING
+	PING,		// PING
+	MOVEMENT	// Informació sobre el moviment
 };
 
 class Player {
@@ -115,13 +116,13 @@ public:
 							else if (i == players->size() - 1) {	// si no existeix 
 								playertmp.ip = ip;				// crea nou jugador
 								playertmp.port = port;
-								if (players->at(0).id == 1)
+								if (players->at(0).id == 0)
 								{
-									playertmp.id = 2; // player 2
+									playertmp.id = 1; // player 2
 								}
 								else
 								{
-									playertmp.id = 1; // player 1
+									playertmp.id = 0; // player 1
 								}
 								players->push_back(playertmp);
 								data[1] = players->at(i+1).id + 48;	// marca la id
@@ -132,7 +133,7 @@ public:
 					else {
 						playertmp.ip = ip;					// crea nou jugador
 						playertmp.port = port;
-						playertmp.id = 1; // un id mes al ultim de la llista
+						playertmp.id = 0; // un id mes al ultim de la llista
 
 						players->push_back(playertmp);
 						data[1] = players->at(0).id + 48;	// marca la id
