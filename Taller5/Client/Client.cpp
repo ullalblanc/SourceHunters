@@ -60,7 +60,7 @@ int main()
 	State state = connect;		// Comencem en connect per que es conecti al server
 	Player playertmp;			// Amb el tmp es guardara a ell mateix i als altres en el vector player
 
-	playertmp.x = -50;
+	//playertmp.x = -50;
 	playertmp.y = 750;
 	player.push_back(playertmp);
 	player.push_back(playertmp);

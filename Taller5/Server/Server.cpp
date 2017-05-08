@@ -33,28 +33,6 @@ void sendAll(Send* sender, std::vector<ServerPlayer>* player) { // per misatges 
 
 		foundMessage = false;
 	}
-
-	/*sender->SendMessages(player->at(1).ip, player->at(1).port);
-	for (int i = 0; i < player->at(1).keyCommands.size(); i++)
-	{
-		if (player->at(1).keyCommands[i] == *sender->command) {
-			foundMessage = true;
-			break;
-		}
-	}
-	if (!foundMessage) player->at(1).keyCommands.push_back(*sender->command);
-
-	foundMessage = false;
-
-	sender->SendMessages(player->at(0).ip, player->at(0).port);
-	for (int i = 0; i < player->at(0).keyCommands.size(); i++)
-	{
-		if (player->at(0).keyCommands[i] == *sender->command) {
-			foundMessage = true;
-			break;
-		}
-	}
-	if (!foundMessage) player->at(0).keyCommands.push_back(*sender->command);*/
 }
 
 int main()
@@ -63,9 +41,9 @@ int main()
 
 	sf::IpAddress ip = sf::IpAddress::IpAddress("127.0.0.1");	// sf::IpAddress::getLocalAddress();
 	sf::UdpSocket socket;										// El socket del servidor
-	std::queue<sf::IpAddress> ipQueue;							// On es guarden les ips no asignades dels nous jugadors
-	std::queue<unsigned short> portQueue;						// On es guarden els ports no asigntas dels nous jugadors
-	std::queue<std::string> clientCommands;						// Misatges dels jugadors per anar executant
+	//std::queue<sf::IpAddress> ipQueue;							// On es guarden les ips no asignades dels nous jugadors
+	//std::queue<unsigned short> portQueue;						// On es guarden els ports no asigntas dels nous jugadors
+	std::queue<InputMemoryBitStream> clientCommands;						// Misatges dels jugadors per anar executant
 	sf::Mutex mutex;											// Per evitar varis accesos a les cues
 	std::string command;										// el misatge que envia als clients
 	Send sender;												// Sender per enviar misatges
@@ -74,7 +52,7 @@ int main()
 	std::vector<ServerPlayer> player;							// Vector de jugadors
 	ServerPlayer playertmp;
 	//InputMemoryBitStream input;								// Per llegir misatges optimitzats
-	OutputMemoryBitStream output;								// Per crear mistages optimitzats
+	//OutputMemoryBitStream output;								// Per crear mistages optimitzats
 
 	sf::Socket::Status status = socket.bind(5000);				// Bind al port 5000
 	if (status != sf::Socket::Done) {
@@ -123,7 +101,8 @@ int main()
 			if (!playersConected) {
 				mutex.lock();
 				if (!clientCommands.empty()) {
-					int clientCase = protocol.GetType(clientCommands.front());
+					int clientCase; clientCommands.front().Read(&clientCase, 3);
+					//int clientCase = protocol.GetType(clientCommands.front());
 					switch (clientCase) {
 					case 1:	// Un client es vol conectar
 
@@ -140,8 +119,12 @@ int main()
 									std::cout << "\n New user" << std::endl;
 								}
 								//command = protocol.CreateMessage(std::vector<int>{HELLO, player[i].id, player[i].x});
-								command = protocol.CreateMessageP(1, player[i].id, player[i].x); // 1_0_0_vacio // WELCOME_id_x_y
-								sender.SendMessages(player[i].ip, player[i].port);
+								OutputMemoryBitStream output;
+								output.Write(HELLO, 3);
+								output.Write(player[i].id, 1);
+								output.Write(player[i].x, 11);
+								//command = protocol.CreateMessageP(1, player[i].id, player[i].x); // 1_0_0_vacio // WELCOME_id_x_y
+								sender.SendMessages(player[i].ip, player[i].port, output);
 								clientCommands.pop();
 							}
 						}

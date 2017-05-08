@@ -25,7 +25,7 @@ class Player {
 
 public:
 	int id;
-	int x;
+	int x = -1;
 	int y;
 	std::vector<std::string> keyCommands;
 };
@@ -73,7 +73,7 @@ class Receive
 {
 public:
 	sf::UdpSocket *socket;
-	std::queue<std::string> *commands;
+	std::queue<InputMemoryBitStream> *commands;
 	sf::Mutex *mutex;
 	bool stopReceive = true;
 
@@ -87,7 +87,6 @@ class ServerReceive : public Receive {
 
 public:
 	std::vector<ServerPlayer> *players;
-	//ServerPlayer *playertmp;
 
 	void ReceiveCommands() {
 		do {
@@ -102,15 +101,19 @@ public:
 			if (status == sf::Socket::Done) {
 				mutex->lock();
 				//commands->push(data);
-
-				if (data[0] == '1') { // save ip and port
+				InputMemoryBitStream newCommand(data, received * 8);
+				commands->push(newCommand);
+				int type;
+				newCommand.Read(&type, 3);
+				if (type == HELLO) { // save ip and port
 					ServerPlayer playertmp;
 					if (!players->empty()) {
 						for (int i = 0; i < players->size(); i++) // recorre tots els jugadors
 						{
 							if (players->at(i).port == port && players->at(i).ip == ip) // Si es el jugador 2
 							{
-								data[1] = players->at(i).id + 48; // marca la id
+								commands->back().SetNewId = players->at(i).id;
+								//data[1] = players->at(i).id + 48; // marca la id
 								break;							// acaba el for
 							}
 							else if (i == players->size() - 1) {	// si no existeix 
@@ -125,22 +128,24 @@ public:
 									playertmp.id = 0; // player 1
 								}
 								players->push_back(playertmp);
-								data[1] = players->at(i+1).id + 48;	// marca la id
-								data[2] = '1';						// marca que necesita posicio
+								commands->back().SetNewId = players->at(i).id;
+								//data[1] = players->at(i+1).id + 48;	// marca la id
+								//data[2] = '1';						// marca que necesita posicio
 							}
 						}
 					}
 					else {
 						playertmp.ip = ip;					// crea nou jugador
 						playertmp.port = port;
-						playertmp.id = 0; // un id mes al ultim de la llista
+						playertmp.id = 0; 
 
 						players->push_back(playertmp);
-						data[1] = players->at(0).id + 48;	// marca la id
-						data[2] = '1';						// marca que necesita posicio
+						commands->back().SetNewId = 0;
+						//data[1] = players->at(0).id + 48;	// marca la id
+						//data[2] = '1';						// marca que necesita posicio
 					}
 				}
-				commands->push(data);
+				
 				mutex->unlock();
 			}
 		} while (stopReceive);

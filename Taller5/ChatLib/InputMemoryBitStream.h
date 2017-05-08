@@ -6,6 +6,7 @@
 class InputMemoryBitStream
 {
 private:
+	int			newID;
 	char*		mBuffer;
 	uint32_t	mBitHead;
 	uint32_t	mBitCapacity;
@@ -21,6 +22,16 @@ public:
 
 	~InputMemoryBitStream()
 	{
+	}
+
+	void SetNewId(int ID)
+	{
+		newID = ID;
+	}
+
+	int GetNewId() const 
+	{
+		return newID;
 	}
 
 	const char*	GetBufferPtr() const
