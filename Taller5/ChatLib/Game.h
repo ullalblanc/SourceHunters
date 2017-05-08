@@ -14,11 +14,16 @@
 #define MAXTIME 10000
 #define TOTALPLAYERS 2
 
+#define TYPE_SIZE 3
+#define ID_SIZE 1
+#define POSITION_SIZE 11
+
 enum Type { // uint2
-	HELLO,		// Un jugador es vol conectar
-	CONECTION,	// Informacio sobre conexio
-	PING,		// PING
-	MOVEMENT	// Informació sobre el moviment
+	HELLO,			// Un jugador es vol conectar
+	CONNECTION,		// Informacio sobre conexio
+	PING,			// PING
+	DISCONNECTION,	// Avis de desconexio
+	MOVEMENT		// Informació sobre el moviment
 };
 
 class Player {
@@ -27,7 +32,7 @@ public:
 	int id;
 	int x = -1;
 	int y;
-	std::vector<std::string> keyCommands;
+	std::vector<OutputMemoryBitStream> keyCommands;
 };
 
 class ServerPlayer : public Player {
