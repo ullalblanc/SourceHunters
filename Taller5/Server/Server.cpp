@@ -1,12 +1,8 @@
-//#include <SFML\Graphics.hpp>
-//#include <SFML\Network.hpp>
 #include <cstring>
 
 #include "Game.h"
 
-// 1_0_0_0 // Hello // client vol conectarse
-// 2_i_i_0 // Conexion_Start_Jugador_vacio // client comfirma que esta ready per jugar
-// 3_i // Ping_index // Comfirmacio de ping de client
+// Protocol: https://docs.google.com/spreadsheets/d/152EPpd8-f7fTDkZwQlh1OCY5kjCTxg6-iZ2piXvEgeg/edit?usp=sharing
 
 enum State {
 	connect,	// Esperar a que es conectin els dos jugadors
@@ -67,6 +63,7 @@ int main()
 	//receiver.playertmp = &playertmp;
 
 	//-- SERVER --//
+
 	MessageManager protocol;
 	Timer timerReady;
 	Timer timerPing;
@@ -278,7 +275,7 @@ int main()
 					clientCommands.pop();
 					break;
 				}
-				case MOVEMENT: 
+				case MOVEMENT: {
 					int playerId; clientCommands.front().Read(&playerId, ID_SIZE);
 					int position; clientCommands.front().Read(&position, POSITION_SIZE);
 
@@ -290,7 +287,7 @@ int main()
 
 					clientCommands.pop();
 					break;
-
+				}
 				case ATTACK:
 
 					break;

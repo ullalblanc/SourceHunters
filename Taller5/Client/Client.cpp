@@ -4,9 +4,6 @@
 
 #include "Game.h"
 
-// 1_i_x_y // WELCOME_id_x // Welcome al client, amb la seva id i posicions
-// 2_i_x_y // POSITION_id_x // Posicio del jugador id
-// 3 // Ping
 // Protocol: https://docs.google.com/spreadsheets/d/152EPpd8-f7fTDkZwQlh1OCY5kjCTxg6-iZ2piXvEgeg/edit?usp=sharing
 
 enum State {
@@ -24,17 +21,13 @@ int main()
 	sf::IpAddress ip = sf::IpAddress::IpAddress("127.0.0.1"); //sf::IpAddress::getLocalAddress();
 	unsigned short serverPort = 5000;
 	sf::UdpSocket socket;
-	std::queue<sf::IpAddress> ipQueue;							// On es guarden les ips no asignades dels nous jugadors
-	std::queue<unsigned short> portQueue;						// On es guarden els ports no asigntas dels nous jugadors
-	std::queue<std::string> serverCommands;						// Misatges del servidor per anar executant
+	std::queue<InputMemoryBitStream> serverCommands;			// Misatges del servidor per anar executant
 	sf::Mutex mutex;											// Per evitar varis accesos a les cues
 	std::string command;										// el misatge que envia als clients
 	Send sender;												// Sender per enviar misatges
 	ClientReceive receiver;										// Receiver per rebre constanment misatges
 	sf::Thread thread(&ClientReceive::ReceiveCommands, &receiver);	// Thread per el receiver
 	std::vector<Player> player;									// Vector de jugadors
-	//InputMemoryBitStream input;								// Per llegir misatges optimitzats
-	OutputMemoryBitStream output;								// Per crear mistages optimitzats
 
 	sender.command = &command;
 	sender.socket = &socket;
@@ -219,30 +212,40 @@ int main()
 		case connect:
 
 			if (timerConnect.Check()) {
-				command = protocol.CreateMessage(1, 0, 0, 0);
-				sender.SendMessages(ip, serverPort);
+				OutputMemoryBitStream output;
+				output.Write(HELLO, TYPE_SIZE);
+				//command = protocol.CreateMessage(1, 0, 0, 0);
+				sender.SendMessages(ip, serverPort, output);
 				timerConnect.Start(5000);
 				timerConnect.Stop();
 			}
 			if (!serverCommands.empty()) {
-				switch (protocol.GetType(serverCommands.front())) {
+				int serverCase; serverCommands.front().Read(&serverCase, TYPE_SIZE);
+				switch (serverCase) {
 
-				case 1:
-					player[0].id = protocol.GetSubType(serverCommands.front());
-					player[0].x = protocol.GetPosition(serverCommands.front());
+				case HELLO:
+					serverCommands.front().Read(&player[0].id, ID_SIZE);
+					serverCommands.front().Read(&player[0].x, POSITION_SIZE);
+					//player[0].id = protocol.GetSubType(serverCommands.front());
+					//player[0].x = protocol.GetPosition(serverCommands.front());
 					serverCommands.pop();
 					break;
 
-				case 2:
-					player[1].id = protocol.GetSubType(serverCommands.front());
-					player[1].x = protocol.GetPosition(serverCommands.front());
+				case CONNECTION: {
+					serverCommands.front().Read(&player[1].id, ID_SIZE);
+					serverCommands.front().Read(&player[1].x, POSITION_SIZE);
+					//player[1].id = protocol.GetSubType(serverCommands.front());
+					//player[1].x = protocol.GetPosition(serverCommands.front());
 					serverCommands.pop();
 
-					command = protocol.CreateMessage(2, player[0].id, 0, 0);
-					sender.SendMessages(ip, serverPort);
+					OutputMemoryBitStream output;
+					output.Write(CONNECTION, TYPE_SIZE);
+					output.Write(player[0].id, ID_SIZE);
+					//command = protocol.CreateMessage(2, player[0].id, 0, 0);
+					sender.SendMessages(ip, serverPort, output);
 					state = play;
 					break;
-
+				}
 				default:
 					break;
 
@@ -270,21 +273,30 @@ int main()
 			}
 
 			if (!serverCommands.empty()) {
-				switch (protocol.GetType(serverCommands.front())) {
+				int serverCase; serverCommands.front().Read(&serverCase, TYPE_SIZE);
+				switch (serverCase) {
 
-				case 1: // NO TINDRIA QUE REBRE 1
+				case HELLO: // NO TINDRIA QUE REBRE 1
 					break;
 
-				case 2: 		
-					command = protocol.CreateMessage(2, player[0].id, 0, 0);
-					sender.SendMessages(ip, serverPort);
+				case CONNECTION: {
+					OutputMemoryBitStream output;
+					output.Write(CONNECTION, TYPE_SIZE);
+					output.Write(player[0].id, ID_SIZE);
+					//command = protocol.CreateMessage(2, player[0].id, 0, 0);
+					sender.SendMessages(ip, serverPort, output);
 					serverCommands.pop();
 					break;
-
-				case 3:
+				}
+				case PING: {
+					OutputMemoryBitStream output;
+					output.Write(PING, TYPE_SIZE);
+					output.Write(player[0].id, ID_SIZE);
 					command = "3" + std::to_string(player[0].id);
-					sender.SendMessages(ip, serverPort);
+					sender.SendMessages(ip, serverPort, output);
 					serverCommands.pop();
+					break;
+				}
 				default:
 					break;
 
