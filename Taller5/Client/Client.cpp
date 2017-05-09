@@ -209,7 +209,7 @@ int main()
 	{
 		sf::Time frameTime = frameClock.restart();
 		switch (state) {
-		case connect:
+		case connect: {
 
 			if (timerConnect.Check()) {
 				OutputMemoryBitStream output;
@@ -223,12 +223,13 @@ int main()
 				int serverCase; serverCommands.front().Read(&serverCase, TYPE_SIZE);
 				switch (serverCase) {
 
-				case HELLO:
+				case HELLO: {
 					serverCommands.front().Read(&player[0].id, ID_SIZE);
 					serverCommands.front().Read(&player[0].x, POSITION_SIZE);
 					//player[0].id = protocol.GetSubType(serverCommands.front());
 					//player[0].x = protocol.GetPosition(serverCommands.front());
 					serverCommands.pop();
+				}
 					break;
 
 				case CONNECTION: {
@@ -246,17 +247,17 @@ int main()
 					state = play;
 					break;
 				}
-				default:
+				default: {}
 					break;
 
 				}
-			}		
+			}
+		}
 			break;
 
-		case send:
+		case send: {}
 			break;
-		case play:
-			
+		case play: {
 
 			sf::Keyboard key;
 			if (key.isKeyPressed(sf::Keyboard::Right)) {
@@ -276,7 +277,8 @@ int main()
 				int serverCase; serverCommands.front().Read(&serverCase, TYPE_SIZE);
 				switch (serverCase) {
 
-				case HELLO: // NO TINDRIA QUE REBRE 1
+				case HELLO: { // NO TINDRIA QUE REBRE 1
+				}
 					break;
 
 				case CONNECTION: {
@@ -302,11 +304,15 @@ int main()
 
 				}
 			}
+		}
 			break;
 
-		case points:
+		case points: {
+		}
 			break;
-		case win:
+		case win: {
+
+		}
 			break;
 		}
 

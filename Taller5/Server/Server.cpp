@@ -90,22 +90,23 @@ int main()
 		switch (state) {
 
 	//-- CONECT --//
-		case connect: // que es conectin els dos jugadors
+		case connect: { // que es conectin els dos jugadors
 			if (!playersConected) {
 				mutex.lock();
 				if (!clientCommands.empty()) {
 					int clientCase; clientCommands.front().Read(&clientCase, TYPE_SIZE);
 					//int clientCase = protocol.GetType(clientCommands.front());
 					switch (clientCase) {
-					case HELLO:	// Un client es vol conectar
+					case HELLO: {	// Un client es vol conectar
 
 						for (int i = 0; i < player.size(); i++)
 						{
 							if (clientCommands.front().GetNewId() == player[i].id) {	// el jugador que diu Hello
 								if (player[i].x < 0) {//protocol.GetFirst(clientCommands.front()) == 1) {			// necesita posicio
-									if (player[i].id == 1) { 
+									if (player[i].id == 1) {
 										player[i].x = 270;// jugador 1 a 270
-									} else {
+									}
+									else {
 										player[i].x = 1330; // jugador 2 a 1330
 									}
 									player[i].y = 750;
@@ -121,6 +122,7 @@ int main()
 								clientCommands.pop();
 							}
 						}
+					}
 						break;
 
 					}
@@ -195,21 +197,22 @@ int main()
 				if (player[0].keyCommands.empty() && player[1].keyCommands.empty())
 				{
 					state = play;
-				}			
+				}
 			}
+		}
 			break;
 
 	//-- PLAY --//
-		case play:
-		////-- PING --////
+		case play: {
+			////-- PING --////
 			if (timerPing.Check()) {
 				// Check si un o els dos jugadors s'ha desconectat
 				bool toConect = false;
 				for (int i = 0; i < TOTALPLAYERS; i++)
-				{					
+				{
 					for (int j = 0; j < player[i].keyCommands.size(); j++)
 					{
-						InputMemoryBitStream intmp(player[i].keyCommands[j].GetBufferPtr(), player[i].keyCommands[j].GetByteLength()*8);
+						InputMemoryBitStream intmp(player[i].keyCommands[j].GetBufferPtr(), player[i].keyCommands[j].GetByteLength() * 8);
 						int typetmp;  intmp.Read(&typetmp, 1);
 						if (typetmp == PING) {
 							OutputMemoryBitStream output;
@@ -220,7 +223,7 @@ int main()
 							player.erase(player.begin() + i);
 							toConect = true;
 						}
-					}				
+					}
 				}
 				if (toConect) { // si hi ha algun jugador desconectat
 					state = connect;
@@ -232,36 +235,39 @@ int main()
 					sendAll(&sender, &player, output);
 					timerPing.Start(3000);
 				}
-				
+
 			}
 
-		////-- CLIENT COMMANDS --////
+			////-- CLIENT COMMANDS --////
 			mutex.lock();
 			if (!clientCommands.empty()) {
 				int clientCase; clientCommands.front().Read(&clientCase, TYPE_SIZE);
 				switch (clientCase) {
 
-				case HELLO:	// Un client es vol conectar
+				case HELLO: {	// Un client es vol conectar
 					clientCommands.pop();
+				}
 					break;
 
-				case CONNECTION:
+				case CONNECTION: {
 					clientCommands.pop();
+				}
 					break;
 
-				case PING:
+				case PING: {
 					int playerId; clientCommands.front().Read(&playerId, ID_SIZE);
-					 //= protocol.GetSubType(clientCommands.front());
+					//= protocol.GetSubType(clientCommands.front());
 					for (int i = 0; i < player[playerId].keyCommands.size(); i++)
 					{
-						InputMemoryBitStream intmp(player[playerId].keyCommands[i].GetBufferPtr(), player[playerId].keyCommands[i].GetByteLength()*8);
+						InputMemoryBitStream intmp(player[playerId].keyCommands[i].GetBufferPtr(), player[playerId].keyCommands[i].GetByteLength() * 8);
 						int typetmp;  intmp.Read(&typetmp, 1);
 						if (clientCase == typetmp) {
-							player[playerId].keyCommands.erase(player[playerId].keyCommands.begin()+1);
+							player[playerId].keyCommands.erase(player[playerId].keyCommands.begin() + 1);
 							break;
 						}
 					}
 					clientCommands.pop();
+				}
 					break;
 
 				case DISCONNECTION: {
@@ -288,12 +294,14 @@ int main()
 					clientCommands.pop();
 					break;
 				}
-				case ATTACK:
+				case ATTACK: {
 
+				}
 					break;
 				}
 			}
 			mutex.unlock();
+		}
 			break;
 		}
 	}

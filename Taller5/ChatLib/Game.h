@@ -11,10 +11,10 @@
 #include "InputMemoryBitStream.h"
 #include "OutputMemoryBitStream.h"
 
-#define MAXTIME 10000
+#define MAXTIME 10000 
 #define TOTALPLAYERS 2
 
-#define TYPE_SIZE 3
+#define TYPE_SIZE 3 
 #define ID_SIZE 1
 #define POSITION_SIZE 11
 
@@ -27,6 +27,8 @@ enum Type { // uint2
 	ATTACK			// Informació sobre el atac
 };
 
+/*Clase Player que guarda la informació basica de un jugador
+Només per Client*/
 class Player {
 
 public:
@@ -118,7 +120,7 @@ public:
 						{
 							if (players->at(i).port == port && players->at(i).ip == ip) // Si es el jugador 2
 							{
-								commands->back().SetNewId = players->at(i).id;
+								commands->back().SetNewId(players->at(i).id);
 								//data[1] = players->at(i).id + 48; // marca la id
 								break;							// acaba el for
 							}
@@ -134,7 +136,7 @@ public:
 									playertmp.id = 0; // player 1
 								}
 								players->push_back(playertmp);
-								commands->back().SetNewId = players->at(i).id;
+								commands->back().SetNewId(players->at(i).id);
 								//data[1] = players->at(i+1).id + 48;	// marca la id
 								//data[2] = '1';						// marca que necesita posicio
 							}
@@ -146,7 +148,7 @@ public:
 						playertmp.id = 0; 
 
 						players->push_back(playertmp);
-						commands->back().SetNewId = 0;
+						commands->back().SetNewId(0);
 						//data[1] = players->at(0).id + 48;	// marca la id
 						//data[2] = '1';						// marca que necesita posicio
 					}

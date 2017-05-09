@@ -4,10 +4,7 @@
 #include <string>
 //#include "General.h"
 
-uint32_t max(uint32_t mBitCapacity, uint32_t nextBitHead) {
-	if (mBitCapacity > nextBitHead) return mBitCapacity;
-	else return nextBitHead;
-};
+
 
 class OutputMemoryBitStream
 {
@@ -15,6 +12,11 @@ private:
 	char* mBuffer;
 	uint32_t mBitHead;
 	uint32_t mBitCapacity;
+
+	uint32_t max(uint32_t mBit, uint32_t nextBit) {
+		if (mBit > nextBit) return mBit;
+		else return nextBit;
+	};
 
 	void ReallocBuffer(uint32_t _inNewBitCapacity)
 	{
