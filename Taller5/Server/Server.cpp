@@ -41,9 +41,7 @@ int main()
 
 	sf::IpAddress ip = sf::IpAddress::IpAddress("127.0.0.1");	// sf::IpAddress::getLocalAddress();
 	sf::UdpSocket socket;										// El socket del servidor
-	//std::queue<sf::IpAddress> ipQueue;							// On es guarden les ips no asignades dels nous jugadors
-	//std::queue<unsigned short> portQueue;						// On es guarden els ports no asigntas dels nous jugadors
-	std::queue<InputMemoryBitStream> clientCommands;						// Misatges dels jugadors per anar executant
+	std::queue<InputMemoryBitStream> clientCommands;			// Misatges dels jugadors per anar executant
 	sf::Mutex mutex;											// Per evitar varis accesos a les cues
 	std::string command;										// el misatge que envia als clients
 	Send sender;												// Sender per enviar misatges
@@ -51,8 +49,6 @@ int main()
 	sf::Thread thread(&ServerReceive::ReceiveCommands, &receiver);	// Thread per el receiver
 	std::vector<ServerPlayer> player;							// Vector de jugadors
 	ServerPlayer playertmp;
-	//InputMemoryBitStream input;								// Per llegir misatges optimitzats
-	//OutputMemoryBitStream output;								// Per crear mistages optimitzats
 
 	sf::Socket::Status status = socket.bind(5000);				// Bind al port 5000
 	if (status != sf::Socket::Done) {
@@ -216,7 +212,7 @@ int main()
 				{					
 					for (int j = 0; j < player[i].keyCommands.size(); j++)
 					{
-						InputMemoryBitStream intmp(player[i].keyCommands[j].GetBufferPtr(), player[i].keyCommands[j].GetByteLength());
+						InputMemoryBitStream intmp(player[i].keyCommands[j].GetBufferPtr(), player[i].keyCommands[j].GetByteLength()*8);
 						int typetmp;  intmp.Read(&typetmp, 1);
 						if (typetmp == PING) {
 							OutputMemoryBitStream output;
@@ -247,17 +243,21 @@ int main()
 			if (!clientCommands.empty()) {
 				int clientCase; clientCommands.front().Read(&clientCase, TYPE_SIZE);
 				switch (clientCase) {
-				case 1:	// Un client es vol conectar
+
+				case HELLO:	// Un client es vol conectar
 					clientCommands.pop();
 					break;
-				case 2:
+
+				case CONNECTION:
 					clientCommands.pop();
 					break;
-				case 3:
-					int playerId; clientCommands.front().Read(&playerId, ID_SIZE); //= protocol.GetSubType(clientCommands.front());
+
+				case PING:
+					int playerId; clientCommands.front().Read(&playerId, ID_SIZE);
+					 //= protocol.GetSubType(clientCommands.front());
 					for (int i = 0; i < player[playerId].keyCommands.size(); i++)
 					{
-						InputMemoryBitStream intmp(player[playerId].keyCommands[i].GetBufferPtr(), player[playerId].keyCommands[i].GetByteLength());
+						InputMemoryBitStream intmp(player[playerId].keyCommands[i].GetBufferPtr(), player[playerId].keyCommands[i].GetByteLength()*8);
 						int typetmp;  intmp.Read(&typetmp, 1);
 						if (clientCase == typetmp) {
 							player[playerId].keyCommands.erase(player[playerId].keyCommands.begin()+1);
@@ -267,10 +267,32 @@ int main()
 					clientCommands.pop();
 					break;
 
-				case 4:
+				case DISCONNECTION: {
+					int playerId; clientCommands.front().Read(&playerId, ID_SIZE);
+					OutputMemoryBitStream output;
+					output.Write(PING, TYPE_SIZE);
+					output.Write(playerId, ID_SIZE);
+					sendAll(&sender, &player, output);
+					player.erase(player.begin() + playerId);
+					state = connect;
+					clientCommands.pop();
+					break;
+				}
+				case MOVEMENT: 
+					int playerId; clientCommands.front().Read(&playerId, ID_SIZE);
+					int position; clientCommands.front().Read(&position, POSITION_SIZE);
+
+					OutputMemoryBitStream output;
+					output.Write(PING, TYPE_SIZE);
+					output.Write(playerId, ID_SIZE);
+					output.Write(position, POSITION_SIZE);
+					sendAll(&sender, &player, output);
+
+					clientCommands.pop();
 					break;
 
-				case 5: // Movimiento
+				case ATTACK:
+
 					break;
 				}
 			}

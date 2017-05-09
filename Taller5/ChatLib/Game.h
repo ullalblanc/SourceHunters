@@ -23,7 +23,8 @@ enum Type { // uint2
 	CONNECTION,		// Informacio sobre conexio
 	PING,			// PING
 	DISCONNECTION,	// Avis de desconexio
-	MOVEMENT		// Informació sobre el moviment
+	MOVEMENT,		// Informació sobre el moviment
+	ATTACK			// Informació sobre el atac
 };
 
 class Player {
@@ -172,9 +173,12 @@ public:
 			sf::Socket::Status status = socket->receive(data, 1500, received, ip, port);
 			data[received] = '\0';
 
+			
 			if (status == sf::Socket::Done) {
 				mutex->lock();
-				commands->push(data);
+				InputMemoryBitStream newCommand(data, received * 8);
+				commands->push(newCommand);
+				//commands->push(data);
 				if (data[0] = '1') { // save ip and port
 
 				}
