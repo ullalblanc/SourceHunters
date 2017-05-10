@@ -49,17 +49,19 @@ int main()
 	//-- CLIENT --//
 
 	MessageManager protocol;	// Per llegir els segons el protocol
-	Timer timerConnect;			// timer per intentar conectarse a servidor	
+	Timer timerConnect;			// timer per intentar conectarse a servidor
+	Timer timerAccum;			// timer per el acumulats de moviment
 	State state = connect;		// Comencem en connect per que es conecti al server
 	Player playertmp;			// Amb el tmp es guardara a ell mateix i als altres en el vector player
+	std::queue<Accum> accum;	// Cua dels acumulats de moviment
 
-	//playertmp.x = -50;
 	playertmp.y = 750;
 	player.push_back(playertmp);
 	player.push_back(playertmp);
+	Accum accumtmp; accumtmp.moveId = 0;
+	accum.push(accumtmp);
 
-	//-- GAME --//
-	
+	//-- GAME --//	
 
 	//carreguem imatges
 	//fons
@@ -257,21 +259,57 @@ int main()
 
 		case send: {}
 			break;
+
 		case play: {
+
+			//-- MOVEMENT --//
 
 			sf::Keyboard key;
 			if (key.isKeyPressed(sf::Keyboard::Right)) {
-				playertmp.x += 2;
+				int movement = 2;
+				player[0].x += movement;
+				accum.back().moveDelta += movement;
+				
+				// TODO: vigilar que no surtin de el mapa ni xoquin amb el enemic
 				//currentAnimation1T = &attackAnimationTop1T;
 				p1Bot.play(pas1B);
 
 			}
 			if (key.isKeyPressed(sf::Keyboard::Left)) {
-				playertmp.x -= 2;
+				int movement = -2;
+				player[0].x += 2;
+				accum.back().moveDelta += movement;
 				//currentAnimation1T = &attackAnimationTop1T;
 				p1Top.play(attackAnimationTop1T);
 
 			}
+
+			//-- ACCUMULATED --//
+
+			if (timerAccum.Check())
+			{
+				if (accum.back().moveDelta != 0)
+				{
+					accum.back().moveAbsolute = player[0].x;			// Marco el absolut del moviment
+					OutputMemoryBitStream output;
+					output.Write(MOVEMENT, TYPE_SIZE);
+					output.Write(player[0].id, ID_SIZE);
+					output.Write(accum.back().moveId, ACCUM_ID_SIZE);
+					output.Write(accum.back().moveDelta, ACCUM_DELTA_SIZE);
+					// TODO: Write de si hi ha animacio o no
+					// sender.SendMessages(ip, port, output);
+					Accum accumtmp;										// Creo nou acumulat
+					if (accum.back().moveId == 15) accumtmp.moveId = 0;	// Si el ultim acumulat te id 15, el nou torna a 0
+					else accumtmp.moveId = accum.back().moveId + 1;     // Sino, el id es un mes que l'anterior
+					// TODO: enviar acumulat
+					// TODO: vigilar que el acumulat no pasi de +/- 64
+					
+					accum.push(accumtmp);
+				}	
+				timerAccum.Start(ACCUMTIME);
+			}
+
+			//-- COMMANDS --//
 
 			if (!serverCommands.empty()) {
 				int serverCase; serverCommands.front().Read(&serverCase, TYPE_SIZE);
@@ -299,6 +337,14 @@ int main()
 					serverCommands.pop();
 					break;
 				}
+				case MOVEMENT: {
+
+					// TODO: Mirar de qui es el moviment
+					// TODO: treure de la cua si es propi
+					// TODO: simular enemic
+
+					break;
+				}							  
 				default:
 					break;
 
@@ -320,11 +366,11 @@ int main()
 
 		if (player.size() > 0) { 
 			p1Bot.update(frameTime);
-			p1Bot.setPosition(playertmp.x, 150 + 275);
+			p1Bot.setPosition(player[0].x, 150 + 275);
 			window.draw(p1Bot);
 
 			p1Top.update(frameTime);
-			p1Top.setPosition(playertmp.x, 150);
+			p1Top.setPosition(player[0].x, 150);
 			window.draw(p1Top); // pintem el jugador
 
 			if (player.size() > 1) {

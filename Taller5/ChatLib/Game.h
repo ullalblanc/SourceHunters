@@ -12,11 +12,14 @@
 #include "OutputMemoryBitStream.h"
 
 #define MAXTIME 10000 
+#define ACCUMTIME 100
 #define TOTALPLAYERS 2
 
 #define TYPE_SIZE 3 
 #define ID_SIZE 1
 #define POSITION_SIZE 11
+#define ACCUM_ID_SIZE 4
+#define ACCUM_DELTA_SIZE 7 // de -64 a +64
 
 enum Type { // uint2
 	HELLO,			// Un jugador es vol conectar
@@ -45,6 +48,13 @@ public:
 	sf::IpAddress ip;
 	unsigned short port;
 
+};
+
+/*Paquets de acumulacio de moviment*/
+struct Accum {
+	int moveId;
+	int moveDelta;
+	int moveAbsolute;
 };
 
 class Timer {
