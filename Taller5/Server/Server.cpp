@@ -12,15 +12,15 @@ enum State {
 };
 
 
-void sendAll(Send* sender, std::vector<ServerPlayer>* player, OutputMemoryBitStream output) { // per misatges iguals que s'envien a tots el jugadors
+void sendAll(Send* sender, std::vector<ServerPlayer>* player, char* command, size_t size) { // per misatges iguals que s'envien a tots el jugadors
 
 	bool foundMessage = false;									// Per saber si hi ha un misatge igual
 	for (int i = 0; i < player->size(); i++)
 	{
-		sender->SendMessages(player->at(i).ip, player->at(i).port, output);
+		sender->SendMessages(player->at(i).ip, player->at(i).port, command, size);
 		for (int j = 0; j < player->at(i).keyCommands.size(); j++)
 		{
-			if (player->at(i).keyCommands[j].GetBufferPtr() == output.GetBufferPtr()) {
+			if (player->at(i).keyCommands[j].GetBufferPtr() == output.GetBufferPtr()) { //TODO: no comparar punters
 				foundMessage = true;
 				break;
 			}
@@ -94,7 +94,9 @@ int main()
 			if (!playersConected) {
 				mutex.lock();
 				if (!clientCommands.empty()) {
-					int clientCase; clientCommands.front().Read(&clientCase, TYPE_SIZE);
+					int clientCase = 0;
+					//InputMemoryBitStream input = clientCommands.front();//(clientCommands.front().GetBufferPtr(), )
+					clientCommands.front().Read(&clientCase, TYPE_SIZE);
 					//int clientCase = protocol.GetType(clientCommands.front());
 					switch (clientCase) {
 					case HELLO: {	// Un client es vol conectar
@@ -118,13 +120,12 @@ int main()
 								output.Write(player[i].id, ID_SIZE);
 								output.Write(player[i].x, POSITION_SIZE);
 								//command = protocol.CreateMessageP(1, player[i].id, player[i].x); // 1_0_0_vacio // WELCOME_id_x_y
-								sender.SendMessages(player[i].ip, player[i].port, output);
+								sender.SendMessages(player[i].ip, player[i].port, output.GetBufferPtr(), output.GetByteLength());
 								clientCommands.pop();
 							}
 						}
 					}
 						break;
-
 					}
 				}
 				if (player.size() == TOTALPLAYERS) { // Si existeixen 2 jugadors
@@ -142,7 +143,7 @@ int main()
 					output.Write(player[0].id, ID_SIZE);
 					output.Write(player[0].x, POSITION_SIZE);
 					//command = protocol.CreateMessageP(2, player[0].id, player[0].x); // 2_0_0_vacio // WELCOME_id_x_y
-					sender.SendMessages(player[1].ip, player[1].port, output);
+					sender.SendMessages(player[1].ip, player[1].port, output.GetBufferPtr(), output.GetByteLength());
 					for (int i = 0; i < player[1].keyCommands.size(); i++)
 					{
 						if (player[1].keyCommands[i].GetBufferPtr() == output.GetBufferPtr()) {
@@ -157,7 +158,7 @@ int main()
 					output2.Write(player[1].id, ID_SIZE);
 					output2.Write(player[1].x, POSITION_SIZE);
 					//command = protocol.CreateMessageP(2, player[1].id, player[1].x); // 2_0_0_vacio // WELCOME_id_x_y
-					sender.SendMessages(player[0].ip, player[0].port, output2);
+					sender.SendMessages(player[0].ip, player[0].port, output2.GetBufferPtr(), output2.GetByteLength());
 					for (int i = 0; i < player[0].keyCommands.size(); i++)
 					{
 						if (player[0].keyCommands[i].GetBufferPtr() == output.GetBufferPtr()) {
@@ -171,19 +172,22 @@ int main()
 				}
 				mutex.lock();
 				if (!clientCommands.empty()) {
-					int clientCase; clientCommands.front().Read(&clientCase, TYPE_SIZE);
+					int clientCase = 0; 
+					clientCommands.front().Read(&clientCase, TYPE_SIZE);
 					//int clientCase = protocol.GetType(clientCommands.front());
 					switch (clientCase) {
 					case HELLO:
 						clientCommands.pop();
 						break;
 					case CONNECTION:	// Un client es vol conectar
-						int id; clientCommands.front().Read(&id, ID_SIZE); //protocol.GetSubType(clientCommands.front());
+						int id = 0; 
+						clientCommands.front().Read(&id, ID_SIZE); //protocol.GetSubType(clientCommands.front());
 
 						for (int i = 0; i < player[id].keyCommands.size(); i++) // Recorrer tots els keycommands
 						{
 							InputMemoryBitStream intmp(player[id].keyCommands[i].GetBufferPtr(), player[id].keyCommands[i].GetByteLength());
-							int typetmp;  intmp.Read(&typetmp, 1);
+							int typetmp = 0;  
+							intmp.Read(&typetmp, 1);
 							//std::string commandToCheck = player[id].keyCommands[i];
 							if (typetmp == CONNECTION) {								// si es un keycommand de ready
 								player[id].keyCommands.erase(player[id].keyCommands.begin() + i);	// borral
@@ -213,7 +217,8 @@ int main()
 					for (int j = 0; j < player[i].keyCommands.size(); j++)
 					{
 						InputMemoryBitStream intmp(player[i].keyCommands[j].GetBufferPtr(), player[i].keyCommands[j].GetByteLength() * 8);
-						int typetmp;  intmp.Read(&typetmp, 1);
+						int typetmp = 0;  
+						intmp.Read(&typetmp, 1);
 						if (typetmp == PING) {
 							OutputMemoryBitStream output;
 							output.Write(DISCONNECTION, TYPE_SIZE);
@@ -232,7 +237,7 @@ int main()
 					OutputMemoryBitStream output;
 					output.Write(PING, TYPE_SIZE);
 					//command = "3";
-					sendAll(&sender, &player, output);
+					sendAll(&sender, &player, output.GetBufferPtr(), output.GetByteLength());
 					timerPing.Start(3000);
 				}
 
@@ -241,7 +246,8 @@ int main()
 			////-- CLIENT COMMANDS --////
 			mutex.lock();
 			if (!clientCommands.empty()) {
-				int clientCase; clientCommands.front().Read(&clientCase, TYPE_SIZE);
+				int clientCase = 0; 
+				clientCommands.front().Read(&clientCase, TYPE_SIZE);
 				switch (clientCase) {
 
 				case HELLO: {	// Un client es vol conectar
@@ -255,12 +261,14 @@ int main()
 					break;
 
 				case PING: {
-					int playerId; clientCommands.front().Read(&playerId, ID_SIZE);
+					int playerId = 0; 
+					clientCommands.front().Read(&playerId, ID_SIZE);
 					//= protocol.GetSubType(clientCommands.front());
 					for (int i = 0; i < player[playerId].keyCommands.size(); i++)
 					{
 						InputMemoryBitStream intmp(player[playerId].keyCommands[i].GetBufferPtr(), player[playerId].keyCommands[i].GetByteLength() * 8);
-						int typetmp;  intmp.Read(&typetmp, 1);
+						int typetmp = 0;  
+						intmp.Read(&typetmp, 1);
 						if (clientCase == typetmp) {
 							player[playerId].keyCommands.erase(player[playerId].keyCommands.begin() + 1);
 							break;
@@ -271,7 +279,8 @@ int main()
 					break;
 
 				case DISCONNECTION: {
-					int playerId; clientCommands.front().Read(&playerId, ID_SIZE);
+					int playerId = 0; 
+					clientCommands.front().Read(&playerId, ID_SIZE);
 					OutputMemoryBitStream output;
 					output.Write(PING, TYPE_SIZE);
 					output.Write(playerId, ID_SIZE);
@@ -282,8 +291,10 @@ int main()
 					break;
 				}
 				case MOVEMENT: {
-					int playerId; clientCommands.front().Read(&playerId, ID_SIZE);
-					int position; clientCommands.front().Read(&position, POSITION_SIZE);
+					int playerId = 0; 
+					clientCommands.front().Read(&playerId, ID_SIZE);
+					int position = 0; 
+					clientCommands.front().Read(&position, POSITION_SIZE);
 
 					OutputMemoryBitStream output;
 					output.Write(PING, TYPE_SIZE);

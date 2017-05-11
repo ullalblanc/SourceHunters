@@ -13,7 +13,7 @@ public:
 	Send();
 	~Send();
 
-	void SendMessages(sf::IpAddress ip, unsigned short port, OutputMemoryBitStream output);
+	void SendMessages(sf::IpAddress ip, unsigned short port, char* command, size_t size);
 
 	sf::UdpSocket *socket;
 	std::string *command;

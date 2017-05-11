@@ -1,17 +1,17 @@
 ﻿  Client.cpp
-E:\SourceHunters\SourceHunters\Taller5\ChatLib\Game.h(58): warning C4244: '=': conversion from 'float' to 'clock_t', possible loss of data
-E:\SourceHunters\SourceHunters\Taller5\ChatLib\Game.h(112): warning C4267: 'argument': conversion from 'size_t' to 'uint32_t', possible loss of data
-E:\SourceHunters\SourceHunters\Taller5\ChatLib\Game.h(181): warning C4267: 'argument': conversion from 'size_t' to 'uint32_t', possible loss of data
-Client.cpp(142): warning C4305: 'argument': truncation from 'double' to 'float'
-Client.cpp(174): warning C4305: 'argument': truncation from 'double' to 'float'
-Client.cpp(323): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
-Client.cpp(327): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
-Client.cpp(333): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
-Client.cpp(262): warning C4101: 'key': unreferenced local variable
+D:\SourceHunters\Taller5\ChatLib\Game.h(68): warning C4244: '=': conversion from 'float' to 'clock_t', possible loss of data
+D:\SourceHunters\Taller5\ChatLib\Game.h(122): warning C4267: 'argument': conversion from 'size_t' to 'uint32_t', possible loss of data
+D:\SourceHunters\Taller5\ChatLib\Game.h(191): warning C4267: 'argument': conversion from 'size_t' to 'uint32_t', possible loss of data
+Client.cpp(145): warning C4305: 'argument': truncation from 'double' to 'float'
+Client.cpp(177): warning C4305: 'argument': truncation from 'double' to 'float'
+Client.cpp(409): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
+Client.cpp(413): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
+Client.cpp(419): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
+Client.cpp(270): warning C4101: 'key': unreferenced local variable
   Generating code
-  4 of 535 functions ( 0.7%) were compiled, the rest were copied from previous compilation.
+  4 of 682 functions ( 0.6%) were compiled, the rest were copied from previous compilation.
     0 functions were new in current compilation
-    4 functions had inline decision re-evaluated but remain unchanged
+    1 functions had inline decision re-evaluated but remain unchanged
   Finished generating code
-  Client.vcxproj -> E:\SourceHunters\SourceHunters\Taller5\x64\Release\Client.exe
-  Client.vcxproj -> E:\SourceHunters\SourceHunters\Taller5\x64\Release\Client.pdb (Full PDB)
+  Client.vcxproj -> D:\SourceHunters\Taller5\x64\Release\Client.exe
+  Client.vcxproj -> D:\SourceHunters\Taller5\x64\Release\Client.pdb (Full PDB)

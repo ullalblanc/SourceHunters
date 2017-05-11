@@ -20,6 +20,13 @@ public:
 		mBuffer = _inBuffer;
 	}
 
+	InputMemoryBitStream(const InputMemoryBitStream &input) {
+		newID = input.newID;
+		mBuffer = input.mBuffer;
+		mBitHead = input.mBitHead;
+		mBitCapacity = input.mBitCapacity;
+	}
+
 	~InputMemoryBitStream()
 	{
 	}

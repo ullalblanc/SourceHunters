@@ -121,7 +121,7 @@ public:
 				//commands->push(data);
 				InputMemoryBitStream newCommand(data, received * 8);
 				commands->push(newCommand);
-				int type;
+				int type = 0;
 				newCommand.Read(&type, 3);
 				if (type == HELLO) { // save ip and port
 					ServerPlayer playertmp;

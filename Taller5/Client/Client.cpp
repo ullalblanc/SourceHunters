@@ -218,12 +218,14 @@ int main()
 				OutputMemoryBitStream output;
 				output.Write(HELLO, TYPE_SIZE);
 				//command = protocol.CreateMessage(1, 0, 0, 0);
-				sender.SendMessages(ip, serverPort, output);
+				sender.SendMessages(ip, serverPort, output.GetBufferPtr(), output.GetByteLength());
 				timerConnect.Start(5000);
 				timerConnect.Stop();
 			}
+
 			if (!serverCommands.empty()) {
-				int serverCase; serverCommands.front().Read(&serverCase, TYPE_SIZE);
+				int serverCase = 0; 
+				serverCommands.front().Read(&serverCase, TYPE_SIZE);
 				switch (serverCase) {
 
 				case HELLO: {
@@ -246,7 +248,7 @@ int main()
 					output.Write(CONNECTION, TYPE_SIZE);
 					output.Write(player[0].id, ID_SIZE);
 					//command = protocol.CreateMessage(2, player[0].id, 0, 0);
-					sender.SendMessages(ip, serverPort, output);
+					sender.SendMessages(ip, serverPort, output.GetBufferPtr(), output.GetByteLength());
 					state = play;
 					break;
 				}
@@ -315,11 +317,16 @@ int main()
 			////-- ENEMY --////
 
 			// TODO: simular enemic
+			if (!enemyAccum.empty())
+			{
+				// enemyAccum.front()
+			}
 
 			//-- COMMANDS --//
 
 			if (!serverCommands.empty()) {
-				int serverCase; serverCommands.front().Read(&serverCase, TYPE_SIZE);
+				int serverCase = 0; 
+				serverCommands.front().Read(&serverCase, TYPE_SIZE);
 				switch (serverCase) {
 
 				case HELLO: { // NO TINDRIA QUE REBRE 1
@@ -331,7 +338,7 @@ int main()
 					output.Write(CONNECTION, TYPE_SIZE);
 					output.Write(player[0].id, ID_SIZE);
 					//command = protocol.CreateMessage(2, player[0].id, 0, 0);
-					sender.SendMessages(ip, serverPort, output);
+					sender.SendMessages(ip, serverPort, output.GetBufferPtr(), output.GetByteLength());
 					serverCommands.pop();
 					break;
 				}
@@ -340,15 +347,18 @@ int main()
 					output.Write(PING, TYPE_SIZE);
 					output.Write(player[0].id, ID_SIZE);
 					command = "3" + std::to_string(player[0].id);
-					sender.SendMessages(ip, serverPort, output);
+					sender.SendMessages(ip, serverPort, output.GetBufferPtr(), output.GetByteLength());
 					serverCommands.pop();
 					break;
 				}
 				case MOVEMENT: {
 
-					int playerId; serverCommands.front().Read(&playerId, ID_SIZE);				// Guardem quin jugador es
-					int accumId; serverCommands.front().Read(&accumId, ACCUM_ID_SIZE);			// Guardem la id del acumulat
-					int accumDelta; serverCommands.front().Read(&accumDelta, ACCUM_DELTA_SIZE);	// Guardem el el delta acumulat
+					int playerId = 0; 
+					serverCommands.front().Read(&playerId, ID_SIZE);				// Guardem quin jugador es
+					int accumId = 0; 
+					serverCommands.front().Read(&accumId, ACCUM_ID_SIZE);			// Guardem la id del acumulat
+					int accumDelta = 0; 
+					serverCommands.front().Read(&accumDelta, ACCUM_DELTA_SIZE);	// Guardem el el delta acumulat
 
 					if (playerId == player[0].id)				// Si es el id propi, comfirma el moviment
 					{	// TODO: Check de trampas o problemes
