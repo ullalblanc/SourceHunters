@@ -53,13 +53,14 @@ int main()
 	Timer timerAccum;			// timer per el acumulats de moviment
 	State state = connect;		// Comencem en connect per que es conecti al server
 	Player playertmp;			// Amb el tmp es guardara a ell mateix i als altres en el vector player
-	std::queue<Accum> accum;	// Cua dels acumulats de moviment
+	std::vector<Accum> accum;	// Vector dels acumulats de moviment
+	std::queue<Accum> enemyAccum;// Cua dels acumulats de moviment del contrincant
 
 	playertmp.y = 750;
 	player.push_back(playertmp);
 	player.push_back(playertmp);
 	Accum accumtmp; accumtmp.moveId = 0;
-	accum.push(accumtmp);
+	accum.push_back(accumtmp);
 
 	//-- GAME --//	
 
@@ -286,6 +287,8 @@ int main()
 
 			//-- ACCUMULATED --//
 
+			////-- PLAYER --////
+
 			if (timerAccum.Check())
 			{
 				if (accum.back().moveDelta != 0)
@@ -304,10 +307,14 @@ int main()
 					// TODO: enviar acumulat
 					// TODO: vigilar que el acumulat no pasi de +/- 64
 					
-					accum.push(accumtmp);
+					accum.push_back(accumtmp);
 				}	
 				timerAccum.Start(ACCUMTIME);
 			}
+
+			////-- ENEMY --////
+
+			// TODO: simular enemic
 
 			//-- COMMANDS --//
 
@@ -339,10 +346,33 @@ int main()
 				}
 				case MOVEMENT: {
 
-					// TODO: Mirar de qui es el moviment
-					// TODO: treure de la cua si es propi
-					// TODO: simular enemic
+					int playerId; serverCommands.front().Read(&playerId, ID_SIZE);				// Guardem quin jugador es
+					int accumId; serverCommands.front().Read(&accumId, ACCUM_ID_SIZE);			// Guardem la id del acumulat
+					int accumDelta; serverCommands.front().Read(&accumDelta, ACCUM_DELTA_SIZE);	// Guardem el el delta acumulat
 
+					if (playerId == player[0].id)				// Si es el id propi, comfirma el moviment
+					{	// TODO: Check de trampas o problemes
+						for (int i = 0; i < accum.size(); i++)	// Recorre tots els misatges de acumulacio
+						{
+							if (accum[i].moveId == accumId)		// Si troba el misatge de acumulacio
+							{
+								for (int j = 0; j < accum.size()-i; j++)		// Recorre els misatges que hi havien fins ara
+								{
+									accum.erase(accum.begin());					// Borrals
+								}
+								break;
+							}
+						}
+					} 
+					else							// Si es el id del contrincant, simula el moviment
+					{
+						Accum accumtmp;
+						accumtmp.moveId = accumId;
+						accumtmp.moveDelta = accumDelta;
+						enemyAccum.push(accumtmp);	// Afegir acumulat a la cua
+					}
+
+					serverCommands.pop();
 					break;
 				}							  
 				default:
