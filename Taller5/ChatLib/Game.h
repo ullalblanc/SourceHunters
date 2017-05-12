@@ -35,10 +35,11 @@ Només per Client*/
 class Player {
 
 public:
-	int id;
-	int x = -1;
+	int id = 0;
+	int x = 0;
 	int y;
 	std::vector<OutputMemoryBitStream> keyCommands;
+	//std::vector<OutputMemoryBitStream> keyCommands;
 };
 
 class ServerPlayer : public Player {
@@ -191,9 +192,6 @@ public:
 				InputMemoryBitStream newCommand(data, received * 8);
 				commands->push(newCommand);
 				//commands->push(data);
-				if (data[0] = '1') { // save ip and port
-
-				}
 				mutex->unlock();
 			}
 		} while (stopReceive);

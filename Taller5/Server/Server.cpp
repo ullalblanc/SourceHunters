@@ -12,23 +12,30 @@ enum State {
 };
 
 
-void sendAll(Send* sender, std::vector<ServerPlayer>* player, char* command, size_t size) { // per misatges iguals que s'envien a tots el jugadors
+int sendAll(Send* sender, std::vector<ServerPlayer>* player, char* command, size_t size) { // per misatges iguals que s'envien a tots el jugadors
 
+	int commandPush = 0;
 	bool foundMessage = false;									// Per saber si hi ha un misatge igual
 	for (int i = 0; i < player->size(); i++)
 	{
 		sender->SendMessages(player->at(i).ip, player->at(i).port, command, size);
 		for (int j = 0; j < player->at(i).keyCommands.size(); j++)
 		{
-			if (player->at(i).keyCommands[j].GetBufferPtr() == output.GetBufferPtr()) { //TODO: no comparar punters
+			if (strcmp(player->at(i).keyCommands[j].GetBufferPtr(), command)) { //TODO: Petarmel
 				foundMessage = true;
 				break;
 			}
 		}
-		if (!foundMessage) player->at(i).keyCommands.push_back(output);
+		if (!foundMessage)
+		{
+			//OutputMemoryBitStream tmp(*output);
+			commandPush += i + 1;
+			//player->at(i).keyCommands.push_back(*output);
+		}
 
 		foundMessage = false;
 	}
+	return commandPush;
 }
 
 int main()
@@ -104,8 +111,8 @@ int main()
 						for (int i = 0; i < player.size(); i++)
 						{
 							if (clientCommands.front().GetNewId() == player[i].id) {	// el jugador que diu Hello
-								if (player[i].x < 0) {//protocol.GetFirst(clientCommands.front()) == 1) {			// necesita posicio
-									if (player[i].id == 1) {
+								if (player[i].x <= 0) {//protocol.GetFirst(clientCommands.front()) == 1) {			// necesita posicio
+									if (player[i].id == 0) {
 										player[i].x = 270;// jugador 1 a 270
 									}
 									else {
@@ -224,7 +231,21 @@ int main()
 							output.Write(DISCONNECTION, TYPE_SIZE);
 							output.Write(i, ID_SIZE);
 							//command = "4" + std::to_string(i); // Misatge que s'ha desconectat el jugador i
-							sendAll(&sender, &player, output);
+
+							int commandPush = sendAll(&sender, &player, output.GetBufferPtr(), output.GetByteLength());
+							switch (commandPush)
+							{
+							case 1:
+								player[0].keyCommands.push_back(output);
+								break;
+							case 2:
+								player[1].keyCommands.push_back(output);
+								break;
+							case 3:
+								player[0].keyCommands.push_back(output);
+								player[1].keyCommands.push_back(output);
+								break;
+							}
 							player.erase(player.begin() + i);
 							toConect = true;
 						}
@@ -237,7 +258,20 @@ int main()
 					OutputMemoryBitStream output;
 					output.Write(PING, TYPE_SIZE);
 					//command = "3";
-					sendAll(&sender, &player, output.GetBufferPtr(), output.GetByteLength());
+					int commandPush = sendAll(&sender, &player, output.GetBufferPtr(), output.GetByteLength());
+					switch (commandPush)
+					{
+					case 1:
+						player[0].keyCommands.push_back(output);
+						break;
+					case 2:
+						player[1].keyCommands.push_back(output);
+						break;
+					case 3:
+						player[0].keyCommands.push_back(output);
+						player[1].keyCommands.push_back(output);
+						break;
+					}
 					timerPing.Start(3000);
 				}
 
@@ -284,7 +318,20 @@ int main()
 					OutputMemoryBitStream output;
 					output.Write(PING, TYPE_SIZE);
 					output.Write(playerId, ID_SIZE);
-					sendAll(&sender, &player, output);
+					int commandPush = sendAll(&sender, &player, output.GetBufferPtr(), output.GetByteLength());
+					switch (commandPush)
+					{
+					case 1:
+						player[0].keyCommands.push_back(output);
+						break;
+					case 2:
+						player[1].keyCommands.push_back(output);
+						break;
+					case 3:
+						player[0].keyCommands.push_back(output);
+						player[1].keyCommands.push_back(output);
+						break;
+					}
 					player.erase(player.begin() + playerId);
 					state = connect;
 					clientCommands.pop();
@@ -300,8 +347,20 @@ int main()
 					output.Write(PING, TYPE_SIZE);
 					output.Write(playerId, ID_SIZE);
 					output.Write(position, POSITION_SIZE);
-					sendAll(&sender, &player, output);
-
+					int commandPush = sendAll(&sender, &player, output.GetBufferPtr(), output.GetByteLength());
+					switch (commandPush)
+					{
+					case 1:
+						player[0].keyCommands.push_back(output);
+						break;
+					case 2:
+						player[1].keyCommands.push_back(output);
+						break;
+					case 3:
+						player[0].keyCommands.push_back(output);
+						player[1].keyCommands.push_back(output);
+						break;
+					}
 					clientCommands.pop();
 					break;
 				}

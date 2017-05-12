@@ -56,6 +56,13 @@ public:
 		ReallocBuffer(32);
 	}
 
+	OutputMemoryBitStream(const OutputMemoryBitStream &output)
+	{
+		mBuffer = output.mBuffer;
+		mBitHead = output.mBitHead;
+		mBitCapacity = output.mBitCapacity;
+	}
+
 	~OutputMemoryBitStream()
 	{
 		std::free(mBuffer);
