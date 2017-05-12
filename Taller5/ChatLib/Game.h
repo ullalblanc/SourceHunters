@@ -38,7 +38,7 @@ public:
 	int id = 0;
 	int x = 0;
 	int y;
-	std::vector<OutputMemoryBitStream> keyCommands;
+	std::vector<std::string> keyCommands;
 	//std::vector<OutputMemoryBitStream> keyCommands;
 };
 

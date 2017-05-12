@@ -153,11 +153,11 @@ int main()
 					sender.SendMessages(player[1].ip, player[1].port, output.GetBufferPtr(), output.GetByteLength());
 					for (int i = 0; i < player[1].keyCommands.size(); i++)
 					{
-						if (player[1].keyCommands[i].GetBufferPtr() == output.GetBufferPtr()) {
+						if (player[1].keyCommands[i] == output.GetBufferPtr()) {
 							break;
 						}
 						else if (i == player[1].keyCommands.size() - 1) {
-							player[1].keyCommands.push_back(output);
+							player[1].keyCommands.push_back(output.GetBufferPtr());
 						}
 					}
 					OutputMemoryBitStream output2;
@@ -168,11 +168,11 @@ int main()
 					sender.SendMessages(player[0].ip, player[0].port, output2.GetBufferPtr(), output2.GetByteLength());
 					for (int i = 0; i < player[0].keyCommands.size(); i++)
 					{
-						if (player[0].keyCommands[i].GetBufferPtr() == output.GetBufferPtr()) {
+						if (player[0].keyCommands[i] == output.GetBufferPtr()) {
 							break;
 						}
 						else if (i == player[0].keyCommands.size() - 1) {
-							player[0].keyCommands.push_back(output);
+							player[0].keyCommands.push_back(output.GetBufferPtr());
 						}
 					}
 					timerReady.Start(3000);
@@ -192,7 +192,7 @@ int main()
 
 						for (int i = 0; i < player[id].keyCommands.size(); i++) // Recorrer tots els keycommands
 						{
-							InputMemoryBitStream intmp(player[id].keyCommands[i].GetBufferPtr(), player[id].keyCommands[i].GetByteLength());
+							InputMemoryBitStream intmp(player[id].keyCommands[i].c_str(), player[id].keyCommands[i].size());
 							int typetmp = 0;  
 							intmp.Read(&typetmp, 1);
 							//std::string commandToCheck = player[id].keyCommands[i];
