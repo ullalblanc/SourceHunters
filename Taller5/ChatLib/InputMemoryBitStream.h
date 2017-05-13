@@ -67,7 +67,7 @@ public:
 
 		*_outData &= (~(0x00ff << _inBitCount));
 
-		mBitHead += _inBitCount;
+		mBitHead += _inBitCount; 
 	}
 
 	void ReadBits(void* _outData, uint32_t _inBitCount)

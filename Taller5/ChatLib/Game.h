@@ -38,8 +38,9 @@ public:
 	int id = 0;
 	int x = 0;
 	int y;
-	std::vector<std::string> keyCommands;
-	//std::vector<OutputMemoryBitStream> keyCommands;
+	int ready = 0;
+	//std::vector<std::string> keyCommands;
+	std::vector<OutputMemoryBitStream> keyCommands;
 };
 
 class ServerPlayer : public Player {

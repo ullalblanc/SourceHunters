@@ -15,6 +15,7 @@ public:
 
 	void SendMessages(sf::IpAddress ip, unsigned short port, char* command, size_t size);
 
+	bool showType = true;
 	sf::UdpSocket *socket;
 	std::string *command;
 };

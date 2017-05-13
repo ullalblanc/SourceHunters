@@ -65,7 +65,6 @@ public:
 
 	~OutputMemoryBitStream()
 	{
-		std::free(mBuffer);
 	}
 
 	void WriteBits(uint8_t _inData, size_t _inBitCount)

@@ -1,17 +1,19 @@
 ﻿  Client.cpp
-E:\SourceHunters\SourceHunters\Taller5\ChatLib\Game.h(69): warning C4244: '=': conversion from 'float' to 'clock_t', possible loss of data
-E:\SourceHunters\SourceHunters\Taller5\ChatLib\Game.h(123): warning C4267: 'argument': conversion from 'size_t' to 'uint32_t', possible loss of data
-E:\SourceHunters\SourceHunters\Taller5\ChatLib\Game.h(192): warning C4267: 'argument': conversion from 'size_t' to 'uint32_t', possible loss of data
+E:\SourceHunters\SourceHunters\Taller5\ChatLib\Game.h(70): warning C4244: '=': conversion from 'float' to 'clock_t', possible loss of data
+E:\SourceHunters\SourceHunters\Taller5\ChatLib\Game.h(124): warning C4267: 'argument': conversion from 'size_t' to 'uint32_t', possible loss of data
+E:\SourceHunters\SourceHunters\Taller5\ChatLib\Game.h(193): warning C4267: 'argument': conversion from 'size_t' to 'uint32_t', possible loss of data
 Client.cpp(145): warning C4305: 'argument': truncation from 'double' to 'float'
 Client.cpp(177): warning C4305: 'argument': truncation from 'double' to 'float'
-Client.cpp(409): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
-Client.cpp(413): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
+Client.cpp(415): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
 Client.cpp(419): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
-Client.cpp(270): warning C4101: 'key': unreferenced local variable
+Client.cpp(425): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
+Client.cpp(276): warning C4101: 'key': unreferenced local variable
   Generating code
-  2 of 683 functions ( 0.3%) were compiled, the rest were copied from previous compilation.
+  22 of 682 functions ( 3.2%) were compiled, the rest were copied from previous compilation.
     0 functions were new in current compilation
-    6 functions had inline decision re-evaluated but remain unchanged
+    2 functions had inline decision re-evaluated but remain unchanged
   Finished generating code
+ChatLib.lib(MessageManager.obj) : warning LNK4099: PDB 'ChatLib.pdb' was not found with 'ChatLib.lib(MessageManager.obj)' or at 'E:\SourceHunters\SourceHunters\Taller5\x64\Release\ChatLib.pdb'; linking object as if no debug info
+ChatLib.lib(Send.obj) : warning LNK4099: PDB 'ChatLib.pdb' was not found with 'ChatLib.lib(Send.obj)' or at 'E:\SourceHunters\SourceHunters\Taller5\x64\Release\ChatLib.pdb'; linking object as if no debug info
   Client.vcxproj -> E:\SourceHunters\SourceHunters\Taller5\x64\Release\Client.exe
   Client.vcxproj -> E:\SourceHunters\SourceHunters\Taller5\x64\Release\Client.pdb (Full PDB)

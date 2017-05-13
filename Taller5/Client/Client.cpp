@@ -215,17 +215,21 @@ int main()
 		case connect: {
 
 			if (timerConnect.Check()) {
-				OutputMemoryBitStream output;
-				output.Write(HELLO, TYPE_SIZE);
-				//command = protocol.CreateMessage(1, 0, 0, 0);
-				sender.SendMessages(ip, serverPort, output.GetBufferPtr(), output.GetByteLength());
+				if (player[0].x == 0) {
+					OutputMemoryBitStream output;
+					output.Write(HELLO, TYPE_SIZE);
+					//command = protocol.CreateMessage(1, 0, 0, 0);
+					sender.SendMessages(ip, serverPort, output.GetBufferPtr(), output.GetByteLength());
+					
+					//timerConnect.Stop();
+				}
 				timerConnect.Start(5000);
-				timerConnect.Stop();
 			}
 
 			if (!serverCommands.empty()) {
 				int serverCase = 0; 
 				serverCommands.front().Read(&serverCase, TYPE_SIZE);
+				//std::cout << serverCase << std::endl;
 				switch (serverCase) {
 
 				case HELLO: {
@@ -244,18 +248,20 @@ int main()
 					//player[1].x = protocol.GetPosition(serverCommands.front());
 					serverCommands.pop();
 
-					OutputMemoryBitStream output;
-					output.Write(CONNECTION, TYPE_SIZE);
-					output.Write(player[0].id, ID_SIZE);
-					//command = protocol.CreateMessage(2, player[0].id, 0, 0);
-					sender.SendMessages(ip, serverPort, output.GetBufferPtr(), output.GetByteLength());
-					state = play;
+					
 					break;
 				}
-				default: {}
-					break;
-
 				}
+			}
+			if (player[0].x != 0 && player[1].x != 0)
+			{
+				OutputMemoryBitStream output;
+				output.Write(CONNECTION, TYPE_SIZE);
+				output.Write(player[0].id, ID_SIZE);
+				//command = protocol.CreateMessage(2, player[0].id, 0, 0);
+				sender.SendMessages(ip, serverPort, output.GetBufferPtr(), output.GetByteLength());
+				state = play;
+				std::cout << "play " << player[0].x << " " << player[1].x << std::endl;
 			}
 		}
 			break;
