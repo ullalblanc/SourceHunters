@@ -16,7 +16,7 @@
 #define TOTALPLAYERS 2
 
 #define TYPE_SIZE 3 
-#define ID_SIZE 1
+#define ID_SIZE 1 // Tambien funciona para negatio i positivo
 #define POSITION_SIZE 11
 #define ACCUM_ID_SIZE 4
 #define ACCUM_DELTA_SIZE 7 // de -64 a +64
@@ -30,6 +30,13 @@ enum Type { // uint2
 	ATTACK			// Informació sobre el atac
 };
 
+/*Paquets de acumulacio de moviment*/
+struct Accum {
+	int moveId;
+	int moveDelta = 0;
+	int moveAbsolute = 0;
+};
+
 /*Clase Player que guarda la informació basica de un jugador
 Només per Client*/
 class Player {
@@ -41,6 +48,7 @@ public:
 	int ready = 0;
 	//std::vector<std::string> keyCommands;
 	std::vector<OutputMemoryBitStream> keyCommands;
+	std::vector<Accum> accum;
 };
 
 class ServerPlayer : public Player {
@@ -52,12 +60,7 @@ public:
 
 };
 
-/*Paquets de acumulacio de moviment*/
-struct Accum {
-	int moveId;
-	int moveDelta;
-	int moveAbsolute;
-};
+
 
 class Timer {
 	std::clock_t time = std::clock();
@@ -125,6 +128,9 @@ public:
 				commands->push(newCommand);
 				int type = 0;
 				newCommand.Read(&type, 3);
+
+				std::cout << "Client Case is " << type << std::endl;
+
 				if (type == HELLO) { // save ip and port
 					ServerPlayer playertmp;
 					if (!players->empty()) {

@@ -92,13 +92,13 @@ int main()
 		if (key.isKeyPressed(sf::Keyboard::BackSpace)) { // si el server vol tancar la comunicacio
 			state = win;
 		}
-
+		mutex.lock();
 		switch (state) {
 
 	//-- CONECT --//
 		case connect: { // que es conectin els dos jugadors
 			if (!playersConected) {
-				mutex.lock();
+				//mutex.lock();
 				if (!clientCommands.empty()) {
 					int clientCase = 0;
 					clientCommands.front().Read(&clientCase, TYPE_SIZE);
@@ -113,7 +113,7 @@ int main()
 										player[i].x = 270;// jugador 1 a 270
 									}
 									else {
-										player[i].x = 1330; // jugador 2 a 1330
+										player[i].x = 800;//1330; // jugador 2 a 1330
 									}
 									player[i].y = 750;
 									std::cout << "\n New user" << std::endl;
@@ -133,9 +133,13 @@ int main()
 				if (player.size() == TOTALPLAYERS) { // Si existeixen 2 jugadors
 					if (player[0].x > 0 && player[1].x > 0) {// si els 2 jugadors tenen posicions valides, estan correctament conectats
 						playersConected = true;
+						for (int j = 0; j < clientCommands.size(); j++)
+						{
+							clientCommands.pop();
+						}
 					}
 				}
-				mutex.unlock();
+				//mutex.unlock();
 			}
 			else
 			{
@@ -170,7 +174,7 @@ int main()
 					}
 					timerReady.Start(5000);
 				}
-				mutex.lock();
+				//mutex.lock();
 				if (!clientCommands.empty()) {
 					int clientCase = 0; 
 					clientCommands.front().Read(&clientCase, TYPE_SIZE);
@@ -202,7 +206,7 @@ int main()
 						break;
 					}
 				}
-				mutex.unlock();
+				//mutex.unlock();
 				if (player[0].ready == 1 && player[1].ready == 1)
 				{
 					state = play;
@@ -214,7 +218,7 @@ int main()
 	//-- PLAY --//
 
 		case play: {
-
+			//mutex.lock();
 			////-- PING --////
 
 			if (timerPing.Check()) {
@@ -231,6 +235,8 @@ int main()
 							OutputMemoryBitStream output;
 							output.Write(DISCONNECTION, TYPE_SIZE);
 							output.Write(i, ID_SIZE); // Misatge que s'ha desconectat el jugador i
+
+							std::cout << "player " << i << " seems to be disconected" << std::endl;
 
 							bool foundMessage = false;									// Per saber si hi ha un misatge igual
 							for (int k = 0; k < player.size(); k++)
@@ -288,15 +294,18 @@ int main()
 
 			////-- CLIENT COMMANDS --////
 
-			mutex.lock();
+			
 			if (!clientCommands.empty()) {
-				int clientCase = 0; 
+				int clientCase = 7; 
 				clientCommands.front().Read(&clientCase, TYPE_SIZE);
+				
+				std::cout << "And now Client Case is " << clientCase << std::endl;
+
 				switch (clientCase) {
 
 				case HELLO: {	// Un client es vol conectar
-					state = connect;
-					//clientCommands.pop();
+					//state = connect;
+					clientCommands.pop();
 				}
 					break;
 
@@ -308,6 +317,7 @@ int main()
 				case PING: {
 					int playerId = 0; 
 					clientCommands.front().Read(&playerId, ID_SIZE);
+					std::cout << "Player " << playerId << " Pinged" << std::endl;
 					for (int i = 0; i < player[playerId].keyCommands.size(); i++)
 					{
 						InputMemoryBitStream intmp(player[playerId].keyCommands[i].GetBufferPtr(), player[playerId].keyCommands[i].GetByteLength() * 8);
@@ -348,19 +358,36 @@ int main()
 					}
 					player.erase(player.begin() + playerId);
 					state = connect;
-					clientCommands.pop();
-					break;
+					clientCommands.pop();				
 				}
+									break;
 				case MOVEMENT: {
 					int playerId = 0; 
 					clientCommands.front().Read(&playerId, ID_SIZE);
-					int position = 0; 
-					clientCommands.front().Read(&position, POSITION_SIZE);
+					int accumId = 0;
+					clientCommands.front().Read(&accumId, ACCUM_ID_SIZE);			// Guardem la id del acumulat
+					int negative = 0;
+					clientCommands.front().Read(&negative, ID_SIZE);
+					int accumDelta = 0;
+					clientCommands.front().Read(&accumDelta, ACCUM_DELTA_SIZE);	// Guardem el el delta acumulat
+
+					if (negative == 1) accumDelta *= -1;
+
+					Accum accumtmp;
+					accumtmp.moveId = accumId;
+					accumtmp.moveDelta = accumDelta;
+					accumtmp.moveAbsolute = player[playerId].x + accumDelta;
+					// TODO: Comprobacions de trampas i limits
+
+					player[playerId].accum.push_back(accumtmp);
 
 					OutputMemoryBitStream output;
-					output.Write(PING, TYPE_SIZE);
+					output.Write(MOVEMENT, TYPE_SIZE);
 					output.Write(playerId, ID_SIZE);
-					output.Write(position, POSITION_SIZE);
+					output.Write(player[playerId].accum.back().moveId, ACCUM_ID_SIZE);
+					output.Write(negative, ID_SIZE); // TODO: Cambiar per que funcioni amb playerId accum
+					output.Write(player[playerId].accum.back().moveDelta, ACCUM_DELTA_SIZE);
+
 					bool foundMessage = false;									// Per saber si hi ha un misatge igual
 					for (int k = 0; k < player.size(); k++)
 					{
@@ -380,18 +407,20 @@ int main()
 						foundMessage = false;
 					}
 					clientCommands.pop();
-					break;
+					
 				}
+							   break;
 				case ATTACK: {
 
 				}
 					break;
 				}
 			}
-			mutex.unlock();
+			//mutex.unlock();
 		}
 			break;
 		}
+		mutex.unlock();
 	}
 	receiver.stopReceive = false;
 	thread.terminate();

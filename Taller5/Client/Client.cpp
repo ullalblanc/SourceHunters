@@ -59,14 +59,15 @@ int main()
 	Timer timerAccum;			// timer per el acumulats de moviment
 	State state = connect;		// Comencem en connect per que es conecti al server
 	Player playertmp;			// Amb el tmp es guardara a ell mateix i als altres en el vector player
-	std::vector<Accum> accum;	// Vector dels acumulats de moviment
-	std::queue<Accum> enemyAccum;// Cua dels acumulats de moviment del contrincant
+	//std::vector<Accum> accum;	// Vector dels acumulats de moviment
+	//std::queue<Accum> enemyAccum;// Cua dels acumulats de moviment del contrincant
 
 	playertmp.y = 750;
 	player.push_back(playertmp);
 	player.push_back(playertmp);
 	Accum accumtmp; accumtmp.moveId = 0;
-	accum.push_back(accumtmp);
+	//accum.push_back(accumtmp);
+	player[0].accum.push_back(accumtmp);
 
 	//-- GAME --//	
 
@@ -181,11 +182,6 @@ int main()
 	//Animation* currentAnimation1T = &idleAnimation1T;
 
 
-	// set up AnimatedSprite
-	AnimatedSprite p1Top(sf::seconds(SpriteVelocityTop), true, false); //(sf::Time frameTime, bool paused, bool looped)
-	p1Top.setPosition(sf::Vector2f(player[0].x - 325, player[0].y));
-	p1Top.play(idleAnimation1T);
-
 	//Bot
 	sf::Texture p1TextBot;
 	if (!p1TextBot.loadFromFile("../Resources/PassosEsq.png")) {
@@ -212,11 +208,6 @@ int main()
 
 	//Animation* currentAnimation1B = &idleAnimation1B;
 
-
-	// set up AnimatedSprite
-	AnimatedSprite p1Bot(sf::seconds(SpriteVelocityBot), true, false); //(sf::Time frameTime, bool paused, bool looped)
-	p1Bot.setPosition(sf::Vector2f(player[0].x - 325, player[0].y + 275)); //275 d'alçada per compensar amb la cintura
-	p1Bot.play(idleAnimation1B);
 
 	//Jugador 2 
 	//TOP
@@ -295,10 +286,6 @@ int main()
 
 	//Animation* currentAnimation1T = &idleAnimation2T;
 
-	// set up AnimatedSprite
-	AnimatedSprite p2Top(sf::seconds(SpriteVelocityTop), true, false); //(sf::Time frameTime, bool paused, bool looped)
-	p2Top.setPosition(sf::Vector2f(player[1].x - 325, player[1].y));
-	p2Top.play(idleAnimation2T);
 
 	//Bot
 	sf::Texture p2TextBot;
@@ -324,12 +311,12 @@ int main()
 	pas2B.addFrame(sf::IntRect(502 * 0, 382 * 1, 500, 380));
 	pas2B.addFrame(sf::IntRect(502 * 1, 382 * 0, 500, 380));
 
-	//Animation* currentAnimation1B = &idleAnimation1B;
+	//Animation* currentAnimation1B = &idleAnimation1B;	
 
-	// set up AnimatedSprite
+	AnimatedSprite p1Top(sf::seconds(SpriteVelocityTop), true, false); //(sf::Time frameTime, bool paused, bool looped)
+	AnimatedSprite p1Bot(sf::seconds(SpriteVelocityBot), true, false); //(sf::Time frameTime, bool paused, bool looped)
 	AnimatedSprite p2Bot(sf::seconds(SpriteVelocityBot), true, false); //(sf::Time frameTime, bool paused, bool looped)
-	p2Bot.setPosition(sf::Vector2f(player[1].x - 325, player[1].y + 275)); //275 d'alçada per compensar amb la cintura
-	p2Bot.play(idleAnimation2B);
+	AnimatedSprite p2Top(sf::seconds(SpriteVelocityTop), true, false); //(sf::Time frameTime, bool paused, bool looped)
 
 	int FoggOffset = 0;
 	int DireccioAtacJugador1 = 0; // 0=Idle 1=Top 2=Mid 3=Bot
@@ -362,6 +349,9 @@ int main()
 
 	thread.launch();																	// Comencem thread receive
 
+	int left = 0;
+	int right = 1;
+
 	while (window.isOpen())
 	{
 		sf::Time frameTime = frameClock.restart();
@@ -388,6 +378,28 @@ int main()
 				case HELLO: {
 					serverCommands.front().Read(&player[0].id, ID_SIZE);
 					serverCommands.front().Read(&player[0].x, POSITION_SIZE);
+
+					if (player[0].id == 1)
+					{
+						left = 1;
+						right = 0;
+					}
+					// set up AnimatedSprite	
+					p1Top.setPosition(sf::Vector2f(player[left].x /*- 325*/, player[0].y));
+					p1Top.play(idleAnimation1T);
+
+					// set up AnimatedSprite					
+					p1Bot.setPosition(sf::Vector2f(player[left].x /*- 325*/, player[0].y + 275)); //275 d'alçada per compensar amb la cintura
+					p1Bot.play(idleAnimation1B);
+
+					// set up AnimatedSprite					
+					p2Bot.setPosition(sf::Vector2f(player[right].x /*- 325*/, player[1].y + 275)); //275 d'alçada per compensar amb la cintura
+					p2Bot.play(idleAnimation2B);
+
+					// set up AnimatedSprite
+					p2Top.setPosition(sf::Vector2f(player[right].x /*- 325*/, player[1].y));
+					p2Top.play(idleAnimation2T);
+
 					serverCommands.pop();
 				}
 					break;
@@ -425,52 +437,76 @@ int main()
 			if (key.isKeyPressed(sf::Keyboard::Right)) {
 				int movement = 2;
 				player[0].x += movement;
-				accum.back().moveDelta += movement;
+				player[0].accum.back().moveDelta += movement;
 				
 				// TODO: vigilar que no surtin de el mapa ni xoquin amb el enemic
-				p1Bot.play(pas1B);
+				//p1Bot.play(pas1B);
 
 			}
 			if (key.isKeyPressed(sf::Keyboard::Left)) {
 				int movement = -2;
-				player[0].x += 2;
-				accum.back().moveDelta += movement;
-				p1Top.play(attackAnimationTop1T);
+				player[0].x += movement;
+				player[0].accum.back().moveDelta += movement;
+				//p1Top.play(attackAnimationTop1T);
 
 			}
 
+			// TODO: Attack
 			//-- ACCUMULATED --//
 
 			////-- PLAYER --////
 
 			if (timerAccum.Check())
 			{
-				if (accum.back().moveDelta != 0)
+				if (player[0].accum.back().moveDelta != 0)
 				{
-					accum.back().moveAbsolute = player[0].x;			// Marco el absolut del moviment
+					int negative = 0; // 0 = positiu, 1 = negatiu
+					if (player[0].accum.back().moveDelta < 0) {
+						negative = 1;
+						player[0].accum.back().moveDelta *= -1;
+					}
+
+					player[0].accum.back().moveAbsolute = player[0].x;			// Marco el absolut del moviment
 					OutputMemoryBitStream output;
 					output.Write(MOVEMENT, TYPE_SIZE);
 					output.Write(player[0].id, ID_SIZE);
-					output.Write(accum.back().moveId, ACCUM_ID_SIZE);
-					output.Write(accum.back().moveDelta, ACCUM_DELTA_SIZE);
+					output.Write(player[0].accum.back().moveId, ACCUM_ID_SIZE);
+					output.Write(negative, ID_SIZE);
+					output.Write(player[0].accum.back().moveDelta, ACCUM_DELTA_SIZE);
+
+					sender.SendMessages(ip, port, output.GetBufferPtr(), output.GetByteLength());
 					// TODO: Write de si hi ha animacio o no
 					Accum accumtmp;										// Creo nou acumulat
-					if (accum.back().moveId == 15) accumtmp.moveId = 0;	// Si el ultim acumulat te id 15, el nou torna a 0
-					else accumtmp.moveId = accum.back().moveId + 1;     // Sino, el id es un mes que l'anterior
-					// TODO: enviar acumulat
+					if (player[0].accum.back().moveId == 15) accumtmp.moveId = 0;	// Si el ultim acumulat te id 15, el nou torna a 0
+					else accumtmp.moveId = player[0].accum.back().moveId + 1;     // Sino, el id es un mes que l'anterior
 					// TODO: vigilar que el acumulat no pasi de +/- 64
 					
-					accum.push_back(accumtmp);
+					player[0].accum.push_back(accumtmp);
 				}	
 				timerAccum.Start(ACCUMTIME);
 			}
 
 			////-- ENEMY --////
 
-			// TODO: simular enemic
-			if (!enemyAccum.empty())
+			if (!player[1].accum.empty())
 			{
-				// enemyAccum.front()
+				int movement = 1;
+				if (player[1].accum.front().moveAbsolute != player[1].x)
+				{
+					if (player[1].accum.front().moveDelta < 0) movement = -1;
+					player[1].x += movement;
+					if (player[1].accum.front().moveAbsolute != player[1].x) {
+						player[1].x += movement;
+					}
+					else
+					{
+						player[1].accum.erase(player[1].accum.begin());
+					}
+				}
+				else
+				{
+					player[1].accum.erase(player[1].accum.begin());
+				}
 			}
 
 			//-- COMMANDS --//
@@ -507,18 +543,22 @@ int main()
 					serverCommands.front().Read(&playerId, ID_SIZE);				// Guardem quin jugador es
 					int accumId = 0; 
 					serverCommands.front().Read(&accumId, ACCUM_ID_SIZE);			// Guardem la id del acumulat
+					int negative = 0;
+					serverCommands.front().Read(&negative, ID_SIZE);
 					int accumDelta = 0; 
 					serverCommands.front().Read(&accumDelta, ACCUM_DELTA_SIZE);	// Guardem el el delta acumulat
 
+					if (negative == 1) accumDelta *= -1;
+
 					if (playerId == player[0].id)				// Si es el id propi, comfirma el moviment
 					{	// TODO: Check de trampas o problemes
-						for (int i = 0; i < accum.size(); i++)	// Recorre tots els misatges de acumulacio
+						for (int i = 0; i < player[0].accum.size(); i++)	// Recorre tots els misatges de acumulacio
 						{
-							if (accum[i].moveId == accumId)		// Si troba el misatge de acumulacio
+							if (player[0].accum[i].moveId == accumId)		// Si troba el misatge de acumulacio
 							{
-								for (int j = 0; j < accum.size()-i; j++)		// Recorre els misatges que hi havien fins ara
+								for (int j = 0; j < player[0].accum.size()-i; j++)		// Recorre els misatges que hi havien fins ara
 								{
-									accum.erase(accum.begin());					// Borrals
+									player[0].accum.erase(player[0].accum.begin());					// Borrals
 								}
 								break;
 							}
@@ -529,7 +569,8 @@ int main()
 						Accum accumtmp;
 						accumtmp.moveId = accumId;
 						accumtmp.moveDelta = accumDelta;
-						enemyAccum.push(accumtmp);	// Afegir acumulat a la cua
+						accumtmp.moveAbsolute = player[1].x + accumDelta;
+						player[1].accum.push_back(accumtmp);	// Afegir acumulat a la cua
 					}
 
 					serverCommands.pop();
@@ -569,20 +610,20 @@ int main()
 
 		//
 		p1Bot.update(frameTime);
-		p1Bot.setPosition(player[0].x, 150 + 275);
+		p1Bot.setPosition(player[left].x, 150 + 275);
 		window.draw(p1Bot);
 		//p1Top.play(*currentAnimation1T);
 		p1Top.update(frameTime);
-		p1Top.setPosition(player[0].x, 150);
+		p1Top.setPosition(player[left].x, 150);
 		window.draw(p1Top);
 
 		//P2
 		p2Bot.update(frameTime);
-		p2Bot.setPosition(player[1].x + 150, player[1].y + 275); //Aquests 150 en x son la desviació del sprite de les cames
+		p2Bot.setPosition(player[right].x /*+ 150*/, player[right].y/* + 275*/); //Aquests 150 en x son la desviació del sprite de les cames
 		window.draw(p2Bot);
 
 		p2Top.update(frameTime);
-		p2Top.setPosition(player[1].x, player[1].y);
+		p2Top.setPosition(player[right].x, player[right].y);
 		window.draw(p2Top);// pintem el jugador
 
 		window.draw(herba);
