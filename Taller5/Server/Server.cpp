@@ -67,7 +67,6 @@ int main()
 	receiver.socket = &socket;
 	receiver.mutex = &mutex;
 	receiver.players = &player;
-	//receiver.playertmp = &playertmp;
 
 	//-- SERVER --//
 
@@ -102,9 +101,7 @@ int main()
 				mutex.lock();
 				if (!clientCommands.empty()) {
 					int clientCase = 0;
-					//InputMemoryBitStream input = clientCommands.front();//(clientCommands.front().GetBufferPtr(), )
 					clientCommands.front().Read(&clientCase, TYPE_SIZE);
-					//int clientCase = protocol.GetType(clientCommands.front());
 					switch (clientCase) {
 					case HELLO: {	// Un client es vol conectar
 
@@ -121,12 +118,10 @@ int main()
 									player[i].y = 750;
 									std::cout << "\n New user" << std::endl;
 								}
-								//command = protocol.CreateMessage(std::vector<int>{HELLO, player[i].id, player[i].x});
 								OutputMemoryBitStream output;
 								output.Write(HELLO, TYPE_SIZE);
 								output.Write(player[i].id, ID_SIZE);
 								output.Write(player[i].x, POSITION_SIZE);
-								//command = protocol.CreateMessageP(1, player[i].id, player[i].x); // 1_0_0_vacio // WELCOME_id_x_y
 								sender.SendMessages(player[i].ip, player[i].port, output.GetBufferPtr(), output.GetByteLength());
 								clientCommands.pop();
 							}
@@ -149,7 +144,6 @@ int main()
 					output.Write(CONNECTION, TYPE_SIZE);
 					output.Write(player[0].id, ID_SIZE);
 					output.Write(player[0].x, POSITION_SIZE);
-					//command = protocol.CreateMessageP(2, player[0].id, player[0].x); // 2_0_0_vacio // WELCOME_id_x_y
 					sender.SendMessages(player[1].ip, player[1].port, output.GetBufferPtr(), output.GetByteLength());
 					for (int i = 0; i < player[1].keyCommands.size(); i++)
 					{
@@ -164,7 +158,6 @@ int main()
 					output2.Write(CONNECTION, TYPE_SIZE);
 					output2.Write(player[1].id, ID_SIZE);
 					output2.Write(player[1].x, POSITION_SIZE);
-					//command = protocol.CreateMessageP(2, player[1].id, player[1].x); // 2_0_0_vacio // WELCOME_id_x_y
 					sender.SendMessages(player[0].ip, player[0].port, output2.GetBufferPtr(), output2.GetByteLength());
 					for (int i = 0; i < player[0].keyCommands.size(); i++)
 					{
@@ -181,7 +174,6 @@ int main()
 				if (!clientCommands.empty()) {
 					int clientCase = 0; 
 					clientCommands.front().Read(&clientCase, TYPE_SIZE);
-					//int clientCase = protocol.GetType(clientCommands.front());
 					switch (clientCase) {
 					case HELLO:
 						playersConected = false;
@@ -189,7 +181,7 @@ int main()
 						break;
 					case CONNECTION:	// Un client es vol conectar
 						int playerId = 0; 
-						clientCommands.front().Read(&playerId, ID_SIZE); //protocol.GetSubType(clientCommands.front());
+						clientCommands.front().Read(&playerId, ID_SIZE); 
 
 						player[playerId].ready = 1;
 						for (int i = 0; i < player[playerId].keyCommands.size(); i++) // Recorrer tots els keycommands
@@ -197,7 +189,6 @@ int main()
 							InputMemoryBitStream intmp(player[playerId].keyCommands[i].GetBufferPtr(), player[playerId].keyCommands[i].GetByteLength());
 							int typetmp = 0;  
 							intmp.Read(&typetmp, 1);
-							//std::string commandToCheck = player[playerId].keyCommands[i];
 							if (typetmp == CONNECTION) {								// si es un keycommand de ready
 								
 								for (int j = 0; j < player[playerId].keyCommands.size(); j++)
@@ -221,8 +212,11 @@ int main()
 			break;
 
 	//-- PLAY --//
+
 		case play: {
+
 			////-- PING --////
+
 			if (timerPing.Check()) {
 				// Check si un o els dos jugadors s'ha desconectat
 				bool toConect = false;
@@ -236,8 +230,7 @@ int main()
 						if (typetmp == PING) {
 							OutputMemoryBitStream output;
 							output.Write(DISCONNECTION, TYPE_SIZE);
-							output.Write(i, ID_SIZE);
-							//command = "4" + std::to_string(i); // Misatge que s'ha desconectat el jugador i
+							output.Write(i, ID_SIZE); // Misatge que s'ha desconectat el jugador i
 
 							bool foundMessage = false;									// Per saber si hi ha un misatge igual
 							for (int k = 0; k < player.size(); k++)
@@ -245,7 +238,7 @@ int main()
 								sender.SendMessages(player[k].ip, player[k].port, output.GetBufferPtr(), output.GetByteLength());
 								for (int l = 0; l < player[k].keyCommands.size(); l++)
 								{
-									if (strcmp(player[k].keyCommands[l].GetBufferPtr(), output.GetBufferPtr())) { //TODO: Petarmel
+									if (strcmp(player[k].keyCommands[l].GetBufferPtr(), output.GetBufferPtr())) { 
 										foundMessage = true;
 										break;
 									}
@@ -269,15 +262,13 @@ int main()
 				else {
 					OutputMemoryBitStream output;
 					output.Write(PING, TYPE_SIZE);
-					//command = "3";
-					//int commandPush = sendAll(&sender, &player, output.GetBufferPtr(), output.GetByteLength());
 					bool foundMessage = false;									// Per saber si hi ha un misatge igual
 					for (int k = 0; k < player.size(); k++)
 					{
 						sender.SendMessages(player[k].ip, player[k].port, output.GetBufferPtr(), output.GetByteLength());
 						for (int l = 0; l < player[k].keyCommands.size(); l++)
 						{
-							if (strcmp(player[k].keyCommands[l].GetBufferPtr(), output.GetBufferPtr())) { //TODO: Petarmel
+							if (strcmp(player[k].keyCommands[l].GetBufferPtr(), output.GetBufferPtr())) { 
 								foundMessage = true;
 								break;
 							}
@@ -296,6 +287,7 @@ int main()
 			}
 
 			////-- CLIENT COMMANDS --////
+
 			mutex.lock();
 			if (!clientCommands.empty()) {
 				int clientCase = 0; 
@@ -316,7 +308,6 @@ int main()
 				case PING: {
 					int playerId = 0; 
 					clientCommands.front().Read(&playerId, ID_SIZE);
-					//= protocol.GetSubType(clientCommands.front());
 					for (int i = 0; i < player[playerId].keyCommands.size(); i++)
 					{
 						InputMemoryBitStream intmp(player[playerId].keyCommands[i].GetBufferPtr(), player[playerId].keyCommands[i].GetByteLength() * 8);
@@ -337,14 +328,13 @@ int main()
 					OutputMemoryBitStream output;
 					output.Write(PING, TYPE_SIZE);
 					output.Write(playerId, ID_SIZE);
-					//int commandPush = sendAll(&sender, &player, output.GetBufferPtr(), output.GetByteLength());
 					bool foundMessage = false;									// Per saber si hi ha un misatge igual
 					for (int k = 0; k < player.size(); k++)
 					{
 						sender.SendMessages(player[k].ip, player[k].port, output.GetBufferPtr(), output.GetByteLength());
 						for (int l = 0; l < player[k].keyCommands.size(); l++)
 						{
-							if (strcmp(player[k].keyCommands[l].GetBufferPtr(), output.GetBufferPtr())) { //TODO: Petarmel
+							if (strcmp(player[k].keyCommands[l].GetBufferPtr(), output.GetBufferPtr())) { 
 								foundMessage = true;
 								break;
 							}
@@ -371,14 +361,13 @@ int main()
 					output.Write(PING, TYPE_SIZE);
 					output.Write(playerId, ID_SIZE);
 					output.Write(position, POSITION_SIZE);
-					//int commandPush = sendAll(&sender, &player, output.GetBufferPtr(), output.GetByteLength());
 					bool foundMessage = false;									// Per saber si hi ha un misatge igual
 					for (int k = 0; k < player.size(); k++)
 					{
 						sender.SendMessages(player[k].ip, player[k].port, output.GetBufferPtr(), output.GetByteLength());
 						for (int l = 0; l < player[k].keyCommands.size(); l++)
 						{
-							if (strcmp(player[k].keyCommands[l].GetBufferPtr(), output.GetBufferPtr())) { //TODO: Petarmel
+							if (strcmp(player[k].keyCommands[l].GetBufferPtr(), output.GetBufferPtr())) {
 								foundMessage = true;
 								break;
 							}
