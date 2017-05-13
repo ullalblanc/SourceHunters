@@ -33,6 +33,7 @@ int main()
 	unsigned short serverPort = 5000;
 	sf::UdpSocket socket;
 	std::queue<InputMemoryBitStream> serverCommands;			// Misatges del servidor per anar executant
+	std::queue<Command> com;
 	sf::Mutex mutex;											// Per evitar varis accesos a les cues
 	std::string command;										// el misatge que envia als clients
 	Send sender;												// Sender per enviar misatges
@@ -44,6 +45,7 @@ int main()
 	sender.socket = &socket;
 
 	receiver.commands = &serverCommands;
+	receiver.com = &com;
 	receiver.socket = &socket;
 	receiver.mutex = &mutex;
 	receiver.players = &player;
@@ -69,7 +71,7 @@ int main()
 	playertmp.y = 750;
 	player.push_back(playertmp);
 	player.push_back(playertmp);
-	Accum accumtmp; accumtmp.moveId = 0;
+	Accum accumtmp; accumtmp.id = 0;
 	//accum.push_back(accumtmp);
 	player[0].accum.push_back(accumtmp);
 
@@ -419,15 +421,18 @@ int main()
 				timerConnect.Start(5000);
 			}
 
-			if (!serverCommands.empty()) {
-				int serverCase = 0; 
-				serverCommands.front().Read(&serverCase, TYPE_SIZE);
+			if (!com.empty()) {
+				//int serverCase = 0; 
+				//serverCommands.front().Read(&serverCase, TYPE_SIZE);
 				//std::cout << serverCase << std::endl;
-				switch (serverCase) {
+				switch (com.front().type) {
 
 				case HELLO: {
-					serverCommands.front().Read(&player[0].id, ID_SIZE);
-					serverCommands.front().Read(&player[0].x, POSITION_SIZE);
+					//serverCommands.front().Read(&player[0].id, ID_SIZE);
+					//serverCommands.front().Read(&player[0].x, POSITION_SIZE);
+
+					player[0].id = com.front().id;
+					player[0].x = com.front().position;
 
 					if (player[0].id == 1)
 					{
@@ -450,18 +455,20 @@ int main()
 					p2Top.setPosition(sf::Vector2f(player[right].x /*- 325*/, player[1].y));
 					p2Top.play(idleAnimation2T);
 
-					serverCommands.pop();
+					com.pop();
+					//serverCommands.pop();
 				}
 					break;
 
 				case CONNECTION: {
-					serverCommands.front().Read(&player[1].id, ID_SIZE);
-					serverCommands.front().Read(&player[1].x, POSITION_SIZE);
-					serverCommands.pop();
-
-					
-					break;
+					//serverCommands.front().Read(&player[1].id, ID_SIZE);
+					//serverCommands.front().Read(&player[1].x, POSITION_SIZE);
+					player[1].id = com.front().id;
+					player[1].x = com.front().position;
+					com.pop();
+					//serverCommands.pop();				
 				}
+								 break;
 				}
 			}
 			if (player[0].x != 0 && player[1].x != 0)
@@ -487,7 +494,7 @@ int main()
 			if (key.isKeyPressed(sf::Keyboard::Right)) {
 				int movement = 2;
 				player[0].x += movement;
-				player[0].accum.back().moveDelta += movement;
+				player[0].accum.back().delta += movement;
 				
 				// TODO: vigilar que no surtin de el mapa ni xoquin amb el enemic
 				//p1Bot.play(pas1B);
@@ -496,7 +503,7 @@ int main()
 			if (key.isKeyPressed(sf::Keyboard::Left)) {
 				int movement = -2;
 				player[0].x += movement;
-				player[0].accum.back().moveDelta += movement;
+				player[0].accum.back().delta += movement;
 				//p1Top.play(attackAnimationTop1T);
 
 			}
@@ -508,27 +515,27 @@ int main()
 
 			if (timerAccum.Check())
 			{
-				if (player[0].accum.back().moveDelta != 0)
+				if (player[0].accum.back().delta != 0)
 				{
-					int negative = 0; // 0 = positiu, 1 = negatiu
-					if (player[0].accum.back().moveDelta < 0) {
-						negative = 1;
-						player[0].accum.back().moveDelta *= -1;
+					//int negative = 0; // 0 = positiu, 1 = negatiu
+					if (player[0].accum.back().delta < 0) {
+						player[0].accum.back().sign = 1;
+						player[0].accum.back().delta *= -1;
 					}
 
-					player[0].accum.back().moveAbsolute = player[0].x;			// Marco el absolut del moviment
+					player[0].accum.back().absolute = player[0].x;			// Marco el absolut del moviment
 					OutputMemoryBitStream output;
 					output.Write(MOVEMENT, TYPE_SIZE);
 					output.Write(player[0].id, ID_SIZE);
-					output.Write(player[0].accum.back().moveId, ACCUM_ID_SIZE);
-					output.Write(negative, ID_SIZE);
-					output.Write(player[0].accum.back().moveDelta, ACCUM_DELTA_SIZE);
+					output.Write(player[0].accum.back().id, ACCUM_ID_SIZE);
+					output.Write(player[0].accum.back().sign, ID_SIZE);
+					output.Write(player[0].accum.back().delta, ACCUM_DELTA_SIZE);
 
-					sender.SendMessages(ip, port, output.GetBufferPtr(), output.GetByteLength());
+					sender.SendMessages(ip, serverPort, output.GetBufferPtr(), output.GetByteLength());
 					// TODO: Write de si hi ha animacio o no
 					Accum accumtmp;										// Creo nou acumulat
-					if (player[0].accum.back().moveId == 15) accumtmp.moveId = 0;	// Si el ultim acumulat te id 15, el nou torna a 0
-					else accumtmp.moveId = player[0].accum.back().moveId + 1;     // Sino, el id es un mes que l'anterior
+					if (player[0].accum.back().id == 15) accumtmp.id = 0;	// Si el ultim acumulat te id 15, el nou torna a 0
+					else accumtmp.id = player[0].accum.back().id + 1;     // Sino, el id es un mes que l'anterior
 					// TODO: vigilar que el acumulat no pasi de +/- 64
 					
 					player[0].accum.push_back(accumtmp);
@@ -541,11 +548,11 @@ int main()
 			if (!player[1].accum.empty())
 			{
 				int movement = 1;
-				if (player[1].accum.front().moveAbsolute != player[1].x)
+				if (player[1].accum.front().absolute != player[1].x)
 				{
-					if (player[1].accum.front().moveDelta < 0) movement = -1;
+					if (player[1].accum.front().delta < 0) movement = -1;
 					player[1].x += movement;
-					if (player[1].accum.front().moveAbsolute != player[1].x) {
+					if (player[1].accum.front().absolute != player[1].x) {
 						player[1].x += movement;
 					}
 					else
@@ -561,10 +568,10 @@ int main()
 
 			//-- COMMANDS --//
 
-			if (!serverCommands.empty()) {
-				int serverCase = 0; 
-				serverCommands.front().Read(&serverCase, TYPE_SIZE);
-				switch (serverCase) {
+			if (!com.empty()) {
+				//int serverCase = 0; 
+				//serverCommands.front().Read(&serverCase, TYPE_SIZE);
+				switch (com.front().type) {
 
 				case HELLO: { // NO TINDRIA QUE REBRE 1
 				}
@@ -575,21 +582,23 @@ int main()
 					output.Write(CONNECTION, TYPE_SIZE);
 					output.Write(player[0].id, ID_SIZE);
 					sender.SendMessages(ip, serverPort, output.GetBufferPtr(), output.GetByteLength());
-					serverCommands.pop();
+					com.pop();
+					//serverCommands.pop();
 					break;
 				}
 				case PING: {
 					OutputMemoryBitStream output;
 					output.Write(PING, TYPE_SIZE);
 					output.Write(player[0].id, ID_SIZE);
-					command = "3" + std::to_string(player[0].id);
+					//command = "3" + std::to_string(player[0].id);
 					sender.SendMessages(ip, serverPort, output.GetBufferPtr(), output.GetByteLength());
-					serverCommands.pop();
+					com.pop();
+					//serverCommands.pop();
 					break;
 				}
 				case MOVEMENT: {
 
-					int playerId = 0; 
+					/*int playerId = 0; 
 					serverCommands.front().Read(&playerId, ID_SIZE);				// Guardem quin jugador es
 					int accumId = 0; 
 					serverCommands.front().Read(&accumId, ACCUM_ID_SIZE);			// Guardem la id del acumulat
@@ -598,13 +607,14 @@ int main()
 					int accumDelta = 0; 
 					serverCommands.front().Read(&accumDelta, ACCUM_DELTA_SIZE);	// Guardem el el delta acumulat
 
-					if (negative == 1) accumDelta *= -1;
+					if (negative == 1) accumDelta *= -1;*/
 
-					if (playerId == player[0].id)				// Si es el id propi, comfirma el moviment
+
+					if (com.front().id == player[0].id)				// Si es el id propi, comfirma el moviment
 					{	// TODO: Check de trampas o problemes
 						for (int i = 0; i < player[0].accum.size(); i++)	// Recorre tots els misatges de acumulacio
 						{
-							if (player[0].accum[i].moveId == accumId)		// Si troba el misatge de acumulacio
+							if (player[0].accum[i].id == com.front().accum.id)		// Si troba el misatge de acumulacio
 							{
 								for (int j = 0; j < player[0].accum.size()-i; j++)		// Recorre els misatges que hi havien fins ara
 								{
@@ -616,14 +626,16 @@ int main()
 					} 
 					else							// Si es el id del contrincant, simula el moviment
 					{
-						Accum accumtmp;
-						accumtmp.moveId = accumId;
+						Accum accumtmp = com.front().accum;
+						/*accumtmp.moveId = accumId;
 						accumtmp.moveDelta = accumDelta;
-						accumtmp.moveAbsolute = player[1].x + accumDelta;
+						accumtmp.moveAbsolute = player[1].x + accumDelta;*/
+						accumtmp.absolute = player[1].x + accumtmp.delta;
 						player[1].accum.push_back(accumtmp);	// Afegir acumulat a la cua
 					}
 
-					serverCommands.pop();
+					com.pop();
+					//serverCommands.pop();
 					break;
 				}							  
 				default:

@@ -1,24 +1,27 @@
 ﻿  Client.cpp
-E:\SourceHunters\SourceHunters\Taller5\ChatLib\Game.h(73): warning C4244: '=': conversion from 'float' to 'clock_t', possible loss of data
-E:\SourceHunters\SourceHunters\Taller5\ChatLib\Game.h(127): warning C4267: 'argument': conversion from 'size_t' to 'uint32_t', possible loss of data
-E:\SourceHunters\SourceHunters\Taller5\ChatLib\Game.h(199): warning C4267: 'argument': conversion from 'size_t' to 'uint32_t', possible loss of data
-Client.cpp(316): warning C4305: 'argument': truncation from 'double' to 'float'
-Client.cpp(317): warning C4305: 'argument': truncation from 'double' to 'float'
-Client.cpp(318): warning C4305: 'argument': truncation from 'double' to 'float'
-Client.cpp(319): warning C4305: 'argument': truncation from 'double' to 'float'
-Client.cpp(388): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
-Client.cpp(392): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
-Client.cpp(396): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
-Client.cpp(400): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
-Client.cpp(602): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
-Client.cpp(604): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
-Client.cpp(613): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
-Client.cpp(617): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
-Client.cpp(622): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
-Client.cpp(626): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
-Client.cpp(436): warning C4101: 'key': unreferenced local variable
+E:\SourceHunters\SourceHunters\Taller5\ChatLib\Game.h(82): warning C4244: '=': conversion from 'float' to 'clock_t', possible loss of data
+E:\SourceHunters\SourceHunters\Taller5\ChatLib\Game.h(137): warning C4267: 'argument': conversion from 'size_t' to 'uint32_t', possible loss of data
+E:\SourceHunters\SourceHunters\Taller5\ChatLib\Game.h(250): warning C4267: 'argument': conversion from 'size_t' to 'uint32_t', possible loss of data
+Client.cpp(347): warning C4305: 'argument': truncation from 'double' to 'float'
+Client.cpp(348): warning C4305: 'argument': truncation from 'double' to 'float'
+Client.cpp(349): warning C4305: 'argument': truncation from 'double' to 'float'
+Client.cpp(350): warning C4305: 'argument': truncation from 'double' to 'float'
+Client.cpp(351): warning C4305: 'argument': truncation from 'double' to 'float'
+Client.cpp(443): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
+Client.cpp(447): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
+Client.cpp(451): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
+Client.cpp(455): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
+Client.cpp(710): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
+Client.cpp(712): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
+Client.cpp(721): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
+Client.cpp(725): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
+Client.cpp(730): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
+Client.cpp(734): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
+Client.cpp(493): warning C4101: 'key': unreferenced local variable
   Generating code
-  All 646 functions were compiled because no usable IPDB/IOBJ from previous compilation was found.
+  4 of 730 functions ( 0.5%) were compiled, the rest were copied from previous compilation.
+    0 functions were new in current compilation
+    4 functions had inline decision re-evaluated but remain unchanged
   Finished generating code
 ChatLib.lib(Send.obj) : warning LNK4099: PDB 'ChatLib.pdb' was not found with 'ChatLib.lib(Send.obj)' or at 'E:\SourceHunters\SourceHunters\Taller5\x64\Release\ChatLib.pdb'; linking object as if no debug info
   Client.vcxproj -> E:\SourceHunters\SourceHunters\Taller5\x64\Release\Client.exe

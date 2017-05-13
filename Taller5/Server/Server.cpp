@@ -136,7 +136,7 @@ int main()
 				if (player.size() == TOTALPLAYERS) { // Si existeixen 2 jugadors
 					if (player[0].x > 0 && player[1].x > 0) {// si els 2 jugadors tenen posicions valides, estan correctament conectats
 						playersConected = true;
-						for (int j = 0; j < clientCommands.size(); j++)
+						for (int j = 0; j < com.size(); j++)
 						{
 							com.pop();
 							//clientCommands.pop();
@@ -189,6 +189,7 @@ int main()
 					switch (com.front().type) {
 					case HELLO:
 						playersConected = false;
+						
 						//clientCommands.pop();
 						break;
 					case CONNECTION:	// Un client es vol conectar
@@ -210,6 +211,7 @@ int main()
 								break;
 							}
 						}
+						com.pop();
 						break;
 					}
 				}
@@ -335,7 +337,7 @@ int main()
 						//int typetmp = 0;  
 						//ntmp.Read(&typetmp, 1);
 						if (player[com.front().id].keyComs[i].type == PING) {
-							player[com.front().id].keyComs.erase(player[com.front().id].keyComs.begin() + 1);
+							player[com.front().id].keyComs.erase(player[com.front().id].keyComs.begin());
 							break;
 						}
 					}
