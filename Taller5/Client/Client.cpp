@@ -8,8 +8,12 @@
 #define SpriteVelocityTop 0.05
 #define SpriteVelocityBlock 0.07
 
+#define POSICIO_INICIAL1 270
+#define POSICIO_INICIAL2 800
+#define POSICIO_Y 150
+
 #define DISTANCIA_BODY 70
-#define DISTANCIA_ATTACK 150
+#define DISTANCIA_ATTACK 200
 
 // Protocol: https://docs.google.com/spreadsheets/d/152EPpd8-f7fTDkZwQlh1OCY5kjCTxg6-iZ2piXvEgeg/edit?usp=sharing
 
@@ -119,6 +123,7 @@ int main()
 	//Animacio attack top player 1
 	Animation attackAnimationTop1T;
 	attackAnimationTop1T.setSpriteSheet(p1TextTop);
+	attackAnimationTop1T.addFrame(sf::IntRect(652 * 0, 0, 650, 650));
 	attackAnimationTop1T.addFrame(sf::IntRect(652 * 1, 0, 650, 650));
 	attackAnimationTop1T.addFrame(sf::IntRect(652 * 2, 0, 650, 650));
 	attackAnimationTop1T.addFrame(sf::IntRect(652 * 3, 0, 650, 650));
@@ -136,6 +141,7 @@ int main()
 	//Animacio attack mid player 1
 	Animation attackAnimationMid1T;
 	attackAnimationMid1T.setSpriteSheet(p1TextTop);
+	attackAnimationMid1T.addFrame(sf::IntRect(652 * 0, 0, 650, 650));
 	attackAnimationMid1T.addFrame(sf::IntRect(652 * 4, 652, 650, 650));
 	attackAnimationMid1T.addFrame(sf::IntRect(652 * 5, 652, 650, 650));
 	attackAnimationMid1T.addFrame(sf::IntRect(652 * 6, 652, 650, 650));
@@ -153,6 +159,7 @@ int main()
 	//Animacio attack bot player 1
 	Animation attackAnimationBot1T;
 	attackAnimationBot1T.setSpriteSheet(p1TextTop);
+	attackAnimationBot1T.addFrame(sf::IntRect(652 * 0, 652 * 0, 650, 650));
 	attackAnimationBot1T.addFrame(sf::IntRect(652 * 7, 652 * 2, 650, 650));
 	attackAnimationBot1T.addFrame(sf::IntRect(652 * 8, 652 * 2, 650, 650));
 	attackAnimationBot1T.addFrame(sf::IntRect(652 * 9, 652 * 2, 650, 650));
@@ -225,23 +232,25 @@ int main()
 	//Animacio attack top player 1
 	Animation attackAnimationTop2T;
 	attackAnimationTop2T.setSpriteSheet(p2TextTop);
+	attackAnimationTop2T.addFrame(sf::IntRect(652 * 0, 0, 650, 650));
 	attackAnimationTop2T.addFrame(sf::IntRect(652 * 1, 0, 650, 650));
 	attackAnimationTop2T.addFrame(sf::IntRect(652 * 2, 0, 650, 650));
 	attackAnimationTop2T.addFrame(sf::IntRect(652 * 3, 0, 650, 650));
 	attackAnimationTop2T.addFrame(sf::IntRect(652 * 4, 0, 650, 650));
-	attackAnimationTop2T.addFrame(sf::IntRect(652 * 5, 0, 650, 650));//5
-	attackAnimationTop2T.addFrame(sf::IntRect(652 * 6, 0, 650, 650));
+	attackAnimationTop2T.addFrame(sf::IntRect(652 * 5, 0, 650, 650));
+	attackAnimationTop2T.addFrame(sf::IntRect(652 * 6, 0, 650, 650));//5
 	attackAnimationTop2T.addFrame(sf::IntRect(652 * 7, 0, 650, 650));
 	attackAnimationTop2T.addFrame(sf::IntRect(652 * 8, 0, 650, 650));
 	attackAnimationTop2T.addFrame(sf::IntRect(652 * 9, 0, 650, 650));
-	attackAnimationTop2T.addFrame(sf::IntRect(652 * 0, 652, 650, 650));//10
-	attackAnimationTop2T.addFrame(sf::IntRect(652 * 1, 652, 650, 650));
+	attackAnimationTop2T.addFrame(sf::IntRect(652 * 0, 652, 650, 650));
+	attackAnimationTop2T.addFrame(sf::IntRect(652 * 1, 652, 650, 650));//10
 	attackAnimationTop2T.addFrame(sf::IntRect(652 * 2, 652, 650, 650));
 	attackAnimationTop2T.addFrame(sf::IntRect(652 * 3, 652, 650, 650));
 
 	//Animacio attack mid player 1
 	Animation attackAnimationMid2T;
 	attackAnimationMid2T.setSpriteSheet(p2TextTop);
+	attackAnimationMid2T.addFrame(sf::IntRect(652 * 0, 0, 650, 650));
 	attackAnimationMid2T.addFrame(sf::IntRect(652 * 4, 652, 650, 650));
 	attackAnimationMid2T.addFrame(sf::IntRect(652 * 5, 652, 650, 650));
 	attackAnimationMid2T.addFrame(sf::IntRect(652 * 6, 652, 650, 650));
@@ -256,9 +265,11 @@ int main()
 	attackAnimationMid2T.addFrame(sf::IntRect(652 * 5, 652 * 2, 650, 650));
 	attackAnimationMid2T.addFrame(sf::IntRect(652 * 6, 652 * 2, 650, 650));
 
+
 	//Animacio attack bot player 1
 	Animation attackAnimationBot2T;
 	attackAnimationBot2T.setSpriteSheet(p2TextTop);
+	attackAnimationBot2T.addFrame(sf::IntRect(652 * 0, 652 * 0, 650, 650));
 	attackAnimationBot2T.addFrame(sf::IntRect(652 * 7, 652 * 2, 650, 650));
 	attackAnimationBot2T.addFrame(sf::IntRect(652 * 8, 652 * 2, 650, 650));
 	attackAnimationBot2T.addFrame(sf::IntRect(652 * 9, 652 * 2, 650, 650));
@@ -311,12 +322,31 @@ int main()
 	pas2B.addFrame(sf::IntRect(502 * 0, 382 * 1, 500, 380));
 	pas2B.addFrame(sf::IntRect(502 * 1, 382 * 0, 500, 380));
 
+	//Partycle System
+
+	sf::Texture PSText;
+	if (!PSText.loadFromFile("../Resources/AtlasPS.png")) {
+		std::cout << "Can't load the image file" << std::endl;
+		return -1;
+	}
+
+	Animation PSBasic;
+	PSBasic.setSpriteSheet(PSText);
+	PSBasic.addFrame(sf::IntRect(400 * 2, 400 * 1, 400, 400));
+	PSBasic.addFrame(sf::IntRect(400 * 0, 400 * 0, 400, 400));
+	PSBasic.addFrame(sf::IntRect(400 * 1, 400 * 0, 400, 400));
+	PSBasic.addFrame(sf::IntRect(400 * 2, 400 * 0, 400, 400));
+	PSBasic.addFrame(sf::IntRect(400 * 3, 400 * 0, 400, 400));
+	PSBasic.addFrame(sf::IntRect(400 * 0, 400 * 1, 400, 400));
+	PSBasic.addFrame(sf::IntRect(400 * 1, 400 * 1, 400, 400));
+
 	//Animation* currentAnimation1B = &idleAnimation1B;	
 
 	AnimatedSprite p1Top(sf::seconds(SpriteVelocityTop), true, false); //(sf::Time frameTime, bool paused, bool looped)
 	AnimatedSprite p1Bot(sf::seconds(SpriteVelocityBot), true, false); //(sf::Time frameTime, bool paused, bool looped)
 	AnimatedSprite p2Bot(sf::seconds(SpriteVelocityBot), true, false); //(sf::Time frameTime, bool paused, bool looped)
 	AnimatedSprite p2Top(sf::seconds(SpriteVelocityTop), true, false); //(sf::Time frameTime, bool paused, bool looped)
+	AnimatedSprite PSAnimated(sf::seconds(SpriteVelocityBot), false, false); //(sf::Time frameTime, bool paused, bool looped)
 
 	int FoggOffset = 0;
 	int DireccioAtacJugador1 = 0; // 0=Idle 1=Top 2=Mid 3=Bot
@@ -336,11 +366,22 @@ int main()
 	fucsia.setTexture(texture3);
 	fucsia.setOrigin(20, 20);
 
+	//TEXT
 	sf::Font font;
-	if (!font.loadFromFile("cour.ttf"))
+	if (!font.loadFromFile("../Resources/Samurai.ttf"))
 	{
 		std::cout << "Can't load the font file" << std::endl;
 	}
+	sf::Text text1(/*std::to_string(puntsJugador1)*/"0", font, 50); //Aqui va la variable de puntuacio de cada jugador
+	//text1.setColor(sf::Color::White);
+	text1.setPosition(150, 750);
+	sf::Text text2(/*std::to_string(puntsJugador2)*/"0", font, 50);
+	//text2.setColor(sf::Color::White);
+	text2.setPosition(1450, 750);
+	sf::Text PointText("", font, 100);
+	PointText.setPosition(300, 250);
+	sf::Text Instructions("Prem 'ENTER' per iniciar la propera ronda", font, 30);
+	Instructions.setPosition(300, 750);
 
 	sf::Vector2i screenDimensions(1600, 900);											// Dimensions pantalles
 	sf::RenderWindow window;															// Creem la finestra del joc
@@ -354,6 +395,15 @@ int main()
 
 	while (window.isOpen())
 	{
+		sf::Event event; //Si no la finestra no detecta el ratolí i no es pot moure
+		while (window.pollEvent(event))
+		{
+			if (event.type == sf::Event::Closed)
+				window.close();
+			if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Escape)
+				window.close();
+		}
+
 		sf::Time frameTime = frameClock.restart();
 		switch (state) {
 		case connect: {
@@ -584,12 +634,58 @@ int main()
 		}
 			break;
 
-		case points: {
-		}
-			break;
-		case win: {
+		case points: 
 
-		}
+			/*if ((puntsJugador1 >= 5) || (puntsJugador2 >= 5)) {  //Comprovem primer la puntuacio
+				state = win;
+			}
+			if (key.isKeyPressed(sf::Keyboard::Return)) { //Reiniciem jugadors. 
+				player[0].x = POSICIO_INICIAL1;
+				player[0].y = POSICIO_Y;
+				DireccioAtacJugador1 = 0;
+				p1Top.play(idleAnimation1T);
+				p1Bot.play(idleAnimation1B);
+
+				player[1].x = POSICIO_INICIAL2;
+				player[1].y = POSICIO_Y;
+				DireccioAtacJugador2 = 0;
+				p2Top.play(idleAnimation2T);
+				p2Bot.play(idleAnimation2B);
+				state = play;
+
+
+			}*/
+			break;
+		case win:
+
+			/*if (puntsJugador1 > puntsJugador2) { //Comprovem quin jugador a guanyat i actualitzem el text envers aixo
+				PointText.setString("El jugador 1 guanya");
+			}
+			else {
+				PointText.setString("El jugador 2 guanya");
+			}
+			Instructions.setString("Prem 'Enter' per iniciar una nova partida. ");
+			if (key.isKeyPressed(sf::Keyboard::Return)) { //Reiniciem jugadors. I tambe les puntuacion i els textos.
+				Instructions.setString("Prem 'ENTER' per iniciar la propera ronda");
+				puntsJugador1 = 0;
+				puntsJugador2 = 0;
+				text1.setString(std::to_string(puntsJugador1));
+				text2.setString(std::to_string(puntsJugador2));
+
+				playertmp.x = POSICIO_INICIAL1;
+				playertmp.y = POSICIO_Y;
+				DireccioAtacJugador1 = 0;
+				p1Top.play(idleAnimation1T);
+				p1Bot.play(idleAnimation1B);
+
+				playerEnemy.x = POSICIO_INICIAL2;
+				playerEnemy.y = POSICIO_Y;
+				DireccioAtacJugador2 = 0;
+				p2Top.play(idleAnimation2T);
+				p2Bot.play(idleAnimation2B);
+				state = play;
+
+			}*/
 			break;
 		}
 
@@ -627,6 +723,16 @@ int main()
 		window.draw(p2Top);// pintem el jugador
 
 		window.draw(herba);
+
+		PSAnimated.update(frameTime); //Actualitzem el sistema de particules
+		window.draw(PSAnimated); //Pintem el sistema de particules, s'ha de cridar amb PSAnimated.play(PSBasic)
+		window.draw(text1); //Text de puntuacions
+		window.draw(text2);
+
+		if (state == points || state == win) { //Pintem el text si el estat es point o win
+			window.draw(PointText);
+			window.draw(Instructions);
+		}
 
 		window.display();		// Mostrem per la finestra
 		window.clear();			// Netejem finestra
