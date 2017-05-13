@@ -32,9 +32,17 @@ enum Type { // uint2
 
 /*Paquets de acumulacio de moviment*/
 struct Accum {
-	int moveId;
-	int moveDelta = 0;
-	int moveAbsolute = 0;
+	int id = 0;
+	int sign = 0;
+	int delta = 0;
+	int absolute = 0;
+};
+
+struct Command {
+	int type = 0;
+	int id = 0;
+	int position = 0;
+	Accum accum;
 };
 
 /*Clase Player que guarda la informació basica de un jugador
@@ -48,6 +56,7 @@ public:
 	int ready = 0;
 	//std::vector<std::string> keyCommands;
 	std::vector<OutputMemoryBitStream> keyCommands;
+	std::vector<Command> keyComs;
 	std::vector<Accum> accum;
 };
 
@@ -97,6 +106,7 @@ class Receive
 public:
 	sf::UdpSocket *socket;
 	std::queue<InputMemoryBitStream> *commands;
+	std::queue<Command> *com;
 	sf::Mutex *mutex;
 	bool stopReceive = true;
 
@@ -126,20 +136,24 @@ public:
 				//commands->push(data);
 				InputMemoryBitStream newCommand(data, received * 8);
 				commands->push(newCommand);
-				int type = 0;
-				newCommand.Read(&type, 3);
 
-				std::cout << "Client Case is " << type << std::endl;
+				Command comtmp;
+				comtmp.type = 0;
+				newCommand.Read(&comtmp.type, 3);
 
-				if (type == HELLO) { // save ip and port
+				std::cout << "Client Case is " << comtmp.type << std::endl;
+
+				switch (comtmp.type) {
+
+				case HELLO: {
 					ServerPlayer playertmp;
 					if (!players->empty()) {
 						for (int i = 0; i < players->size(); i++) // recorre tots els jugadors
 						{
 							if (players->at(i).port == port && players->at(i).ip == ip) // Si es el jugador 2
 							{
-								commands->back().SetNewId(players->at(i).id);
-								//data[1] = players->at(i).id + 48; // marca la id
+								comtmp.id = players->at(i).id;
+								//commands->back().SetNewId(players->at(i).id);
 								break;							// acaba el for
 							}
 							else if (i == players->size() - 1) {	// si no existeix 
@@ -154,24 +168,59 @@ public:
 									playertmp.id = 0; // player 1
 								}
 								players->push_back(playertmp);
-								commands->back().SetNewId(players->at(i).id);
-								//data[1] = players->at(i+1).id + 48;	// marca la id
-								//data[2] = '1';						// marca que necesita posicio
+								comtmp.id = players->at(i).id; // Marca per donar posicio
+								//commands->back().SetNewId(players->at(i).id);
 							}
 						}
 					}
 					else {
 						playertmp.ip = ip;					// crea nou jugador
 						playertmp.port = port;
-						playertmp.id = 0; 
+						playertmp.id = 0;
 
 						players->push_back(playertmp);
-						commands->back().SetNewId(0);
-						//data[1] = players->at(0).id + 48;	// marca la id
-						//data[2] = '1';						// marca que necesita posicio
+						comtmp.id = playertmp.id; // Marca per donar posicio
+						//commands->back().SetNewId(0);
 					}
 				}
-				
+							break;
+				case CONNECTION :
+				{
+					newCommand.Read(&comtmp.id, ID_SIZE);
+				}
+				break;
+
+				case PING :
+				{
+					newCommand.Read(&comtmp.id, ID_SIZE);
+				}
+				break;
+
+				case DISCONNECTION:
+				{
+					newCommand.Read(&comtmp.id, ID_SIZE);
+				}
+				break;
+
+				case MOVEMENT:
+				{
+					newCommand.Read(&comtmp.id, ID_SIZE);			// ID del player
+					newCommand.Read(&comtmp.accum.id, ID_SIZE);		// ID del acumulat
+					newCommand.Read(&comtmp.accum.sign, ID_SIZE);	// Signe del acumulat
+					newCommand.Read(&comtmp.accum.delta, ID_SIZE);	// Accumulat
+
+					if (comtmp.accum.sign == 1) comtmp.accum.delta *= -1; // Canvia de signe acumulat si requereix
+				}
+				break;
+
+				case ATTACK:
+				{
+					newCommand.Read(&comtmp.id, ID_SIZE);
+				}
+				break;
+
+				}
+				com->push(comtmp);
 				mutex->unlock();
 			}
 		} while (stopReceive);

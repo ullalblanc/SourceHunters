@@ -45,6 +45,7 @@ int main()
 	sf::IpAddress ip = sf::IpAddress::IpAddress("127.0.0.1");	// sf::IpAddress::getLocalAddress();
 	sf::UdpSocket socket;										// El socket del servidor
 	std::queue<InputMemoryBitStream> clientCommands;			// Misatges dels jugadors per anar executant
+	std::queue<Command> com;
 	sf::Mutex mutex;											// Per evitar varis accesos a les cues
 	std::string command;										// el misatge que envia als clients
 	Send sender;												// Sender per enviar misatges
@@ -64,6 +65,7 @@ int main()
 	sender.socket = &socket;
 
 	receiver.commands = &clientCommands;
+	receiver.com = &com;
 	receiver.socket = &socket;
 	receiver.mutex = &mutex;
 	receiver.players = &player;
@@ -99,21 +101,21 @@ int main()
 		case connect: { // que es conectin els dos jugadors
 			if (!playersConected) {
 				//mutex.lock();
-				if (!clientCommands.empty()) {
-					int clientCase = 0;
-					clientCommands.front().Read(&clientCase, TYPE_SIZE);
-					switch (clientCase) {
+				if (!com.empty()) {
+					//int clientCase = 0;
+					//clientCommands.front().Read(&clientCase, TYPE_SIZE);
+					switch (com.front().type) {
 					case HELLO: {	// Un client es vol conectar
 
 						for (int i = 0; i < player.size(); i++)
 						{
-							if (clientCommands.front().GetNewId() == player[i].id) {	// el jugador que diu Hello
+							if (com.front().id == player[i].id) {	// el jugador que diu Hello
 								if (player[i].x <= 0) {//protocol.GetFirst(clientCommands.front()) == 1) {			// necesita posicio
 									if (player[i].id == 0) {
 										player[i].x = 270;// jugador 1 a 270
 									}
 									else {
-										player[i].x = 800;//1330; // jugador 2 a 1330
+										player[i].x = 1330; // jugador 2 a 1330
 									}
 									player[i].y = 750;
 									std::cout << "\n New user" << std::endl;
@@ -123,7 +125,8 @@ int main()
 								output.Write(player[i].id, ID_SIZE);
 								output.Write(player[i].x, POSITION_SIZE);
 								sender.SendMessages(player[i].ip, player[i].port, output.GetBufferPtr(), output.GetByteLength());
-								clientCommands.pop();
+								//clientCommands.pop();
+								com.pop();
 							}
 						}
 					}
@@ -135,7 +138,8 @@ int main()
 						playersConected = true;
 						for (int j = 0; j < clientCommands.size(); j++)
 						{
-							clientCommands.pop();
+							com.pop();
+							//clientCommands.pop();
 						}
 					}
 				}
@@ -149,13 +153,15 @@ int main()
 					output.Write(player[0].id, ID_SIZE);
 					output.Write(player[0].x, POSITION_SIZE);
 					sender.SendMessages(player[1].ip, player[1].port, output.GetBufferPtr(), output.GetByteLength());
-					for (int i = 0; i < player[1].keyCommands.size(); i++)
+					for (int i = 0; i < player[1].keyComs.size(); i++)
 					{
-						if (player[1].keyCommands[i].GetBufferPtr() == output.GetBufferPtr()) {
+						if (player[1].keyComs[i].type == CONNECTION) {
 							break;
 						}
-						else if (i == player[1].keyCommands.size() - 1) {
-							player[1].keyCommands.push_back(output);
+						else if (i == player[1].keyComs.size() - 1) {
+							Command comtmp;
+							comtmp.type = CONNECTION;
+							player[1].keyComs.push_back(comtmp);
 						}
 					}
 					OutputMemoryBitStream output2;
@@ -165,40 +171,41 @@ int main()
 					sender.SendMessages(player[0].ip, player[0].port, output2.GetBufferPtr(), output2.GetByteLength());
 					for (int i = 0; i < player[0].keyCommands.size(); i++)
 					{
-						if (player[0].keyCommands[i].GetBufferPtr() == output.GetBufferPtr()) {
+						if (player[0].keyComs[i].type == CONNECTION) {
 							break;
 						}
-						else if (i == player[0].keyCommands.size() - 1) {
-							player[0].keyCommands.push_back(output);
+						else if (i == player[0].keyComs.size() - 1) {
+							Command comtmp;
+							comtmp.type = CONNECTION;
+							player[0].keyComs.push_back(comtmp);
 						}
 					}
 					timerReady.Start(5000);
 				}
 				//mutex.lock();
-				if (!clientCommands.empty()) {
-					int clientCase = 0; 
-					clientCommands.front().Read(&clientCase, TYPE_SIZE);
-					switch (clientCase) {
+				if (!com.empty()) {
+					//int clientCase = 0; 
+					//clientCommands.front().Read(&clientCase, TYPE_SIZE);
+					switch (com.front().type) {
 					case HELLO:
 						playersConected = false;
 						//clientCommands.pop();
 						break;
 					case CONNECTION:	// Un client es vol conectar
-						int playerId = 0; 
-						clientCommands.front().Read(&playerId, ID_SIZE); 
+						//int playerId = 0; 
+						//clientCommands.front().Read(&playerId, ID_SIZE); 
 
-						player[playerId].ready = 1;
-						for (int i = 0; i < player[playerId].keyCommands.size(); i++) // Recorrer tots els keycommands
+						player[com.front().id].ready = 1;
+						for (int i = 0; i < player[com.front().id].keyComs.size(); i++) // Recorrer tots els keycommands
 						{
-							InputMemoryBitStream intmp(player[playerId].keyCommands[i].GetBufferPtr(), player[playerId].keyCommands[i].GetByteLength());
-							int typetmp = 0;  
-							intmp.Read(&typetmp, 1);
-							if (typetmp == CONNECTION) {								// si es un keycommand de ready
-								
-								for (int j = 0; j < player[playerId].keyCommands.size(); j++)
+							//InputMemoryBitStream intmp(player[playerId].keyCommands[i].GetBufferPtr(), player[playerId].keyCommands[i].GetByteLength());
+							//int typetmp = 0;  
+							//intmp.Read(&typetmp, 1);
+							if (player[com.front().id].keyComs[i].type == CONNECTION) {								// si es un keycommand de ready							
+								for (int j = 0; j < player[com.front().id].keyComs.size(); j++)
 								{
-									player[playerId].keyCommands.erase(player[playerId].keyCommands.begin() + j);	// borral
-									std::cout << "All messages deleted for player " << playerId << std::endl;
+									player[com.front().id].keyComs.erase(player[com.front().id].keyComs.begin() + j);	// borral
+									std::cout << "All messages deleted for player " << com.front().id << std::endl;
 								}							
 								break;
 							}
@@ -226,23 +233,23 @@ int main()
 				bool toConect = false;
 				for (int i = 0; i < TOTALPLAYERS; i++)
 				{
-					for (int j = 0; j < player[i].keyCommands.size(); j++)
+					for (int j = 0; j < player[i].keyComs.size(); j++)
 					{
-						InputMemoryBitStream intmp(player[i].keyCommands[j].GetBufferPtr(), player[i].keyCommands[j].GetByteLength() * 8);
-						int typetmp = 0;  
-						intmp.Read(&typetmp, 1);
-						if (typetmp == PING) {
+						//InputMemoryBitStream intmp(player[i].keyCommands[j].GetBufferPtr(), player[i].keyCommands[j].GetByteLength() * 8);
+						//int typetmp = 0;  
+						//intmp.Read(&typetmp, 1);
+						if (player[i].keyComs[j].type == PING) {
 							OutputMemoryBitStream output;
 							output.Write(DISCONNECTION, TYPE_SIZE);
 							output.Write(i, ID_SIZE); // Misatge que s'ha desconectat el jugador i
 
 							std::cout << "player " << i << " seems to be disconected" << std::endl;
 
-							bool foundMessage = false;									// Per saber si hi ha un misatge igual
+							//bool foundMessage = false;									// Per saber si hi ha un misatge igual
 							for (int k = 0; k < player.size(); k++)
 							{
 								sender.SendMessages(player[k].ip, player[k].port, output.GetBufferPtr(), output.GetByteLength());
-								for (int l = 0; l < player[k].keyCommands.size(); l++)
+								/*for (int l = 0; l < player[k].keyCommands.size(); l++)
 								{
 									if (strcmp(player[k].keyCommands[l].GetBufferPtr(), output.GetBufferPtr())) { 
 										foundMessage = true;
@@ -252,9 +259,9 @@ int main()
 								if (!foundMessage)
 								{
 									player[k].keyCommands.push_back(output);
-								}
+								}*/
 
-								foundMessage = false;
+								//foundMessage = false;
 							}
 
 							player.erase(player.begin() + i);
@@ -272,16 +279,18 @@ int main()
 					for (int k = 0; k < player.size(); k++)
 					{
 						sender.SendMessages(player[k].ip, player[k].port, output.GetBufferPtr(), output.GetByteLength());
-						for (int l = 0; l < player[k].keyCommands.size(); l++)
+						for (int l = 0; l < player[k].keyComs.size(); l++)
 						{
-							if (strcmp(player[k].keyCommands[l].GetBufferPtr(), output.GetBufferPtr())) { 
+							if ( player[k].keyComs[l].type == PING) {//if (strcmp(player[k].keyCommands[l].GetBufferPtr(), output.GetBufferPtr())) { 
 								foundMessage = true;
 								break;
 							}
 						}
 						if (!foundMessage)
 						{
-							player[k].keyCommands.push_back(output);
+							Command com;
+							com.type = PING;
+							player[k].keyComs.push_back(com);
 						}
 
 						foundMessage = false;
@@ -295,54 +304,58 @@ int main()
 			////-- CLIENT COMMANDS --////
 
 			
-			if (!clientCommands.empty()) {
-				int clientCase = 7; 
-				clientCommands.front().Read(&clientCase, TYPE_SIZE);
+			if (!com.empty()) {
+				//int clientCase = 7; 
+				//clientCommands.front().Read(&clientCase, TYPE_SIZE);
 				
-				std::cout << "And now Client Case is " << clientCase << std::endl;
+				std::cout << "And now Client Case is " << com.front().type << std::endl;
 
-				switch (clientCase) {
+				switch (com.front().type) {
 
 				case HELLO: {	// Un client es vol conectar
 					//state = connect;
-					clientCommands.pop();
+					//clientCommands.pop();
+					com.pop();
 				}
 					break;
 
 				case CONNECTION: {
-					clientCommands.pop();
+					//clientCommands.pop();
+					com.pop();
 				}
 					break;
 
 				case PING: {
-					int playerId = 0; 
-					clientCommands.front().Read(&playerId, ID_SIZE);
-					std::cout << "Player " << playerId << " Pinged" << std::endl;
-					for (int i = 0; i < player[playerId].keyCommands.size(); i++)
+					//int playerId = 0; 
+					//clientCommands.front().Read(&playerId, ID_SIZE);
+					std::cout << "Player " << com.front().id << " Pinged" << std::endl;
+					for (int i = 0; i < player[com.front().id].keyComs.size(); i++)
 					{
-						InputMemoryBitStream intmp(player[playerId].keyCommands[i].GetBufferPtr(), player[playerId].keyCommands[i].GetByteLength() * 8);
-						int typetmp = 0;  
-						intmp.Read(&typetmp, 1);
-						if (clientCase == typetmp) {
-							player[playerId].keyCommands.erase(player[playerId].keyCommands.begin() + 1);
+						//InputMemoryBitStream intmp(player[playerId].keyCommands[i].GetBufferPtr(), player[playerId].keyCommands[i].GetByteLength() * 8);
+						//int typetmp = 0;  
+						//ntmp.Read(&typetmp, 1);
+						if (player[com.front().id].keyComs[i].type == PING) {
+							player[com.front().id].keyComs.erase(player[com.front().id].keyComs.begin() + 1);
 							break;
 						}
 					}
-					clientCommands.pop();
+					//clientCommands.pop();
+					com.pop();
+
 				}
 					break;
 
 				case DISCONNECTION: {
-					int playerId = 0; 
-					clientCommands.front().Read(&playerId, ID_SIZE);
+					//int playerId = 0; 
+					//clientCommands.front().Read(&playerId, ID_SIZE);
 					OutputMemoryBitStream output;
 					output.Write(PING, TYPE_SIZE);
-					output.Write(playerId, ID_SIZE);
-					bool foundMessage = false;									// Per saber si hi ha un misatge igual
+					output.Write(com.front().id, ID_SIZE);
+					//bool foundMessage = false;									// Per saber si hi ha un misatge igual
 					for (int k = 0; k < player.size(); k++)
 					{
 						sender.SendMessages(player[k].ip, player[k].port, output.GetBufferPtr(), output.GetByteLength());
-						for (int l = 0; l < player[k].keyCommands.size(); l++)
+						/*for (int l = 0; l < player[k].keyCommands.size(); l++)
 						{
 							if (strcmp(player[k].keyCommands[l].GetBufferPtr(), output.GetBufferPtr())) { 
 								foundMessage = true;
@@ -352,47 +365,47 @@ int main()
 						if (!foundMessage)
 						{
 							player[k].keyCommands.push_back(output);
-						}
+						}*/
 
-						foundMessage = false;
+						//foundMessage = false;
 					}
-					player.erase(player.begin() + playerId);
+					player.erase(player.begin() + com.front().id);
 					state = connect;
-					clientCommands.pop();				
+					//clientCommands.pop();
+					com.pop();
+
 				}
 									break;
 				case MOVEMENT: {
-					int playerId = 0; 
+					/*int playerId = 0; 
 					clientCommands.front().Read(&playerId, ID_SIZE);
 					int accumId = 0;
 					clientCommands.front().Read(&accumId, ACCUM_ID_SIZE);			// Guardem la id del acumulat
 					int negative = 0;
 					clientCommands.front().Read(&negative, ID_SIZE);
 					int accumDelta = 0;
-					clientCommands.front().Read(&accumDelta, ACCUM_DELTA_SIZE);	// Guardem el el delta acumulat
+					clientCommands.front().Read(&accumDelta, ACCUM_DELTA_SIZE);	// Guardem el el delta acumulat*/
 
-					if (negative == 1) accumDelta *= -1;
+					//if (negative == 1) accumDelta *= -1;
 
-					Accum accumtmp;
-					accumtmp.moveId = accumId;
-					accumtmp.moveDelta = accumDelta;
-					accumtmp.moveAbsolute = player[playerId].x + accumDelta;
+					Accum accumtmp = com.front().accum;
+					accumtmp.absolute = player[com.front().id].x + accumtmp.delta;
 					// TODO: Comprobacions de trampas i limits
 
-					player[playerId].accum.push_back(accumtmp);
+					player[com.front().id].accum.push_back(accumtmp);
 
 					OutputMemoryBitStream output;
 					output.Write(MOVEMENT, TYPE_SIZE);
-					output.Write(playerId, ID_SIZE);
-					output.Write(player[playerId].accum.back().moveId, ACCUM_ID_SIZE);
-					output.Write(negative, ID_SIZE); // TODO: Cambiar per que funcioni amb playerId accum
-					output.Write(player[playerId].accum.back().moveDelta, ACCUM_DELTA_SIZE);
+					output.Write(com.front().id, ID_SIZE);
+					output.Write(player[com.front().id].accum.back().id, ACCUM_ID_SIZE);
+					output.Write(player[com.front().id].accum.back().sign, ID_SIZE); // TODO: Cambiar per que funcioni amb playerId accum
+					output.Write(player[com.front().id].accum.back().delta, ACCUM_DELTA_SIZE);
 
-					bool foundMessage = false;									// Per saber si hi ha un misatge igual
+					//bool foundMessage = false;									// Per saber si hi ha un misatge igual
 					for (int k = 0; k < player.size(); k++)
 					{
 						sender.SendMessages(player[k].ip, player[k].port, output.GetBufferPtr(), output.GetByteLength());
-						for (int l = 0; l < player[k].keyCommands.size(); l++)
+						/*for (int l = 0; l < player[k].keyCommands.size(); l++)
 						{
 							if (strcmp(player[k].keyCommands[l].GetBufferPtr(), output.GetBufferPtr())) {
 								foundMessage = true;
@@ -402,11 +415,12 @@ int main()
 						if (!foundMessage)
 						{
 							player[k].keyCommands.push_back(output);
-						}
+						}*/
 
-						foundMessage = false;
+						//foundMessage = false;
 					}
-					clientCommands.pop();
+					//clientCommands.pop();
+					com.pop();
 					
 				}
 							   break;
