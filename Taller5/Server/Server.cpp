@@ -102,15 +102,13 @@ int main()
 			if (!playersConected) {
 				//mutex.lock();
 				if (!com.empty()) {
-					//int clientCase = 0;
-					//clientCommands.front().Read(&clientCase, TYPE_SIZE);
 					switch (com.front().type) {
 					case HELLO: {	// Un client es vol conectar
 
 						for (int i = 0; i < player.size(); i++)
 						{
 							if (com.front().id == player[i].id) {	// el jugador que diu Hello
-								if (player[i].x <= 0) {//protocol.GetFirst(clientCommands.front()) == 1) {			// necesita posicio
+								if (player[i].x <= 0) {		// necesita posicio
 									if (player[i].id == 0) {
 										player[i].x = 270;// jugador 1 a 270
 									}
@@ -184,8 +182,6 @@ int main()
 				}
 				//mutex.lock();
 				if (!com.empty()) {
-					//int clientCase = 0; 
-					//clientCommands.front().Read(&clientCase, TYPE_SIZE);
 					switch (com.front().type) {
 					case HELLO:
 						playersConected = false;
@@ -193,15 +189,10 @@ int main()
 						//clientCommands.pop();
 						break;
 					case CONNECTION:	// Un client es vol conectar
-						//int playerId = 0; 
-						//clientCommands.front().Read(&playerId, ID_SIZE); 
 
 						player[com.front().id].ready = 1;
 						for (int i = 0; i < player[com.front().id].keyComs.size(); i++) // Recorrer tots els keycommands
 						{
-							//InputMemoryBitStream intmp(player[playerId].keyCommands[i].GetBufferPtr(), player[playerId].keyCommands[i].GetByteLength());
-							//int typetmp = 0;  
-							//intmp.Read(&typetmp, 1);
 							if (player[com.front().id].keyComs[i].type == CONNECTION) {								// si es un keycommand de ready							
 								for (int j = 0; j < player[com.front().id].keyComs.size(); j++)
 								{
@@ -237,9 +228,6 @@ int main()
 				{
 					for (int j = 0; j < player[i].keyComs.size(); j++)
 					{
-						//InputMemoryBitStream intmp(player[i].keyCommands[j].GetBufferPtr(), player[i].keyCommands[j].GetByteLength() * 8);
-						//int typetmp = 0;  
-						//intmp.Read(&typetmp, 1);
 						if (player[i].keyComs[j].type == PING) {
 							OutputMemoryBitStream output;
 							output.Write(DISCONNECTION, TYPE_SIZE);
@@ -247,23 +235,9 @@ int main()
 
 							std::cout << "player " << i << " seems to be disconected" << std::endl;
 
-							//bool foundMessage = false;									// Per saber si hi ha un misatge igual
 							for (int k = 0; k < player.size(); k++)
 							{
 								sender.SendMessages(player[k].ip, player[k].port, output.GetBufferPtr(), output.GetByteLength());
-								/*for (int l = 0; l < player[k].keyCommands.size(); l++)
-								{
-									if (strcmp(player[k].keyCommands[l].GetBufferPtr(), output.GetBufferPtr())) { 
-										foundMessage = true;
-										break;
-									}
-								}
-								if (!foundMessage)
-								{
-									player[k].keyCommands.push_back(output);
-								}*/
-
-								//foundMessage = false;
 							}
 
 							player.erase(player.begin() + i);
@@ -283,7 +257,7 @@ int main()
 						sender.SendMessages(player[k].ip, player[k].port, output.GetBufferPtr(), output.GetByteLength());
 						for (int l = 0; l < player[k].keyComs.size(); l++)
 						{
-							if ( player[k].keyComs[l].type == PING) {//if (strcmp(player[k].keyCommands[l].GetBufferPtr(), output.GetBufferPtr())) { 
+							if ( player[k].keyComs[l].type == PING) {
 								foundMessage = true;
 								break;
 							}
@@ -307,8 +281,6 @@ int main()
 
 			
 			if (!com.empty()) {
-				//int clientCase = 7; 
-				//clientCommands.front().Read(&clientCase, TYPE_SIZE);
 				
 				std::cout << "And now Client Case is " << com.front().type << std::endl;
 
@@ -316,40 +288,30 @@ int main()
 
 				case HELLO: {	// Un client es vol conectar
 					//state = connect;
-					//clientCommands.pop();
 					com.pop();
 				}
 					break;
 
 				case CONNECTION: {
-					//clientCommands.pop();
 					com.pop();
 				}
 					break;
 
 				case PING: {
-					//int playerId = 0; 
-					//clientCommands.front().Read(&playerId, ID_SIZE);
 					std::cout << "Player " << com.front().id << " Pinged" << std::endl;
 					for (int i = 0; i < player[com.front().id].keyComs.size(); i++)
 					{
-						//InputMemoryBitStream intmp(player[playerId].keyCommands[i].GetBufferPtr(), player[playerId].keyCommands[i].GetByteLength() * 8);
-						//int typetmp = 0;  
-						//ntmp.Read(&typetmp, 1);
 						if (player[com.front().id].keyComs[i].type == PING) {
 							player[com.front().id].keyComs.erase(player[com.front().id].keyComs.begin());
 							break;
 						}
 					}
-					//clientCommands.pop();
 					com.pop();
 
 				}
 					break;
 
 				case DISCONNECTION: {
-					//int playerId = 0; 
-					//clientCommands.front().Read(&playerId, ID_SIZE);
 					OutputMemoryBitStream output;
 					output.Write(PING, TYPE_SIZE);
 					output.Write(com.front().id, ID_SIZE);
@@ -357,39 +319,14 @@ int main()
 					for (int k = 0; k < player.size(); k++)
 					{
 						sender.SendMessages(player[k].ip, player[k].port, output.GetBufferPtr(), output.GetByteLength());
-						/*for (int l = 0; l < player[k].keyCommands.size(); l++)
-						{
-							if (strcmp(player[k].keyCommands[l].GetBufferPtr(), output.GetBufferPtr())) { 
-								foundMessage = true;
-								break;
-							}
-						}
-						if (!foundMessage)
-						{
-							player[k].keyCommands.push_back(output);
-						}*/
-
-						//foundMessage = false;
 					}
 					player.erase(player.begin() + com.front().id);
 					state = connect;
-					//clientCommands.pop();
 					com.pop();
 
 				}
 									break;
 				case MOVEMENT: {
-					/*int playerId = 0; 
-					clientCommands.front().Read(&playerId, ID_SIZE);
-					int accumId = 0;
-					clientCommands.front().Read(&accumId, ACCUM_ID_SIZE);			// Guardem la id del acumulat
-					int negative = 0;
-					clientCommands.front().Read(&negative, ID_SIZE);
-					int accumDelta = 0;
-					clientCommands.front().Read(&accumDelta, ACCUM_DELTA_SIZE);	// Guardem el el delta acumulat*/
-
-					//if (negative == 1) accumDelta *= -1;
-
 					Accum accumtmp = com.front().accum;
 					accumtmp.absolute = player[com.front().id].x + accumtmp.delta;
 					// TODO: Comprobacions de trampas i limits
@@ -403,25 +340,10 @@ int main()
 					output.Write(player[com.front().id].accum.back().sign, ID_SIZE); // TODO: Cambiar per que funcioni amb playerId accum
 					output.Write(player[com.front().id].accum.back().delta, ACCUM_DELTA_SIZE);
 
-					//bool foundMessage = false;									// Per saber si hi ha un misatge igual
 					for (int k = 0; k < player.size(); k++)
 					{
 						sender.SendMessages(player[k].ip, player[k].port, output.GetBufferPtr(), output.GetByteLength());
-						/*for (int l = 0; l < player[k].keyCommands.size(); l++)
-						{
-							if (strcmp(player[k].keyCommands[l].GetBufferPtr(), output.GetBufferPtr())) {
-								foundMessage = true;
-								break;
-							}
-						}
-						if (!foundMessage)
-						{
-							player[k].keyCommands.push_back(output);
-						}*/
-
-						//foundMessage = false;
 					}
-					//clientCommands.pop();
 					com.pop();
 					
 				}

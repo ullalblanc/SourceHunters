@@ -422,14 +422,9 @@ int main()
 			}
 
 			if (!com.empty()) {
-				//int serverCase = 0; 
-				//serverCommands.front().Read(&serverCase, TYPE_SIZE);
-				//std::cout << serverCase << std::endl;
 				switch (com.front().type) {
 
 				case HELLO: {
-					//serverCommands.front().Read(&player[0].id, ID_SIZE);
-					//serverCommands.front().Read(&player[0].x, POSITION_SIZE);
 
 					player[0].id = com.front().id;
 					player[0].x = com.front().position;
@@ -439,6 +434,15 @@ int main()
 						left = 1;
 						right = 0;
 					}
+
+					com.pop();
+				}
+					break;
+
+				case CONNECTION: {
+					player[1].id = com.front().id;
+					player[1].x = com.front().position;
+
 					// set up AnimatedSprite	
 					p1Top.setPosition(sf::Vector2f(player[left].x /*- 325*/, player[0].y));
 					p1Top.play(idleAnimation1T);
@@ -456,19 +460,9 @@ int main()
 					p2Top.play(idleAnimation2T);
 
 					com.pop();
-					//serverCommands.pop();
+
 				}
 					break;
-
-				case CONNECTION: {
-					//serverCommands.front().Read(&player[1].id, ID_SIZE);
-					//serverCommands.front().Read(&player[1].x, POSITION_SIZE);
-					player[1].id = com.front().id;
-					player[1].x = com.front().position;
-					com.pop();
-					//serverCommands.pop();				
-				}
-								 break;
 				}
 			}
 			if (player[0].x != 0 && player[1].x != 0)
@@ -530,6 +524,8 @@ int main()
 					output.Write(player[0].accum.back().id, ACCUM_ID_SIZE);
 					output.Write(player[0].accum.back().sign, ID_SIZE);
 					output.Write(player[0].accum.back().delta, ACCUM_DELTA_SIZE);
+
+					std::cout << "Enviat " << player[0].accum.back().delta << std::endl;
 
 					sender.SendMessages(ip, serverPort, output.GetBufferPtr(), output.GetByteLength());
 					// TODO: Write de si hi ha animacio o no

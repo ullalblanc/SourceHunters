@@ -5,9 +5,9 @@ E:\SourceHunters\SourceHunters\Taller5\ChatLib\Game.h(137): warning C4267: 'argu
 E:\SourceHunters\SourceHunters\Taller5\ChatLib\Game.h(250): warning C4267: 'argument': conversion from 'size_t' to 'uint32_t', possible loss of data
 Server.cpp(93): warning C4101: 'key': unreferenced local variable
   Generating code
-  1 of 715 functions ( 0.1%) were compiled, the rest were copied from previous compilation.
+  2 of 715 functions ( 0.3%) were compiled, the rest were copied from previous compilation.
     0 functions were new in current compilation
-    6 functions had inline decision re-evaluated but remain unchanged
+    0 functions had inline decision re-evaluated but remain unchanged
   Finished generating code
 ChatLib.lib(MessageManager.obj) : warning LNK4099: PDB 'ChatLib.pdb' was not found with 'ChatLib.lib(MessageManager.obj)' or at 'E:\SourceHunters\SourceHunters\Taller5\x64\Release\ChatLib.pdb'; linking object as if no debug info
 ChatLib.lib(Send.obj) : warning LNK4099: PDB 'ChatLib.pdb' was not found with 'ChatLib.lib(Send.obj)' or at 'E:\SourceHunters\SourceHunters\Taller5\x64\Release\ChatLib.pdb'; linking object as if no debug info

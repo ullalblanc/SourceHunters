@@ -7,21 +7,21 @@ Client.cpp(348): warning C4305: 'argument': truncation from 'double' to 'float'
 Client.cpp(349): warning C4305: 'argument': truncation from 'double' to 'float'
 Client.cpp(350): warning C4305: 'argument': truncation from 'double' to 'float'
 Client.cpp(351): warning C4305: 'argument': truncation from 'double' to 'float'
-Client.cpp(443): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
 Client.cpp(447): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
 Client.cpp(451): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
 Client.cpp(455): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
-Client.cpp(710): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
-Client.cpp(712): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
+Client.cpp(459): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
+Client.cpp(706): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
+Client.cpp(708): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
+Client.cpp(717): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
 Client.cpp(721): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
-Client.cpp(725): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
+Client.cpp(726): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
 Client.cpp(730): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
-Client.cpp(734): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
-Client.cpp(493): warning C4101: 'key': unreferenced local variable
+Client.cpp(487): warning C4101: 'key': unreferenced local variable
   Generating code
-  4 of 730 functions ( 0.5%) were compiled, the rest were copied from previous compilation.
+  5 of 730 functions ( 0.7%) were compiled, the rest were copied from previous compilation.
     0 functions were new in current compilation
-    4 functions had inline decision re-evaluated but remain unchanged
+    1 functions had inline decision re-evaluated but remain unchanged
   Finished generating code
 ChatLib.lib(Send.obj) : warning LNK4099: PDB 'ChatLib.pdb' was not found with 'ChatLib.lib(Send.obj)' or at 'E:\SourceHunters\SourceHunters\Taller5\x64\Release\ChatLib.pdb'; linking object as if no debug info
   Client.vcxproj -> E:\SourceHunters\SourceHunters\Taller5\x64\Release\Client.exe
