@@ -14,12 +14,17 @@
 #define MAXTIME 10000 
 #define ACCUMTIME 100 //Temps per acumular delta
 #define TOTALPLAYERS 2
+#define LEFT_LIMIT 100
+#define RIGHT_LIMIT 1100
+#define PLAYER_LIMIT 70
+#define DISTANCE_ATTACK 200
 
 #define TYPE_SIZE 3 
 #define ID_SIZE 1 // Tambien funciona para negatio i positivo
 #define POSITION_SIZE 11
 #define ACCUM_ID_SIZE 4
-#define ACCUM_DELTA_SIZE 7 // de -64 a +64
+#define ACCUM_DELTA_SIZE 6 // de -64 a +64
+#define ATTACK_SIZE 2
 
 enum Type { // uint2
 	HELLO,			// Un jugador es vol conectar
@@ -27,7 +32,8 @@ enum Type { // uint2
 	PING,			// PING
 	DISCONNECTION,	// Avis de desconexio
 	MOVEMENT,		// Informació sobre el moviment
-	ATTACK			// Informació sobre el atac
+	ATTACK,			// Informació sobre el atac
+	SCORE,			// Informació sobre la puntuació
 };
 
 /*Paquets de acumulacio de moviment*/
@@ -54,6 +60,8 @@ public:
 	int x = 0;
 	int y;
 	int ready = 0;
+	int attack = 0; // 0=Idle 1=Top 2=Mid 3=Bot
+	int score = 0;
 	//std::vector<std::string> keyCommands;
 	std::vector<OutputMemoryBitStream> keyCommands;
 	std::vector<Command> keyComs;
@@ -141,7 +149,7 @@ public:
 				comtmp.type = 0;
 				newCommand.Read(&comtmp.type, 3);
 
-				std::cout << "Client Case is " << comtmp.type << std::endl;
+				//std::cout << "Client Case is " << comtmp.type << std::endl;
 
 				switch (comtmp.type) {
 
@@ -153,7 +161,6 @@ public:
 							if (players->at(i).port == port && players->at(i).ip == ip) // Si es el jugador 2
 							{
 								comtmp.id = players->at(i).id;
-								//commands->back().SetNewId(players->at(i).id);
 								break;							// acaba el for
 							}
 							else if (i == players->size() - 1) {	// si no existeix 
@@ -169,7 +176,6 @@ public:
 								}
 								players->push_back(playertmp);
 								comtmp.id = players->at(i).id; // Marca per donar posicio
-								//commands->back().SetNewId(players->at(i).id);
 							}
 						}
 					}
@@ -180,7 +186,6 @@ public:
 
 						players->push_back(playertmp);
 						comtmp.id = playertmp.id; // Marca per donar posicio
-						//commands->back().SetNewId(0);
 					}
 				}
 							break;
@@ -208,14 +213,22 @@ public:
 					newCommand.Read(&comtmp.accum.id, ACCUM_ID_SIZE);		// ID del acumulat
 					newCommand.Read(&comtmp.accum.sign, ID_SIZE);	// Signe del acumulat
 					newCommand.Read(&comtmp.accum.delta, ACCUM_DELTA_SIZE);	// Accumulat
+					newCommand.Read(&comtmp.accum.absolute, POSITION_SIZE);	// Absolut
 
-					std::cout << " Delta " << comtmp.accum.delta << std::endl;
+					//std::cout << " Delta " << comtmp.accum.delta << std::endl;
 
-					if (comtmp.accum.sign == 1) comtmp.accum.delta *= -1; // Canvia de signe acumulat si requereix
+					if (comtmp.accum.sign == 1) comtmp.accum.delta = -comtmp.accum.delta; // Canvia de signe acumulat si requereix
 				}
 				break;
 
 				case ATTACK:
+				{
+					newCommand.Read(&comtmp.id, ID_SIZE);
+					newCommand.Read(&comtmp.position, ATTACK_SIZE); // quin atac a fet. // 0=Idle 1=Top 2=Mid 3=Bot
+				}
+				break;
+
+				case SCORE:
 				{
 					newCommand.Read(&comtmp.id, ID_SIZE);
 				}
@@ -286,14 +299,21 @@ public:
 					newCommand.Read(&comtmp.accum.id, ACCUM_ID_SIZE);		// ID del acumulat
 					newCommand.Read(&comtmp.accum.sign, ID_SIZE);	// Signe del acumulat
 					newCommand.Read(&comtmp.accum.delta, ACCUM_DELTA_SIZE);	// Accumulat
+					newCommand.Read(&comtmp.accum.absolute, POSITION_SIZE);	// Absolut
 
-					std::cout << " Delta " << comtmp.accum.delta << std::endl;
-
-					if (comtmp.accum.sign == 1) comtmp.accum.delta *= -1; // Canvia de signe acumulat si requereix
+					if (comtmp.accum.sign == 1) comtmp.accum.delta = -comtmp.accum.delta; // Canvia de signe acumulat si requereix
+					//std::cout << " Delta " << comtmp.accum.delta << std::endl;
 				}
 				break;
 
 				case ATTACK:
+				{
+					newCommand.Read(&comtmp.id, ID_SIZE);
+					newCommand.Read(&comtmp.position, ATTACK_SIZE); // quin atac a fet. // 0=Idle 1=Top 2=Mid 3=Bot
+				}
+				break;
+
+				case SCORE:
 				{
 					newCommand.Read(&comtmp.id, ID_SIZE);
 				}
@@ -357,11 +377,14 @@ public:
 	sf::Time getFrameTime() const;
 	void setFrame(std::size_t newFrame, bool resetTime = true);
 
+	sf::Time m_currentTime;
+	std::size_t m_currentFrame;
+
 private:
 	const Animation* m_animation;
 	sf::Time m_frameTime;
-	sf::Time m_currentTime;
-	std::size_t m_currentFrame;
+	
+	
 	bool m_isPaused;
 	bool m_isLooped;
 	const sf::Texture* m_texture;

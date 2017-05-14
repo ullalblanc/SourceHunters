@@ -13,7 +13,7 @@
 #define POSICIO_Y 150
 
 #define DISTANCIA_BODY 70
-#define DISTANCIA_ATTACK 200
+
 
 // Protocol: https://docs.google.com/spreadsheets/d/152EPpd8-f7fTDkZwQlh1OCY5kjCTxg6-iZ2piXvEgeg/edit?usp=sharing
 
@@ -68,7 +68,7 @@ int main()
 	//std::vector<Accum> accum;	// Vector dels acumulats de moviment
 	//std::queue<Accum> enemyAccum;// Cua dels acumulats de moviment del contrincant
 
-	playertmp.y = 750;
+	playertmp.y = 150;
 	player.push_back(playertmp);
 	player.push_back(playertmp);
 	Accum accumtmp; accumtmp.id = 0;
@@ -472,7 +472,7 @@ int main()
 				output.Write(player[0].id, ID_SIZE);
 				sender.SendMessages(ip, serverPort, output.GetBufferPtr(), output.GetByteLength());
 				state = play;
-				std::cout << "play " << player[0].x << " " << player[1].x << std::endl;
+				//std::cout << "play " << player[0].x << " " << player[1].x << std::endl;
 			}
 		}
 			break;
@@ -487,22 +487,118 @@ int main()
 			sf::Keyboard key;
 			if (key.isKeyPressed(sf::Keyboard::Right)) {
 				int movement = 2;
-				player[0].x += movement;
-				player[0].accum.back().delta += movement;
-				
-				// TODO: vigilar que no surtin de el mapa ni xoquin amb el enemic
+				int distance = player[1].x - (player[0].x + movement);
+				if (distance < 0) distance = -distance;
+				if (distance > DISTANCIA_BODY)
+				{
+					if ((player[0].x + movement) < RIGHT_LIMIT)
+					{
+						player[0].x += movement;
+						player[0].accum.back().delta += movement;
+					}
+				}
+				// TODO: vigilar que no xoquin amb el enemic
 				//p1Bot.play(pas1B);
 
 			}
 			if (key.isKeyPressed(sf::Keyboard::Left)) {
 				int movement = -2;
-				player[0].x += movement;
-				player[0].accum.back().delta += movement;
+				int distance = player[1].x - (player[0].x + movement);
+				if (distance < 0) distance = -distance;
+				if (distance > DISTANCIA_BODY)
+				{
+					if ((player[0].x + movement) > LEFT_LIMIT)
+					{
+						player[0].x += movement;
+						player[0].accum.back().delta += movement;
+					}
+				}
 				//p1Top.play(attackAnimationTop1T);
-
 			}
 
+			if (key.isKeyPressed(sf::Keyboard::Z) && player[0].attack == 0) {
+				if (!left) {
+					p1Top.play(attackAnimationTop1T);
+				}
+				else {
+					p2Top.play(attackAnimationTop2T);
+				}
+				player[0].attack = 1;
+
+				OutputMemoryBitStream output;
+				output.Write(ATTACK, TYPE_SIZE);
+				output.Write(player[0].id, ID_SIZE);
+				output.Write(player[0].attack, ATTACK_SIZE);
+
+				sender.SendMessages(ip, serverPort, output.GetBufferPtr(), output.GetByteLength());
+			}
+
+			if (key.isKeyPressed(sf::Keyboard::X) && player[0].attack == 0) {
+				if (!left) {
+					p1Top.play(attackAnimationMid1T);
+				}
+				else {
+					p2Top.play(attackAnimationMid2T);
+				}
+				player[0].attack = 2;
+
+				OutputMemoryBitStream output;
+				output.Write(ATTACK, TYPE_SIZE);
+				output.Write(player[0].id, ID_SIZE);
+				output.Write(player[0].attack, ATTACK_SIZE);
+
+				sender.SendMessages(ip, serverPort, output.GetBufferPtr(), output.GetByteLength());
+			}
+
+			if (key.isKeyPressed(sf::Keyboard::C) && player[0].attack == 0) {
+				if (!left) {
+					p1Top.play(attackAnimationBot1T);
+				}
+				else {
+					p2Top.play(attackAnimationBot2T);
+				}
+				player[0].attack = 3;
+
+				OutputMemoryBitStream output;
+				output.Write(ATTACK, TYPE_SIZE);
+				output.Write(player[0].id, ID_SIZE);
+				output.Write(player[0].attack, ATTACK_SIZE);
+
+				sender.SendMessages(ip, serverPort, output.GetBufferPtr(), output.GetByteLength());
+			}
+
+			if (player[0].attack != 0)
+			{
+				if (!left) 
+				{
+					if (p1Top.m_currentFrame == 12) {
+						OutputMemoryBitStream output;
+						output.Write(ATTACK, TYPE_SIZE);
+						output.Write(player[0].id, ID_SIZE);
+						output.Write(player[0].attack, ATTACK_SIZE);
+
+						sender.SendMessages(ip, serverPort, output.GetBufferPtr(), output.GetByteLength());
+						player[0].attack = 0;
+					}
+					
+				}
+				else
+				{
+					if (p2Top.m_currentFrame == 12) {
+						OutputMemoryBitStream output;
+						output.Write(ATTACK, TYPE_SIZE);
+						output.Write(player[0].id, ID_SIZE);
+						output.Write(player[0].attack, ATTACK_SIZE);
+
+						sender.SendMessages(ip, serverPort, output.GetBufferPtr(), output.GetByteLength());
+						player[0].attack = 0;
+					}
+					
+				}
+				
+			}
 			// TODO: Attack
+
 			//-- ACCUMULATED --//
 
 			////-- PLAYER --////
@@ -514,7 +610,7 @@ int main()
 					//int negative = 0; // 0 = positiu, 1 = negatiu
 					if (player[0].accum.back().delta < 0) {
 						player[0].accum.back().sign = 1;
-						player[0].accum.back().delta *= -1;
+						player[0].accum.back().delta = -player[0].accum.back().delta;
 					}
 
 					player[0].accum.back().absolute = player[0].x;			// Marco el absolut del moviment
@@ -524,15 +620,15 @@ int main()
 					output.Write(player[0].accum.back().id, ACCUM_ID_SIZE);
 					output.Write(player[0].accum.back().sign, ID_SIZE);
 					output.Write(player[0].accum.back().delta, ACCUM_DELTA_SIZE);
+					output.Write(player[0].accum.back().absolute, POSITION_SIZE);
 
-					std::cout << "Enviat " << player[0].accum.back().delta << std::endl;
+					//std::cout << "Enviat " << player[0].accum.back().delta << std::endl;
 
 					sender.SendMessages(ip, serverPort, output.GetBufferPtr(), output.GetByteLength());
-					// TODO: Write de si hi ha animacio o no
+
 					Accum accumtmp;										// Creo nou acumulat
 					if (player[0].accum.back().id == 15) accumtmp.id = 0;	// Si el ultim acumulat te id 15, el nou torna a 0
 					else accumtmp.id = player[0].accum.back().id + 1;     // Sino, el id es un mes que l'anterior
-					// TODO: vigilar que el acumulat no pasi de +/- 64
 					
 					player[0].accum.push_back(accumtmp);
 				}	
@@ -543,18 +639,11 @@ int main()
 
 			if (!player[1].accum.empty())
 			{
-				int movement = 1;
+				int movement = 2;
 				if (player[1].accum.front().absolute != player[1].x)
 				{
-					if (player[1].accum.front().delta < 0) movement = -1;
+					if (player[1].accum.front().delta < 0) movement = -movement;
 					player[1].x += movement;
-					if (player[1].accum.front().absolute != player[1].x) {
-						player[1].x += movement;
-					}
-					else
-					{
-						player[1].accum.erase(player[1].accum.begin());
-					}
 				}
 				else
 				{
@@ -563,7 +652,7 @@ int main()
 			}
 
 			//-- COMMANDS --//
-
+			
 			if (!com.empty()) {
 				//int serverCase = 0; 
 				//serverCommands.front().Read(&serverCase, TYPE_SIZE);
@@ -579,32 +668,17 @@ int main()
 					output.Write(player[0].id, ID_SIZE);
 					sender.SendMessages(ip, serverPort, output.GetBufferPtr(), output.GetByteLength());
 					com.pop();
-					//serverCommands.pop();
 					break;
 				}
 				case PING: {
 					OutputMemoryBitStream output;
 					output.Write(PING, TYPE_SIZE);
 					output.Write(player[0].id, ID_SIZE);
-					//command = "3" + std::to_string(player[0].id);
 					sender.SendMessages(ip, serverPort, output.GetBufferPtr(), output.GetByteLength());
 					com.pop();
-					//serverCommands.pop();
 					break;
 				}
 				case MOVEMENT: {
-
-					/*int playerId = 0; 
-					serverCommands.front().Read(&playerId, ID_SIZE);				// Guardem quin jugador es
-					int accumId = 0; 
-					serverCommands.front().Read(&accumId, ACCUM_ID_SIZE);			// Guardem la id del acumulat
-					int negative = 0;
-					serverCommands.front().Read(&negative, ID_SIZE);
-					int accumDelta = 0; 
-					serverCommands.front().Read(&accumDelta, ACCUM_DELTA_SIZE);	// Guardem el el delta acumulat
-
-					if (negative == 1) accumDelta *= -1;*/
-
 
 					if (com.front().id == player[0].id)				// Si es el id propi, comfirma el moviment
 					{	// TODO: Check de trampas o problemes
@@ -623,77 +697,101 @@ int main()
 					else							// Si es el id del contrincant, simula el moviment
 					{
 						Accum accumtmp = com.front().accum;
-						/*accumtmp.moveId = accumId;
-						accumtmp.moveDelta = accumDelta;
-						accumtmp.moveAbsolute = player[1].x + accumDelta;*/
-						accumtmp.absolute = player[1].x + accumtmp.delta;
+						//accumtmp.absolute = player[1].x + accumtmp.delta;
 						player[1].accum.push_back(accumtmp);	// Afegir acumulat a la cua
 					}
 
 					com.pop();
-					//serverCommands.pop();
-					break;
-				}							  
+					//serverCommands.pop();					
+				}
+				break;
+
+				case ATTACK:
+				{
+					player[1].attack = com.front().position;
+					if (!left) {
+						if (player[1].attack == 1)
+						{
+							p2Top.play(attackAnimationTop2T);
+							p2Top.m_currentFrame++;
+						}
+						else if (player[1].attack == 2)
+						{
+							p2Top.play(attackAnimationMid2T);
+							p2Top.m_currentFrame++;
+						}
+						else if (player[1].attack == 3)
+						{
+							p2Top.play(attackAnimationBot2T);
+							p2Top.m_currentFrame++;
+						}												
+					}
+					else {
+						if (player[1].attack == 1)
+						{
+							p1Top.play(attackAnimationTop1T);
+							p1Top.m_currentFrame++;
+						}
+						else if (player[1].attack == 2)
+						{
+							p1Top.play(attackAnimationMid1T);
+							p1Top.m_currentFrame++;
+						}
+						else if (player[1].attack == 3)
+						{
+							p1Top.play(attackAnimationBot1T);
+							p1Top.m_currentFrame++;
+						}
+					}
+					com.pop();
+				}
+				break;
+
+				case SCORE:
+				{
+					player[com.front().id].score++;
+					
+					text1.setString(std::to_string(player[0].score));
+					text2.setString(std::to_string(player[1].score));
+
+					if (!left)
+					{
+						player[0].x = 270;
+						player[1].x = 800;
+					} 
+					else 
+					{
+						player[1].x = 270;
+						player[0].x = 800;
+					}					
+
+					player[0].attack = 0;
+					player[1].attack = 0;
+					p1Top.setAnimation(idleAnimation1T);
+					p2Top.setAnimation(idleAnimation2T);
+
+					timerAccum.Start(ACCUMTIME);
+
+					for (int j = 0; j < player.size(); j++)
+					{
+						for (int i = 0; i < player[j].accum.size(); i++)
+						{
+							player[j].accum.erase(player[j].accum.begin());
+						}					
+					}				
+					Accum accumtmp;
+					player[0].accum.push_back(accumtmp);
+
+					com.pop();
+				}
+				break;
+
 				default:
 					break;
 
 				}
 			}
 		}
-			break;
-
-		case points: 
-
-			/*if ((puntsJugador1 >= 5) || (puntsJugador2 >= 5)) {  //Comprovem primer la puntuacio
-				state = win;
-			}
-			if (key.isKeyPressed(sf::Keyboard::Return)) { //Reiniciem jugadors. 
-				player[0].x = POSICIO_INICIAL1;
-				player[0].y = POSICIO_Y;
-				DireccioAtacJugador1 = 0;
-				p1Top.play(idleAnimation1T);
-				p1Bot.play(idleAnimation1B);
-
-				player[1].x = POSICIO_INICIAL2;
-				player[1].y = POSICIO_Y;
-				DireccioAtacJugador2 = 0;
-				p2Top.play(idleAnimation2T);
-				p2Bot.play(idleAnimation2B);
-				state = play;
-
-
-			}*/
-			break;
-		case win:
-
-			/*if (puntsJugador1 > puntsJugador2) { //Comprovem quin jugador a guanyat i actualitzem el text envers aixo
-				PointText.setString("El jugador 1 guanya");
-			}
-			else {
-				PointText.setString("El jugador 2 guanya");
-			}
-			Instructions.setString("Prem 'Enter' per iniciar una nova partida. ");
-			if (key.isKeyPressed(sf::Keyboard::Return)) { //Reiniciem jugadors. I tambe les puntuacion i els textos.
-				Instructions.setString("Prem 'ENTER' per iniciar la propera ronda");
-				puntsJugador1 = 0;
-				puntsJugador2 = 0;
-				text1.setString(std::to_string(puntsJugador1));
-				text2.setString(std::to_string(puntsJugador2));
-
-				playertmp.x = POSICIO_INICIAL1;
-				playertmp.y = POSICIO_Y;
-				DireccioAtacJugador1 = 0;
-				p1Top.play(idleAnimation1T);
-				p1Bot.play(idleAnimation1B);
-
-				playerEnemy.x = POSICIO_INICIAL2;
-				playerEnemy.y = POSICIO_Y;
-				DireccioAtacJugador2 = 0;
-				p2Top.play(idleAnimation2T);
-				p2Bot.play(idleAnimation2B);
-				state = play;
-
-			}*/
 			break;
 		}
 
@@ -714,20 +812,20 @@ int main()
 
 		//
 		p1Bot.update(frameTime);
-		p1Bot.setPosition(player[left].x, 150 + 275);
+		p1Bot.setPosition(player[left].x, player[left].y + 275);
 		window.draw(p1Bot);
 		//p1Top.play(*currentAnimation1T);
 		p1Top.update(frameTime);
-		p1Top.setPosition(player[left].x, 150);
+		p1Top.setPosition(player[left].x, player[left].y);
 		window.draw(p1Top);
 
 		//P2
 		p2Bot.update(frameTime);
-		p2Bot.setPosition(player[right].x /*+ 150*/, player[right].y/* + 275*/); //Aquests 150 en x son la desviació del sprite de les cames
+		p2Bot.setPosition(player[right].x + 150, player[right].y + 275); //Aquests 150 en x son la desviació del sprite de les cames
 		window.draw(p2Bot);
 
 		p2Top.update(frameTime);
-		p2Top.setPosition(player[right].x, player[right].y);
+		p2Top.setPosition(player[right].x , player[right].y);
 		window.draw(p2Top);// pintem el jugador
 
 		window.draw(herba);

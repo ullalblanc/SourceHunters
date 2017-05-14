@@ -11,33 +11,6 @@ enum State {
 	win			// el joc sacaba
 };
 
-
-/*int sendAll(Send* sender, std::vector<ServerPlayer>* player, char* command, size_t size) { // per misatges iguals que s'envien a tots el jugadors
-
-	int commandPush = 0;
-	bool foundMessage = false;									// Per saber si hi ha un misatge igual
-	for (int i = 0; i < player->size(); i++)
-	{
-		sender->SendMessages(player->at(i).ip, player->at(i).port, command, size);
-		for (int j = 0; j < player->at(i).keyCommands.size(); j++)
-		{
-			if (strcmp(player->at(i).keyCommands[j].GetBufferPtr(), command)) { //TODO: Petarmel
-				foundMessage = true;
-				break;
-			}
-		}
-		if (!foundMessage)
-		{
-			//OutputMemoryBitStream tmp(*output);
-			commandPush += i + 1;
-			//player->at(i).keyCommands.push_back(*output);
-		}
-
-		foundMessage = false;
-	}
-	return commandPush;
-}*/
-
 int main()
 {
 	//-- UDP --//
@@ -113,7 +86,7 @@ int main()
 										player[i].x = 270;// jugador 1 a 270
 									}
 									else {
-										player[i].x = 1330; // jugador 2 a 1330
+										player[i].x = 800; // jugador 2 a 1330
 									}
 									player[i].y = 750;
 									std::cout << "\n New user" << std::endl;
@@ -197,7 +170,7 @@ int main()
 								for (int j = 0; j < player[com.front().id].keyComs.size(); j++)
 								{
 									player[com.front().id].keyComs.erase(player[com.front().id].keyComs.begin() + j);	// borral
-									std::cout << "All messages deleted for player " << com.front().id << std::endl;
+									//std::cout << "All messages deleted for player " << com.front().id << std::endl;
 								}							
 								break;
 							}
@@ -233,7 +206,7 @@ int main()
 							output.Write(DISCONNECTION, TYPE_SIZE);
 							output.Write(i, ID_SIZE); // Misatge que s'ha desconectat el jugador i
 
-							std::cout << "player " << i << " seems to be disconected" << std::endl;
+							//std::cout << "player " << i << " seems to be disconected" << std::endl;
 
 							for (int k = 0; k < player.size(); k++)
 							{
@@ -282,12 +255,12 @@ int main()
 			
 			if (!com.empty()) {
 				
-				std::cout << "And now Client Case is " << com.front().type << std::endl;
+				//std::cout << "And now Client Case is " << com.front().type << std::endl;
 
 				switch (com.front().type) {
 
 				case HELLO: {	// Un client es vol conectar
-					//state = connect;
+					state = connect;
 					com.pop();
 				}
 					break;
@@ -298,7 +271,7 @@ int main()
 					break;
 
 				case PING: {
-					std::cout << "Player " << com.front().id << " Pinged" << std::endl;
+					//std::cout << "Player " << com.front().id << " Pinged" << std::endl;
 					for (int i = 0; i < player[com.front().id].keyComs.size(); i++)
 					{
 						if (player[com.front().id].keyComs[i].type == PING) {
@@ -328,33 +301,87 @@ int main()
 									break;
 				case MOVEMENT: {
 					Accum accumtmp = com.front().accum;
-					accumtmp.absolute = player[com.front().id].x + accumtmp.delta;
+
+					int threshold = 6; // Maximum error able to forgive
+					for (int i = -threshold; i < threshold; i++)
+					{
+						if (accumtmp.absolute > LEFT_LIMIT && accumtmp.absolute < RIGHT_LIMIT) {
+							if ((player[com.front().id].x + accumtmp.delta + i) == accumtmp.absolute) { // si esta dins de la posicio que estem disposats a accpetar
+								player[com.front().id].x = accumtmp.absolute;
+								player[com.front().id].accum.push_back(accumtmp);
+
+								OutputMemoryBitStream output;
+								output.Write(MOVEMENT, TYPE_SIZE);
+								output.Write(com.front().id, ID_SIZE);
+								output.Write(player[com.front().id].accum.back().id, ACCUM_ID_SIZE);
+								output.Write(player[com.front().id].accum.back().sign, ID_SIZE);
+								if (player[com.front().id].accum.back().delta < 0)
+									output.Write(-player[com.front().id].accum.back().delta, ACCUM_DELTA_SIZE);
+								else
+									output.Write(player[com.front().id].accum.back().delta, ACCUM_DELTA_SIZE);
+								output.Write(player[com.front().id].accum.back().absolute, POSITION_SIZE);
+
+								//std::cout << "Delta received: " << com.front().accum.delta << std::endl;
+
+								for (int k = 0; k < player.size(); k++)
+								{
+									sender.SendMessages(player[k].ip, player[k].port, output.GetBufferPtr(), output.GetByteLength());
+								}
+							}
+						}
+					}
+					//accumtmp.absolute = player[com.front().id].x + accumtmp.delta;
 					// TODO: Comprobacions de trampas i limits
 
-					player[com.front().id].accum.push_back(accumtmp);
-
-					OutputMemoryBitStream output;
-					output.Write(MOVEMENT, TYPE_SIZE);
-					output.Write(com.front().id, ID_SIZE);
-					output.Write(player[com.front().id].accum.back().id, ACCUM_ID_SIZE);
-					output.Write(player[com.front().id].accum.back().sign, ID_SIZE); // TODO: Cambiar per que funcioni amb playerId accum
-					output.Write(player[com.front().id].accum.back().delta, ACCUM_DELTA_SIZE);
-
-					for (int k = 0; k < player.size(); k++)
-					{
-						sender.SendMessages(player[k].ip, player[k].port, output.GetBufferPtr(), output.GetByteLength());
-					}
 					com.pop();
 					
 				}
 							   break;
 				case ATTACK: {
 
+					if (player[com.front().id].attack == 0)
+					{
+						player[com.front().id].attack = com.front().position;
+
+						OutputMemoryBitStream output;
+						output.Write(ATTACK, TYPE_SIZE);
+						output.Write(player[com.front().id].id, ID_SIZE);
+						output.Write(player[com.front().id].attack, ATTACK_SIZE);
+
+						if (com.front().id == 0)
+							sender.SendMessages(player[1].ip, player[1].port, output.GetBufferPtr(), output.GetByteLength());
+						else 
+							sender.SendMessages(player[0].ip, player[0].port, output.GetBufferPtr(), output.GetByteLength());
+
+					}
+					else {
+						int distance = player[0].x - player[1].x;
+						if (distance < 0) distance = -distance;
+						if (distance < DISTANCE_ATTACK)
+						{
+							player[com.front().id].score++;
+
+							player[0].x = 270;
+							player[1].x = 800;
+
+							player[0].attack = 0;
+							player[1].attack = 0;
+
+							OutputMemoryBitStream output;
+							output.Write(SCORE, TYPE_SIZE);
+							output.Write(player[com.front().id].id, ID_SIZE);
+
+							for (int k = 0; k < player.size(); k++)
+							{
+								sender.SendMessages(player[k].ip, player[k].port, output.GetBufferPtr(), output.GetByteLength());
+							}
+						}
+					}
+					com.pop();
 				}
 					break;
 				}
 			}
-			//mutex.unlock();
 		}
 			break;
 		}
